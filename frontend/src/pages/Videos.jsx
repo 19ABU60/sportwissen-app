@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,10 @@ export default function Videos() {
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
+
+  useEffect(() => {
+    document.title = "Videos | SportWissen";
+  }, []);
 
   const togglePlay = () => {
     if (videoRef.current) {
