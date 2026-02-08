@@ -272,6 +272,27 @@ export default function Videos() {
           </div>
         </div>
       </motion.div>
+
+      {/* Navigation */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 flex justify-between items-center"
+      >
+        <Link to="/technik">
+          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Zurück: 3. Stoßauslage
+          </Button>
+        </Link>
+        <Link to="/obrien">
+          <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+            Weiter: O'Brien-Technik
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
+      </motion.div>
     </div>
   );
 }
