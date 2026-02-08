@@ -262,18 +262,23 @@ export default function Angleiten() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
+        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
+          <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-zinc-300">Phase 2</span>
+        </div>
         <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight uppercase text-white mb-2">
-          Angleiten
+          2. Angleiten
         </h1>
         <p className="text-zinc-400">
-          Videos und Übungen zum Angleiten mit Nachstellschritt und Impulsschritt
+          Videos und Übungen zum Angleiten - Nachstellschritt und Impulsschritt (Didaktische Reduktion)
         </p>
       </motion.div>
 
