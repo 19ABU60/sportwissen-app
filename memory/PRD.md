@@ -1,13 +1,15 @@
 # SportWissen Kugelstoßen - Product Requirements Document
 
 ## Original Problem Statement
-Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern-Apps modernisieren. Erste App: Kugelstoßen (O'Brien-Technik) für Schüler.
+Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern-Apps modernisieren. Erste App: Kugelstoßen (O'Brien-Technik) für Schüler UND Lehrer.
 
 ## User Choices
 - Dark Theme (wie Speakly-App)
 - Keine Login/Fortschrittsspeicherung (einfacher Start)
 - Platzhalter für Videos/Bilder (später durch echte Medien ersetzen)
 - Copyright "© A. Busse" und "SportWissen" Logo beibehalten
+- Rollmenü-Navigation für chronologischen Bewegungsablauf
+- Jede Bewegungsphase als eigene Seite
 
 ## User Personas
 1. **Schüler (12-18 Jahre)** - Lernen die Kugelstoß-Technik
@@ -20,20 +22,32 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
 - Deutsche Sprache
 - Interaktive Übungen (Drag & Drop, Quiz, Video)
 - Keine Anmeldung erforderlich
+- Chronologischer Bewegungsablauf als Struktur
+
+## Didaktische Struktur (3 Aspekte)
+1. **Didaktisch-methodische Aspekte der Erstvermittlung**
+2. **Kugelstoßen aus dem Nachstellschritt seitwärts oder mit einem Impulsschritt** (Didaktische Reduktion)
+3. **O'Brien-Technik** (Zieltechnik)
 
 ---
 
 ## What's Been Implemented
+### Version 1.1 - 2026-02-08
+- ✅ Neue Startseite mit 3 didaktischen Aspekten
+- ✅ Rollmenü-Navigation im Header für alle Bewegungsphasen
+- ✅ Chronologischer Ablauf: Ausgangsstellung → Angleiten → Stoßauslage → Stoß → O'Brien
+- ✅ Jede Phase als eigene Seite mit Vor/Zurück-Navigation
+- ✅ Neue Seite: Ausgangsstellung (Phase 1)
+- ✅ Neue Seite: O'Brien-Technik (Zieltechnik)
+- ✅ Breadcrumb-Navigation auf allen Seiten
+
 ### Version 1.0 - 2026-02-08
 - ✅ Homepage mit Bento Grid Navigation
 - ✅ Phasen-Seite mit Drag & Drop Sortierung
-- ✅ Technik-Seite mit Bildern und Dropdown-Zuordnung
-- ✅ Angleiten-Seite mit Videos und Quiz
-- ✅ Videos-Seite mit Hauptvideo-Player (Geschwindigkeitssteuerung)
+- ✅ Technik-Seite (Stoßauslage) mit Bildern und Dropdown-Zuordnung
+- ✅ Angleiten-Seite mit Videos und Multiple-Choice Quiz
+- ✅ Videos-Seite (Stoß) mit Hauptvideo-Player
 - ✅ Fehlerbilder-Seite mit aufklappbaren Karten
-- ✅ Floating Navigation Dock
-- ✅ Header mit Logo "SportWissen"
-- ✅ Footer mit Copyright "© A. Busse"
 - ✅ Backend API für Phasen, Technikmerkmale, Videos
 
 ### Technical Stack
@@ -46,13 +60,14 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
 ## Prioritized Backlog
 
 ### P0 - Critical (Done)
-- [x] Basic app structure and navigation
-- [x] Drag & Drop Phasen-Übung
-- [x] Video Player mit Steuerung
+- [x] Chronologische Kapitelstruktur
+- [x] Rollmenü-Navigation
+- [x] 3 didaktische Aspekte auf Startseite
+- [x] Einzelseiten für jede Phase
 
 ### P1 - High Priority (Next Phase)
 - [ ] Echte Videos/Bilder einbinden
-- [ ] Mehr Quiz-Fragen hinzufügen
+- [ ] Mehr Drag & Drop Übungen pro Phase
 - [ ] Lückentext-Übungen interaktiv machen
 - [ ] Arbeitskarten-Sektion
 
@@ -62,15 +77,10 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
 - [ ] Weitere Disziplinen (Gerätturnen, Spiele)
 - [ ] Print-Funktion für Arbeitskarten
 
-### P3 - Nice to Have
-- [ ] Offline-Modus (PWA)
-- [ ] Sprachsynthese für Anleitungen
-- [ ] Gamification (Punkte, Badges)
-
 ---
 
 ## Next Tasks
 1. Echte Kugelstoß-Videos vom Benutzer erhalten und einbinden
 2. Echte Technikbilder einbinden
-3. Quiz erweitern mit mehr Fragen
-4. Lückentext-Übungen interaktiv gestalten
+3. Mehr interaktive Übungen pro Phase
+4. Struktur als Template für weitere Sport-Apps
