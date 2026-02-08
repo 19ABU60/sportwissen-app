@@ -1,53 +1,40 @@
-import { useEffect } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { Toaster } from "@/components/ui/sonner";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Pages
+import Home from "@/pages/Home";
+import Phases from "@/pages/Phases";
+import Technique from "@/pages/Technique";
+import Angleiten from "@/pages/Angleiten";
+import Videos from "@/pages/Videos";
+import Errors from "@/pages/Errors";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+// Components
+import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col bg-zinc-950">
+        <Header />
+        <main className="flex-1 pb-24">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/phasen" element={<Phases />} />
+            <Route path="/technik" element={<Technique />} />
+            <Route path="/angleiten" element={<Angleiten />} />
+            <Route path="/videos" element={<Videos />} />
+            <Route path="/fehler" element={<Errors />} />
+          </Routes>
+        </main>
+        <Footer />
+        <Navigation />
+        <Toaster position="top-center" richColors />
+      </div>
+    </BrowserRouter>
   );
 }
 
