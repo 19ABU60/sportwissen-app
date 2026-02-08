@@ -1,61 +1,95 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  Layers, 
-  Target, 
-  Play, 
-  AlertTriangle, 
-  ArrowRight,
-  Video
+  ChevronRight,
+  BookOpen,
+  Target,
+  Award,
+  Layers,
+  Play,
+  Video,
+  AlertTriangle,
+  ArrowRight
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
-const menuItems = [
+// Die 3 didaktischen Hauptaspekte
+const DIDAKTIK_ASPEKTE = [
   {
-    id: "phasen",
-    title: "Phasen des Kugelstoßens",
-    description: "Ordne die Bewegungsphasen in die richtige Reihenfolge",
-    icon: Layers,
-    path: "/phasen",
-    span: "col-span-12 md:col-span-8",
-    featured: true,
-    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80"
+    id: "erstvermittlung",
+    title: "Didaktisch-methodische Aspekte der Erstvermittlung",
+    description: "Grundlagen und Einführung in die Kugelstoß-Technik",
+    icon: BookOpen,
+    color: "blue"
   },
   {
-    id: "technik",
-    title: "Stoßauslage",
-    description: "Technikmerkmale erkennen und zuordnen",
+    id: "reduktion",
+    title: "Kugelstoßen aus dem Nachstellschritt seitwärts oder mit einem Impulsschritt",
+    description: "Didaktische Reduktion - vereinfachte Bewegungsformen",
     icon: Target,
-    path: "/technik",
-    span: "col-span-12 md:col-span-4",
-    featured: false
+    color: "green"
   },
   {
-    id: "angleiten",
-    title: "Angleiten",
-    description: "Videos und Übungen zum Angleiten",
-    icon: Play,
+    id: "obrien",
+    title: "O'Brien-Technik",
+    description: "Die Zieltechnik - vollständiger Bewegungsablauf",
+    icon: Award,
+    color: "amber"
+  }
+];
+
+// Chronologische Bewegungsphasen für das Rollmenü
+const BEWEGUNGSPHASEN = [
+  { 
+    id: "phasen", 
+    title: "Phasenstruktur", 
+    path: "/phasen",
+    description: "Übersicht aller Bewegungsphasen"
+  },
+  { 
+    id: "ausgangsstellung", 
+    title: "1. Ausgangsstellung", 
+    path: "/ausgangsstellung",
+    description: "Rücken zur Stoßrichtung, Kugel am Hals"
+  },
+  { 
+    id: "angleiten", 
+    title: "2. Angleiten", 
     path: "/angleiten",
-    span: "col-span-12 md:col-span-4",
-    featured: false
+    description: "Nachstellschritt oder Impulsschritt"
   },
-  {
-    id: "videos",
-    title: "Gesamtbewegung",
-    description: "Die O'Brien-Technik im Überblick",
-    icon: Video,
+  { 
+    id: "stossauslage", 
+    title: "3. Stoßauslage", 
+    path: "/technik",
+    description: "Optimale Position vor dem Stoß"
+  },
+  { 
+    id: "stoss", 
+    title: "4. Stoß", 
     path: "/videos",
-    span: "col-span-12 md:col-span-4",
-    featured: false
+    description: "Beschleunigung und Abwurf"
   },
-  {
-    id: "fehler",
-    title: "Fehlerbilder",
-    description: "Antizipierte Fehler erkennen und korrigieren",
-    icon: AlertTriangle,
+  { 
+    id: "obrien", 
+    title: "O'Brien-Technik", 
+    path: "/obrien",
+    description: "Zieltechnik - Gesamtbewegung"
+  },
+  { 
+    id: "fehler", 
+    title: "Fehlerbilder", 
     path: "/fehler",
-    span: "col-span-12 md:col-span-4",
-    featured: false
+    description: "Kardinalfehler und Korrekturen"
   }
 ];
 
@@ -63,9 +97,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
+    transition: { staggerChildren: 0.15 }
   }
 };
 
@@ -74,7 +106,7 @@ const itemVariants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
@@ -83,120 +115,221 @@ export default function Home() {
     document.title = "SportWissen | Kugelstoßen";
   }, []);
 
+  const getColorClasses = (color) => {
+    const colors = {
+      blue: {
+        bg: "bg-blue-500/10",
+        border: "border-blue-500/30 hover:border-blue-500/60",
+        icon: "bg-blue-500/20 text-blue-400",
+        text: "text-blue-400"
+      },
+      green: {
+        bg: "bg-emerald-500/10",
+        border: "border-emerald-500/30 hover:border-emerald-500/60",
+        icon: "bg-emerald-500/20 text-emerald-400",
+        text: "text-emerald-400"
+      },
+      amber: {
+        bg: "bg-amber-500/10",
+        border: "border-amber-500/30 hover:border-amber-500/60",
+        icon: "bg-amber-500/20 text-amber-400",
+        text: "text-amber-400"
+      }
+    };
+    return colors[color] || colors.blue;
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-      {/* Hero Section */}
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      {/* Header mit Titel und Bild */}
       <motion.div 
-        className="mb-12 md:mb-16"
+        className="mb-12"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="font-oswald text-4xl md:text-6xl font-bold tracking-tight uppercase text-white mb-4">
-          Kugelstoßen
-        </h1>
-        <p className="text-lg md:text-xl text-zinc-400 max-w-2xl">
-          Didaktisch-methodische Aufbereitung zur Erstvermittlung der 
-          <span className="text-blue-400 font-medium"> O'Brien-Technik</span>
-        </p>
-      </motion.div>
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Bild links */}
+          <div className="w-full lg:w-1/3 flex-shrink-0">
+            <div className="aspect-[3/4] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
+              <img 
+                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&q=80"
+                alt="Kugelstoßen Demonstration"
+                className="w-full h-full object-cover"
+              />
+              <p className="text-xs text-zinc-600 text-center py-2 bg-zinc-900">
+                Platzhalter - Ihr Bild hier
+              </p>
+            </div>
+          </div>
 
-      {/* Bento Grid */}
-      <motion.div 
-        className="grid grid-cols-12 gap-4 md:gap-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          
-          return (
-            <motion.div
-              key={item.id}
-              variants={itemVariants}
-              className={item.span}
+          {/* Titel und Beschreibung rechts */}
+          <div className="flex-1">
+            <h1 className="font-oswald text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight uppercase text-white mb-6">
+              Kugelstoßen
+            </h1>
+            
+            {/* Die 3 didaktischen Aspekte */}
+            <motion.div 
+              className="space-y-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
             >
-              <Link
-                to={item.path}
-                data-testid={`menu-${item.id}`}
-                className={`
-                  block h-full rounded-xl overflow-hidden
-                  bg-zinc-900/50 border border-zinc-800
-                  hover:border-blue-500/50 
-                  transition-colors duration-300
-                  group relative
-                  ${item.featured ? 'min-h-[280px] md:min-h-[320px]' : 'min-h-[160px] md:min-h-[180px]'}
-                `}
-              >
-                {/* Background Image for Featured */}
-                {item.featured && item.image && (
-                  <div className="absolute inset-0">
-                    <img 
-                      src={item.image} 
-                      alt="" 
-                      className="w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 to-transparent" />
-                  </div>
-                )}
+              {DIDAKTIK_ASPEKTE.map((aspekt, index) => {
+                const colors = getColorClasses(aspekt.color);
+                const Icon = aspekt.icon;
                 
-                {/* Content */}
-                <div className={`
-                  relative h-full p-6 md:p-8 flex flex-col justify-end
-                  ${item.featured ? '' : 'justify-between'}
-                `}>
-                  {/* Icon */}
-                  <div className={`
-                    w-12 h-12 rounded-lg flex items-center justify-center mb-4
-                    ${item.featured 
-                      ? 'bg-blue-500/20 text-blue-400' 
-                      : 'bg-zinc-800 text-zinc-400 group-hover:text-blue-400 group-hover:bg-blue-500/20 transition-colors duration-300'
-                    }
-                  `}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  
-                  {/* Text */}
-                  <div>
-                    <h2 className={`
-                      font-oswald font-bold uppercase tracking-wide text-white mb-2
-                      ${item.featured ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}
-                    `}>
-                      {item.title}
-                    </h2>
-                    <p className="text-zinc-400 text-sm md:text-base">
-                      {item.description}
-                    </p>
-                  </div>
-                  
-                  {/* Arrow */}
-                  <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8">
-                    <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-blue-500 transition-colors duration-300">
-                      <ArrowRight className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors duration-300" />
+                return (
+                  <motion.div
+                    key={aspekt.id}
+                    variants={itemVariants}
+                    className={`
+                      p-4 rounded-lg border transition-colors duration-300
+                      ${colors.bg} ${colors.border}
+                    `}
+                    data-testid={`aspekt-${aspekt.id}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${colors.icon}`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className={`font-semibold ${colors.text}`}>
+                          {aspekt.title}
+                        </h3>
+                        <p className="text-sm text-zinc-400 mt-1">
+                          {aspekt.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
+                  </motion.div>
+                );
+              })}
             </motion.div>
-          );
-        })}
+          </div>
+        </div>
       </motion.div>
 
-      {/* Info Section */}
-      <motion.div 
-        className="mt-12 md:mt-16 p-6 md:p-8 rounded-xl bg-zinc-900/30 border border-zinc-800"
+      {/* Rollmenü Navigation */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mb-8"
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+          <div className="flex-1">
+            <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-1">
+              Bewegungsphasen
+            </h2>
+            <p className="text-sm text-zinc-400">
+              Wähle eine Phase des Bewegungsablaufs
+            </p>
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider min-w-[200px] justify-between"
+                data-testid="phasen-dropdown"
+              >
+                <span>Zur Übersicht</span>
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              className="w-72 bg-zinc-900 border-zinc-700"
+              align="end"
+            >
+              <DropdownMenuLabel className="text-zinc-400 font-oswald uppercase text-xs tracking-wider">
+                Chronologischer Ablauf
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-zinc-700" />
+              {BEWEGUNGSPHASEN.map((phase) => (
+                <DropdownMenuItem key={phase.id} asChild>
+                  <Link 
+                    to={phase.path}
+                    className="flex flex-col items-start py-3 cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
+                    data-testid={`dropdown-${phase.id}`}
+                  >
+                    <span className="font-medium text-white">{phase.title}</span>
+                    <span className="text-xs text-zinc-500">{phase.description}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </motion.div>
+
+      {/* Quick Access Karten */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        <Link 
+          to="/phasen"
+          className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-blue-500/50 transition-colors"
+          data-testid="quick-phasen"
+        >
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+              <Layers className="w-5 h-5 text-blue-400" />
+            </div>
+            <h3 className="font-oswald font-semibold uppercase text-white">Phasenstruktur</h3>
+          </div>
+          <p className="text-sm text-zinc-400">Phasen sortieren und verstehen</p>
+          <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-blue-400 mt-4 transition-colors" />
+        </Link>
+
+        <Link 
+          to="/angleiten"
+          className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-emerald-500/50 transition-colors"
+          data-testid="quick-angleiten"
+        >
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <Play className="w-5 h-5 text-emerald-400" />
+            </div>
+            <h3 className="font-oswald font-semibold uppercase text-white">Angleiten</h3>
+          </div>
+          <p className="text-sm text-zinc-400">Videos zur didaktischen Reduktion</p>
+          <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-emerald-400 mt-4 transition-colors" />
+        </Link>
+
+        <Link 
+          to="/fehler"
+          className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-amber-500/50 transition-colors"
+          data-testid="quick-fehler"
+        >
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-amber-400" />
+            </div>
+            <h3 className="font-oswald font-semibold uppercase text-white">Fehlerbilder</h3>
+          </div>
+          <p className="text-sm text-zinc-400">Kardinalfehler erkennen und korrigieren</p>
+          <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-amber-400 mt-4 transition-colors" />
+        </Link>
+      </motion.div>
+
+      {/* Info für Lehrer */}
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
+        transition={{ delay: 0.8 }}
+        className="mt-12 p-6 rounded-xl bg-zinc-900/30 border border-zinc-800"
       >
-        <h3 className="font-oswald text-lg md:text-xl font-semibold uppercase tracking-wide text-zinc-300 mb-4">
-          Über diese Lern-App
+        <h3 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-500 mb-3">
+          Für Lehrkräfte und Ausbildung
         </h3>
-        <p className="text-zinc-400 leading-relaxed">
-          Diese App unterstützt Schülerinnen und Schüler beim Erlernen der Kugelstoß-Technik 
-          nach O'Brien. Die verschiedenen Module ermöglichen ein strukturiertes Üben der 
-          Bewegungsphasen, Technikmerkmale und typischen Fehlerbilder.
+        <p className="text-zinc-400 text-sm leading-relaxed">
+          Diese Lern-App unterstützt den Vermittlungsprozess im Sportunterricht nach dem Prinzip des 
+          Vielkanal-Lernens. Die Inhalte sind sowohl für Schülerinnen und Schüler als auch für 
+          Lehrkräfte und Lehramtsanwärter konzipiert - von der didaktischen Reduktion bis zur Zieltechnik.
         </p>
       </motion.div>
     </div>
