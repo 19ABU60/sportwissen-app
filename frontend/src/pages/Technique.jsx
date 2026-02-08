@@ -234,6 +234,27 @@ export default function Technique() {
           </div>
         </div>
       </motion.div>
+
+      {/* Navigation */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 flex justify-between items-center"
+      >
+        <Link to="/angleiten">
+          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Zurück: 2. Angleiten
+          </Button>
+        </Link>
+        <Link to="/videos">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            Weiter: 4. Stoß
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
+      </motion.div>
     </div>
   );
 }
