@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize } from "lucide-react";
+import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 
 const MAIN_VIDEO = {
   id: "main",
-  title: "Gesamtbewegung (didaktisch reduziert)",
+  title: "Der Stoß - Beschleunigung und Abwurf",
   url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
   thumbnail: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
-  description: "Die komplette O'Brien-Technik in der Übersicht",
+  description: "Die Stoßphase - von der Stoßauslage zum Abwurf",
 };
 
 export default function Videos() {
