@@ -48,6 +48,7 @@ export default function Technique() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Technik | SportWissen";
     fetchMerkmale();
   }, []);
 
