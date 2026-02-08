@@ -98,6 +98,7 @@ export default function Phases() {
   );
 
   useEffect(() => {
+    document.title = "Phasen | SportWissen";
     fetchPhases();
   }, []);
 
