@@ -249,6 +249,10 @@ export default function Angleiten() {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
 
+  useEffect(() => {
+    document.title = "Angleiten | SportWissen";
+  }, []);
+
   const toggleOption = (index) => {
     setSelectedOptions((prev) =>
       prev.includes(index)
