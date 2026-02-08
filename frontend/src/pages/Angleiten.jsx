@@ -384,6 +384,27 @@ export default function Angleiten() {
         </motion.div>
       </div>
 
+      {/* Navigation */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="mt-8 flex justify-between items-center"
+      >
+        <Link to="/ausgangsstellung">
+          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Zurück: 1. Ausgangsstellung
+          </Button>
+        </Link>
+        <Link to="/technik">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            Weiter: 3. Stoßauslage
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
+      </motion.div>
+
       {/* Video Modal */}
       {selectedVideo && (
         <VideoPlayer
