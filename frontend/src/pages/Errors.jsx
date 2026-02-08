@@ -128,6 +128,10 @@ function ErrorCard({ item, isExpanded, onToggle }) {
 export default function Errors() {
   const [expandedId, setExpandedId] = useState(null);
 
+  useEffect(() => {
+    document.title = "Fehler | SportWissen";
+  }, []);
+
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
