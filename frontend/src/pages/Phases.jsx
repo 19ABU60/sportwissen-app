@@ -82,6 +82,7 @@ export default function Phases() {
   const [activeId, setActiveId] = useState(null);
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPhases, setShowPhases] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
