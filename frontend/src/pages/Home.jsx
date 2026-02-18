@@ -211,19 +211,19 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {/* Rollmenü Navigation */}
+      {/* Rollmenü Navigation - mit blauem Hintergrund */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
         className="mb-8"
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-blue-600 rounded-xl">
           <div className="flex-1">
             <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-1">
-              Bewegungsphasen
+              Übersicht
             </h2>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-blue-100">
               Wähle eine Phase des Bewegungsablaufs
             </p>
           </div>
@@ -231,10 +231,10 @@ export default function Home() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider min-w-[200px] justify-between"
+                className="bg-white/20 hover:bg-white/30 text-white font-oswald uppercase tracking-wider min-w-[200px] justify-between border border-white/30"
                 data-testid="phasen-dropdown"
               >
-                <span>Zur Übersicht</span>
+                <span>Bewegungsphasen</span>
                 <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             </DropdownMenuTrigger>
@@ -261,59 +261,6 @@ export default function Home() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </motion.div>
-
-      {/* Quick Access Karten */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        <Link 
-          to="/phasen"
-          className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-blue-500/50 transition-colors"
-          data-testid="quick-phasen"
-        >
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <Layers className="w-5 h-5 text-blue-400" />
-            </div>
-            <h3 className="font-oswald font-semibold uppercase text-white">Phasenstruktur</h3>
-          </div>
-          <p className="text-sm text-zinc-400">Phasen sortieren und verstehen</p>
-          <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-blue-400 mt-4 transition-colors" />
-        </Link>
-
-        <Link 
-          to="/angleiten"
-          className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-emerald-500/50 transition-colors"
-          data-testid="quick-angleiten"
-        >
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-              <Play className="w-5 h-5 text-emerald-400" />
-            </div>
-            <h3 className="font-oswald font-semibold uppercase text-white">Angleiten</h3>
-          </div>
-          <p className="text-sm text-zinc-400">Videos zur didaktischen Reduktion</p>
-          <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-emerald-400 mt-4 transition-colors" />
-        </Link>
-
-        <Link 
-          to="/fehler"
-          className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-amber-500/50 transition-colors"
-          data-testid="quick-fehler"
-        >
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
-            </div>
-            <h3 className="font-oswald font-semibold uppercase text-white">Fehlerbilder</h3>
-          </div>
-          <p className="text-sm text-zinc-400">Kardinalfehler erkennen und korrigieren</p>
-          <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-amber-400 mt-4 transition-colors" />
-        </Link>
       </motion.div>
 
       {/* Info für Lehrer */}
