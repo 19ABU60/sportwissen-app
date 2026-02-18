@@ -149,14 +149,19 @@ export default function Home() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Bild links */}
-          <div className="w-full lg:w-1/3 flex-shrink-0">
-            <div className="aspect-[3/4] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
+          {/* Bild links - kleiner */}
+          <div className="w-full lg:w-1/4 flex-shrink-0">
+            <div className="aspect-[3/4] rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 cursor-pointer hover:scale-105 transition-transform">
               <img 
-                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&q=80"
+                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80"
                 alt="Kugelstoßen Demonstration"
                 className="w-full h-full object-cover"
               />
+            </div>
+            <p className="text-xs text-zinc-500 text-center mt-2">
+              Platzhalter - Ihr Bild hier
+            </p>
+          </div>
               <p className="text-xs text-zinc-600 text-center py-2 bg-zinc-900">
                 Platzhalter - Ihr Bild hier
               </p>
