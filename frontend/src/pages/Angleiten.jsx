@@ -299,10 +299,10 @@ export default function Angleiten() {
         className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6"
       >
         <h2 className="font-oswald text-xl font-semibold uppercase tracking-wide text-white mb-2">
-          Impulsschritt oder Nachstellschritt
+          Nachstellschritt
         </h2>
         <p className="text-zinc-400 mb-6">
-          Wähle die Merkmale aus, die zur korrekten Ausführung gehören:
+          Bringe die Merkmale in eine chronologische Reihenfolge!
         </p>
 
         <div className="space-y-3">
