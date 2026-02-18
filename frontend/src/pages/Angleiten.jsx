@@ -48,12 +48,12 @@ const VIDEOS = [
 const MERKMALE_DATA = [
   { id: "m1", text: "Seitliche Ausgangsstellung", order: 1 },
   { id: "m2", text: "Körper leicht versetzt zur Stoßrichtung ausrichten", order: 2 },
-  { id: "m3", text: "Nachstellschritt", order: 3 },
-  { id: "m4", text: "gesamten Körper flach in Richtung Balken in die Stoßauslage beschleunigen", order: 4 },
+  { id: "m3", text: "Nachstellschritt flach ausführen", order: 3 },
+  { id: "m4", text: "beim Nachstellschritt das Körpergewicht auf das hintere Bein (Druckbein) verlagern", order: 4 },
   { id: "m5", text: "Landung auf gebeugtem Druckbein", order: 5 },
-  { id: "m6", text: "Schulterachsenneigung durch fast vollständige Gewichtsverlagerung auf das Druckbein", order: 6 },
-  { id: "m7", text: "Stemmbein leicht gebeugt mit Fußaußenkante am Balken", order: 7 },
-  { id: "m8", text: "Stoßarm in Verlängerung der Schulterachse", order: 8 },
+  { id: "m6", text: "Schulterachsenneigung durch vollständige Gewichtsverlagerung auf das Druckbein", order: 6 },
+  { id: "m7", text: "Stemmbein leicht gebeugt mit der Fußaußenkante gegen den Balken drücken", order: 7 },
+  { id: "m8", text: "Stoßarm am Ende der Stoßauslage in Verlängerung der Schulterachse ausgerichtet", order: 8 },
 ];
 
 const CORRECT_ORDER = ["m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"];
