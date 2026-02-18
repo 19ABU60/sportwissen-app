@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 // Merkmale für Nachstellschritt seitwärts
 const MERKMALE_NACHSTELLSCHRITT = [
   "Ausrichtung seitlich zur Stoßrichtung",
+  "Kugel liegt auf den Fingerwurzeln",
+  "Kugel am Hals (unter dem Kinn)",
+  "Ellbogen etwa auf Schulterhöhe",
   "Blick geradeaus",
   "Körpergewicht auf dem leicht gebeugten Druckbein",
   "Stemmbein nur leicht aufgesetzt"
@@ -15,9 +18,12 @@ const MERKMALE_NACHSTELLSCHRITT = [
 // Merkmale für O'Brien-Technik
 const MERKMALE_OBRIEN = [
   "Rücken zur Stoßrichtung",
+  "Kugel liegt auf den Fingerwurzeln",
   "Kugel am Hals (unter dem Kinn)",
+  "Ellbogen etwa auf Schulterhöhe",
   "Blick nach hinten gerichtet",
-  "Körpergewicht auf dem Druckbein"
+  "Körpergewicht auf dem Druckbein",
+  "Standbein leicht gebeugt"
 ];
 
 export default function Ausgangsstellung() {
