@@ -306,10 +306,10 @@ export default function Phases() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="space-y-6"
+          className="space-y-4"
         >
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-            <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-zinc-300 mb-4">
+          <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4">
+            <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200 mb-3">
               Gesamtbewegung (didaktisch reduziert)
             </h2>
             <div className="aspect-video bg-zinc-800 rounded-lg overflow-hidden relative group">
@@ -324,39 +324,36 @@ export default function Phases() {
                   type="video/mp4"
                 />
               </video>
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors pointer-events-none">
-                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                  <Play className="w-8 h-8 text-white ml-1" />
-                </div>
-              </div>
             </div>
-            <p className="text-sm text-zinc-500 mt-3">
-              Platzhalter-Video - Hier kommt später das echte Demonstrationsvideo
+            <p className="text-xs text-zinc-500 mt-2">
+              Platzhalter-Video
             </p>
           </div>
 
-          {/* Info Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="info-card">
-              <div className="info-card-header">
-                Wesentliche Aspekte
-              </div>
-              <ul className="space-y-2">
-                <li className="info-card-item">• Kugelhaltung</li>
-                <li className="info-card-item">• Fußaufsatz</li>
-                <li className="info-card-item">• Oberkörperdrehung</li>
-                <li className="info-card-item">• Gewichtsverlagerung</li>
-              </ul>
-            </div>
-            <div className="info-card">
-              <div className="info-card-header">
+          {/* Info Cards - getauscht */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Linke Karte: Zur Stoßauslage */}
+            <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
+              <div className="text-xs font-oswald font-semibold uppercase tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
                 Zur Stoßauslage
               </div>
-              <ul className="space-y-2">
-                <li className="info-card-item">• Ausgangsstellung</li>
-                <li className="info-card-item">• Angleiten</li>
-                <li className="info-card-item">• Impulsschritt oder</li>
-                <li className="info-card-item">• Nachstellschritt</li>
+              <ul className="space-y-1 text-sm text-zinc-300">
+                <li>• Ausgangsstellung</li>
+                <li>• Angleiten</li>
+                <li>• Impulsschritt oder</li>
+                <li>• Nachstellschritt</li>
+              </ul>
+            </div>
+            {/* Rechte Karte: Wesentliche Aspekte der Stoßauslage */}
+            <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
+              <div className="text-xs font-oswald font-semibold uppercase tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
+                Wesentliche Aspekte der Stoßauslage
+              </div>
+              <ul className="space-y-1 text-sm text-zinc-300">
+                <li>• Kugelhaltung</li>
+                <li>• Fußaufsatz</li>
+                <li>• Oberkörperdrehung</li>
+                <li>• Gewichtsverlagerung</li>
               </ul>
             </div>
           </div>
