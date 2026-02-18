@@ -1,17 +1,23 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, ChevronLeft, Play, Info } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const MERKMALE = [
+// Merkmale für Nachstellschritt seitwärts
+const MERKMALE_NACHSTELLSCHRITT = [
+  "Ausrichtung seitlich zur Stoßrichtung",
+  "Blick geradeaus",
+  "Körpergewicht auf dem leicht gebeugten Druckbein",
+  "Stemmbein nur leicht aufgesetzt"
+];
+
+// Merkmale für O'Brien-Technik
+const MERKMALE_OBRIEN = [
   "Rücken zur Stoßrichtung",
-  "Kugel liegt auf den Fingerwurzeln",
   "Kugel am Hals (unter dem Kinn)",
-  "Ellbogen etwa auf Schulterhöhe",
   "Blick nach hinten gerichtet",
-  "Körpergewicht auf dem Druckbein",
-  "Standbein leicht gebeugt"
+  "Körpergewicht auf dem Druckbein"
 ];
 
 export default function Ausgangsstellung() {
@@ -20,12 +26,12 @@ export default function Ausgangsstellung() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-6"
       >
         <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
           <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
@@ -40,80 +46,88 @@ export default function Ausgangsstellung() {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Bild/Video Bereich */}
+      {/* Zwei Spalten: Nachstellschritt seitwärts und O'Brien-Technik */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Linke Spalte: Nachstellschritt seitwärts */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
+          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
         >
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
-            <div className="aspect-[4/3] relative">
-              <img
-                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80"
-                alt="Ausgangsstellung Demonstration"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <p className="text-white font-medium">Ausgangsstellung</p>
-                <p className="text-zinc-300 text-sm">Rücken zur Stoßrichtung</p>
-              </div>
-              {/* Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 text-white ml-1" />
+          <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-4">
+            Nachstellschritt seitwärts
+          </h2>
+          
+          {/* Merkmale */}
+          <ul className="space-y-2 mb-4">
+            {MERKMALE_NACHSTELLSCHRITT.map((merkmal, index) => (
+              <motion.li
+                key={index}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+                className="flex items-start gap-2"
+              >
+                <div className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-400 text-xs font-medium">{index + 1}</span>
                 </div>
-              </div>
-            </div>
-            <div className="p-4 border-t border-zinc-800">
-              <p className="text-sm text-zinc-500">
-                Platzhalter - Hier kommt später das echte Demonstrationsvideo
-              </p>
+                <span className="text-zinc-300 text-sm">{merkmal}</span>
+              </motion.li>
+            ))}
+          </ul>
+
+          {/* Bild-Platzhalter */}
+          <div className="aspect-[4/3] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600">
+            <img
+              src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80"
+              alt="Nachstellschritt seitwärts"
+              className="w-full h-full object-cover opacity-60"
+            />
+            <div className="relative -mt-8 text-center">
+              <span className="text-xs text-zinc-400 bg-zinc-800/80 px-2 py-1 rounded">Platzhalter</span>
             </div>
           </div>
         </motion.div>
 
-        {/* Merkmale */}
+        {/* Rechte Spalte: O'Brien-Technik */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="space-y-6"
+          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
         >
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-            <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-4">
-              Wesentliche Merkmale
-            </h2>
-            <ul className="space-y-3">
-              {MERKMALE.map((merkmal, index) => (
-                <motion.li
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  className="flex items-start gap-3"
-                >
-                  <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-blue-400 text-sm font-medium">{index + 1}</span>
-                  </div>
-                  <span className="text-zinc-300">{merkmal}</span>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
+          <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-4">
+            O'Brien-Technik
+          </h2>
+          
+          {/* Merkmale */}
+          <ul className="space-y-2 mb-4">
+            {MERKMALE_OBRIEN.map((merkmal, index) => (
+              <motion.li
+                key={index}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                className="flex items-start gap-2"
+              >
+                <div className="w-5 h-5 rounded bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-amber-400 text-xs font-medium">{index + 1}</span>
+                </div>
+                <span className="text-zinc-300 text-sm">{merkmal}</span>
+              </motion.li>
+            ))}
+          </ul>
 
-          {/* Hinweis-Box */}
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-            <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-blue-300 mb-1">Didaktischer Hinweis</h3>
-                <p className="text-sm text-zinc-400">
-                  Die korrekte Ausgangsstellung ist fundamental für den gesamten Bewegungsablauf. 
-                  Fehler hier setzen sich in allen folgenden Phasen fort.
-                </p>
-              </div>
+          {/* Bild-Platzhalter */}
+          <div className="aspect-[4/3] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600">
+            <img
+              src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&q=80"
+              alt="O'Brien-Technik"
+              className="w-full h-full object-cover opacity-60"
+            />
+            <div className="relative -mt-8 text-center">
+              <span className="text-xs text-zinc-400 bg-zinc-800/80 px-2 py-1 rounded">Platzhalter</span>
             </div>
           </div>
         </motion.div>
