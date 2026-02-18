@@ -346,6 +346,7 @@ export default function Phases() {
               <ul className="space-y-1 text-sm text-zinc-300">
                 <li>• Ausgangsstellung</li>
                 <li>• Angleiten</li>
+                <li>• Stoßauslage</li>
               </ul>
             </div>
             {/* Rechte Karte: Wesentliche Aspekte */}
@@ -354,11 +355,11 @@ export default function Phases() {
                 Wesentliche Aspekte
               </div>
               <ul className="space-y-1 text-sm text-zinc-300">
-                <li>• Kugelhaltung</li>
-                <li>• Oberkörper absenken</li>
-                <li>• flach nach hinten-unten abdrücken</li>
-                <li>• bei gleichzeitiger Oberkörperdrehung</li>
-                <li>• mit Gewichtsverlagerung auf das Druckbein</li>
+                <li className="flex"><span className="mr-1">•</span><span>Kugelhaltung</span></li>
+                <li className="flex"><span className="mr-1">•</span><span>Oberkörper absenken</span></li>
+                <li className="flex"><span className="mr-1">•</span><span>flach nach hinten-unten abdrücken</span></li>
+                <li className="flex"><span className="mr-1">•</span><span>bei gleichzeitiger Oberkörperdrehung</span></li>
+                <li className="flex"><span className="mr-1">•</span><span>mit Gewichtsverlagerung auf das Druckbein</span></li>
               </ul>
             </div>
           </div>
