@@ -18,8 +18,8 @@ const DIDAKTIK_ASPEKTE = [
   },
   {
     id: "reduktion",
-    title: "Kugelstoßen aus dem Nachstellschritt seitwärts oder mit einem Impulsschritt",
-    description: "Didaktische Reduktion - vereinfachte Bewegungsformen",
+    title: "Kugelstoßen aus dem Nachstellschritt seitwärts",
+    description: "Didaktische Reduktion - vereinfachte Bewegungsform",
     icon: Target,
     color: "green"
   },
