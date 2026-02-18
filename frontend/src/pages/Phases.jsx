@@ -159,114 +159,143 @@ export default function Phases() {
   const activePhase = activeId ? phases.find((p) => p.id === activeId) : null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8"
+        className="mb-6"
       >
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight uppercase text-white mb-2">
+        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
           Phasen des Kugelstoßens
         </h1>
         <p className="text-zinc-400">
-          Ordne die Bewegungsphasen in die richtige Reihenfolge!
+          Bringe sie in die richtige Reihenfolge!
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Drag & Drop Section */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6"
+          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
         >
-          <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-zinc-300 mb-6">
-            Ziehe die Phasen in die richtige Reihenfolge
-          </h2>
+          {/* Rollmenü Header */}
+          <button
+            onClick={() => setShowPhases(!showPhases)}
+            className="w-full flex items-center justify-between p-3 bg-zinc-700/50 rounded-lg hover:bg-zinc-700 transition-colors"
+            data-testid="toggle-phases"
+          >
+            <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200">
+              Bewegungsphasen
+            </h2>
+            {showPhases ? (
+              <ChevronUp className="w-5 h-5 text-zinc-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-zinc-400" />
+            )}
+          </button>
 
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="h-16 bg-zinc-800 rounded-lg animate-pulse"
-                />
-              ))}
-            </div>
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={phases.map((p) => p.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-3" data-testid="phases-list">
-                  {phases.map((phase, index) => (
-                    <SortablePhaseItem
-                      key={phase.id}
-                      phase={phase}
-                      index={index}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-
-              <DragOverlay>
-                {activePhase ? <PhaseOverlay phase={activePhase} /> : null}
-              </DragOverlay>
-            </DndContext>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex gap-3 mt-6">
-            <Button
-              onClick={validateOrder}
-              data-testid="check-order-btn"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              Überprüfen
-            </Button>
-            <Button
-              onClick={resetExercise}
-              variant="outline"
-              data-testid="reset-btn"
-              className="border-zinc-700 hover:bg-zinc-800 text-zinc-300"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </Button>
-          </div>
-
-          {/* Result Feedback */}
+          {/* Collapsible Phasen-Liste */}
           <AnimatePresence>
-            {result && (
+            {showPhases && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className={`
-                  mt-6 p-4 rounded-lg flex items-center gap-3
-                  ${result.is_correct 
-                    ? "bg-green-500/20 border border-green-500/50" 
-                    : "bg-red-500/20 border border-red-500/50"
-                  }
-                `}
-                data-testid="result-feedback"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
               >
-                {result.is_correct ? (
-                  <Check className="w-6 h-6 text-green-400" />
-                ) : (
-                  <X className="w-6 h-6 text-red-400" />
-                )}
-                <p className={result.is_correct ? "text-green-300" : "text-red-300"}>
-                  {result.message}
-                </p>
+                <div className="pt-4">
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className="h-10 bg-zinc-700 rounded-lg animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={phases.map((p) => p.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="space-y-2" data-testid="phases-list">
+                          {phases.map((phase, index) => (
+                            <SortablePhaseItem
+                              key={phase.id}
+                              phase={phase}
+                              index={index}
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+
+                      <DragOverlay>
+                        {activePhase ? <PhaseOverlay phase={activePhase} /> : null}
+                      </DragOverlay>
+                    </DndContext>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-4">
+                    <Button
+                      onClick={validateOrder}
+                      data-testid="check-order-btn"
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider text-sm"
+                      size="sm"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Überprüfen
+                    </Button>
+                    <Button
+                      onClick={resetExercise}
+                      variant="outline"
+                      data-testid="reset-btn"
+                      className="border-zinc-600 hover:bg-zinc-700 text-zinc-300"
+                      size="sm"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {/* Result Feedback */}
+                  <AnimatePresence>
+                    {result && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className={`
+                          mt-4 p-3 rounded-lg flex items-center gap-3
+                          ${result.is_correct 
+                            ? "bg-green-500/20 border border-green-500/50" 
+                            : "bg-red-500/20 border border-red-500/50"
+                          }
+                        `}
+                        data-testid="result-feedback"
+                      >
+                        {result.is_correct ? (
+                          <Check className="w-5 h-5 text-green-400" />
+                        ) : (
+                          <X className="w-5 h-5 text-red-400" />
+                        )}
+                        <p className={`text-sm ${result.is_correct ? "text-green-300" : "text-red-300"}`}>
+                          {result.message}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
