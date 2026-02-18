@@ -162,11 +162,6 @@ export default function Home() {
               Platzhalter - Ihr Bild hier
             </p>
           </div>
-              <p className="text-xs text-zinc-600 text-center py-2 bg-zinc-900">
-                Platzhalter - Ihr Bild hier
-              </p>
-            </div>
-          </div>
 
           {/* Titel und Beschreibung rechts */}
           <div className="flex-1">
