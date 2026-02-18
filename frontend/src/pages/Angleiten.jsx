@@ -1,9 +1,31 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize, ChevronRight, ChevronLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Play, Pause, RotateCcw, Volume2, VolumeX, Maximize, 
+  ChevronRight, ChevronLeft, ChevronDown, ChevronUp,
+  GripVertical, Check, X
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const VIDEOS = [
   {
@@ -22,23 +44,78 @@ const VIDEOS = [
   },
 ];
 
-const QUIZ_OPTIONS = [
-  "Seitliche Ausgangsstellung",
-  "Körper leicht versetzt zur Stoßrichtung ausrichten",
-  "Nachstellschritt",
-  "gesamten Körper flach in Richtung Balken in die Stoßauslage beschleunigen",
-  "Landung auf gebeugtem Druckbein",
-  "Schulterachsenneigung durch fast vollständige Gewichtsverlagerung auf das Druckbein",
-  "Stemmbein leicht gebeugt mit Fußaußenkante am Balken",
-  "Stoßarm in Verlängerung der Schulterachse",
+// Merkmale mit korrekter Reihenfolge
+const MERKMALE_DATA = [
+  { id: "m1", text: "Seitliche Ausgangsstellung", order: 1 },
+  { id: "m2", text: "Körper leicht versetzt zur Stoßrichtung ausrichten", order: 2 },
+  { id: "m3", text: "Nachstellschritt", order: 3 },
+  { id: "m4", text: "gesamten Körper flach in Richtung Balken in die Stoßauslage beschleunigen", order: 4 },
+  { id: "m5", text: "Landung auf gebeugtem Druckbein", order: 5 },
+  { id: "m6", text: "Schulterachsenneigung durch fast vollständige Gewichtsverlagerung auf das Druckbein", order: 6 },
+  { id: "m7", text: "Stemmbein leicht gebeugt mit Fußaußenkante am Balken", order: 7 },
+  { id: "m8", text: "Stoßarm in Verlängerung der Schulterachse", order: 8 },
 ];
+
+const CORRECT_ORDER = ["m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"];
+
+// Sortable Item Component
+function SortableMerkmalItem({ merkmal, index }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: merkmal.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 1,
+  };
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      className={`
+        flex items-center gap-2 p-2 bg-zinc-800/80 border border-zinc-700 rounded-lg cursor-grab
+        ${isDragging ? "opacity-90 border-blue-500 shadow-lg" : "hover:border-zinc-600"}
+      `}
+      {...attributes}
+      {...listeners}
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+        <span className="text-blue-400 text-xs font-medium">{index + 1}</span>
+      </div>
+      <span className="text-zinc-200 text-sm flex-1">{merkmal.text}</span>
+      <GripVertical className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+    </motion.div>
+  );
+}
+
+function MerkmalOverlay({ merkmal }) {
+  return (
+    <div className="flex items-center gap-2 p-2 bg-zinc-800 border border-blue-500 rounded-lg shadow-xl">
+      <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+        <span className="text-blue-400 text-xs font-medium">•</span>
+      </div>
+      <span className="text-zinc-200 text-sm flex-1">{merkmal.text}</span>
+      <GripVertical className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+    </div>
+  );
+}
 
 function VideoCard({ video, onPlay }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden hover:border-blue-500/50 transition-colors cursor-pointer group"
+      className="bg-zinc-800/50 border border-zinc-700 rounded-xl overflow-hidden hover:border-blue-500/50 transition-colors cursor-pointer group"
       onClick={() => onPlay(video)}
       data-testid={`video-card-${video.id}`}
     >
@@ -49,16 +126,16 @@ function VideoCard({ video, onPlay }) {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-colors">
-          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Play className="w-8 h-8 text-white ml-1" />
+          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Play className="w-7 h-7 text-white ml-1" />
           </div>
         </div>
       </div>
-      <div className="p-4">
-        <h3 className="font-oswald text-lg font-semibold text-white mb-1">
+      <div className="p-3">
+        <h3 className="font-oswald text-base font-semibold text-white mb-1">
           {video.title}
         </h3>
-        <p className="text-sm text-zinc-400">{video.description}</p>
+        <p className="text-xs text-zinc-400">{video.description}</p>
       </div>
     </motion.div>
   );
@@ -111,21 +188,6 @@ function VideoPlayer({ video, onClose }) {
     }
   };
 
-  const restart = () => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      setProgress(0);
-    }
-  };
-
-  const toggleFullscreen = () => {
-    if (videoRef.current) {
-      if (videoRef.current.requestFullscreen) {
-        videoRef.current.requestFullscreen();
-      }
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -148,19 +210,15 @@ function VideoPlayer({ video, onClose }) {
             src={video.url}
             onTimeUpdate={handleTimeUpdate}
             onEnded={() => setIsPlaying(false)}
-            data-testid="video-player"
           />
           
-          {/* Video Controls */}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-            {/* Progress Bar */}
             <Slider
               value={[progress]}
               onValueChange={handleSeek}
               max={100}
               step={0.1}
               className="mb-4"
-              data-testid="video-progress"
             />
             
             <div className="flex items-center justify-between">
@@ -170,21 +228,8 @@ function VideoPlayer({ video, onClose }) {
                   variant="ghost"
                   onClick={togglePlay}
                   className="text-white hover:bg-white/20"
-                  data-testid="play-pause-btn"
                 >
-                  {isPlaying ? (
-                    <Pause className="w-5 h-5" />
-                  ) : (
-                    <Play className="w-5 h-5 ml-0.5" />
-                  )}
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={restart}
-                  className="text-white hover:bg-white/20"
-                >
-                  <RotateCcw className="w-4 h-4" />
+                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
                 </Button>
                 <Button
                   size="icon"
@@ -192,15 +237,10 @@ function VideoPlayer({ video, onClose }) {
                   onClick={toggleMute}
                   className="text-white hover:bg-white/20"
                 >
-                  {isMuted ? (
-                    <VolumeX className="w-5 h-5" />
-                  ) : (
-                    <Volume2 className="w-5 h-5" />
-                  )}
+                  {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                 </Button>
               </div>
               
-              {/* Speed Controls */}
               <div className="flex items-center gap-2">
                 {[0.25, 0.5, 1, 1.5].map((rate) => (
                   <Button
@@ -209,23 +249,12 @@ function VideoPlayer({ video, onClose }) {
                     variant={playbackRate === rate ? "default" : "ghost"}
                     onClick={() => setSpeed(rate)}
                     className={`text-xs px-2 ${
-                      playbackRate === rate
-                        ? "bg-blue-600 text-white"
-                        : "text-white hover:bg-white/20"
+                      playbackRate === rate ? "bg-blue-600 text-white" : "text-white hover:bg-white/20"
                     }`}
-                    data-testid={`speed-${rate}x`}
                   >
                     {rate}x
                   </Button>
                 ))}
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={toggleFullscreen}
-                  className="text-white hover:bg-white/20"
-                >
-                  <Maximize className="w-4 h-4" />
-                </Button>
               </div>
             </div>
           </div>
@@ -242,27 +271,78 @@ function VideoPlayer({ video, onClose }) {
 
 export default function Angleiten() {
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [showMerkmale, setShowMerkmale] = useState(false);
+  const [merkmale, setMerkmale] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+  const [result, setResult] = useState(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     document.title = "Angleiten | SportWissen";
+    // Shuffle merkmale on load
+    const shuffled = [...MERKMALE_DATA].sort(() => Math.random() - 0.5);
+    setMerkmale(shuffled);
   }, []);
 
-  const toggleOption = (index) => {
-    setSelectedOptions((prev) =>
-      prev.includes(index)
-        ? prev.filter((i) => i !== index)
-        : [...prev, index]
-    );
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
   };
 
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (active.id !== over?.id) {
+      setMerkmale((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+      setResult(null);
+    }
+  };
+
+  const validateOrder = () => {
+    const userOrder = merkmale.map((m) => m.id);
+    const isCorrect = JSON.stringify(userOrder) === JSON.stringify(CORRECT_ORDER);
+    
+    setResult({
+      is_correct: isCorrect,
+      message: isCorrect 
+        ? "Perfekt! Die Reihenfolge stimmt!" 
+        : "Nicht ganz richtig. Versuche es noch einmal!"
+    });
+    
+    if (isCorrect) {
+      toast.success("Perfekt! Die Reihenfolge stimmt! 🎉");
+    } else {
+      toast.error("Nicht ganz richtig. Versuche es noch einmal!");
+    }
+  };
+
+  const resetExercise = () => {
+    const shuffled = [...MERKMALE_DATA].sort(() => Math.random() - 0.5);
+    setMerkmale(shuffled);
+    setResult(null);
+  };
+
+  const activeMerkmal = activeId ? merkmale.find((m) => m.id === activeId) : null;
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8"
+        className="mb-6"
       >
         <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
           <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
@@ -277,104 +357,137 @@ export default function Angleiten() {
         </p>
       </motion.div>
 
-      {/* Videos Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {VIDEOS.map((video, index) => (
-          <motion.div
-            key={video.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <VideoCard video={video} onPlay={setSelectedVideo} />
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Quiz Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6"
-      >
-        <h2 className="font-oswald text-xl font-semibold uppercase tracking-wide text-white mb-2">
-          Nachstellschritt
-        </h2>
-        <p className="text-zinc-400 mb-6">
-          Bringe die Merkmale in eine chronologische Reihenfolge!
-        </p>
-
-        <div className="space-y-3">
-          {QUIZ_OPTIONS.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => toggleOption(index)}
-              className={`
-                w-full text-left quiz-option flex items-center gap-3
-                ${selectedOptions.includes(index) ? "selected" : ""}
-              `}
-              data-testid={`quiz-option-${index}`}
-            >
-              <div
-                className={`
-                  w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                  ${selectedOptions.includes(index)
-                    ? "border-blue-500 bg-blue-500"
-                    : "border-zinc-600"
-                  }
-                `}
-              >
-                {selectedOptions.includes(index) && (
-                  <div className="w-2 h-2 rounded-full bg-white" />
-                )}
-              </div>
-              <span className="text-zinc-200">{option}</span>
-            </button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column - Videos */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-          className="info-card"
+          transition={{ delay: 0.2 }}
+          className="space-y-4"
         >
-          <div className="info-card-header">Die Stemmphase dient</div>
-          <div className="grid grid-cols-4 gap-2 text-zinc-400 text-sm">
-            <span>kör</span>
-            <span>Auf</span>
-            <span>Ober</span>
-            <span>des</span>
-            <span>rich</span>
-            <span>dem</span>
-            <span>ten</span>
-            <span>pers</span>
-          </div>
-          <p className="text-xs text-zinc-500 mt-3">
-            (Lückentext-Übung - später interaktiv)
-          </p>
+          {VIDEOS.map((video, index) => (
+            <VideoCard key={video.id} video={video} onPlay={setSelectedVideo} />
+          ))}
         </motion.div>
 
+        {/* Right Column - Merkmale Drag & Drop */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.3 }}
           className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
         >
-          <h3 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-400 mb-3">
-            Steuern von Übungsabläufen
-          </h3>
-          <Button
-            variant="outline"
-            className="w-full border-zinc-600 text-zinc-300 hover:bg-zinc-700"
-            data-testid="control-exercises-btn"
+          {/* Rollmenü Header */}
+          <button
+            onClick={() => setShowMerkmale(!showMerkmale)}
+            className="w-full flex items-center justify-between p-3 bg-zinc-700/50 rounded-lg hover:bg-zinc-700 transition-colors"
+            data-testid="toggle-merkmale"
           >
-            Übungen starten
-          </Button>
+            <div>
+              <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200">
+                Nachstellschritt
+              </h2>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Bringe die Merkmale in eine chronologische Reihenfolge!
+              </p>
+            </div>
+            {showMerkmale ? (
+              <ChevronUp className="w-5 h-5 text-zinc-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-zinc-400" />
+            )}
+          </button>
+
+          {/* Collapsible Merkmale Liste */}
+          <AnimatePresence>
+            {showMerkmale && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-4">
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={merkmale.map((m) => m.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-2" data-testid="merkmale-list">
+                        {merkmale.map((merkmal, index) => (
+                          <SortableMerkmalItem
+                            key={merkmal.id}
+                            merkmal={merkmal}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+
+                    <DragOverlay>
+                      {activeMerkmal ? <MerkmalOverlay merkmal={activeMerkmal} /> : null}
+                    </DragOverlay>
+                  </DndContext>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-4">
+                    <Button
+                      onClick={validateOrder}
+                      data-testid="check-merkmale-btn"
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider text-sm"
+                      size="sm"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Überprüfen
+                    </Button>
+                    <Button
+                      onClick={resetExercise}
+                      variant="outline"
+                      data-testid="reset-merkmale-btn"
+                      className="border-zinc-600 hover:bg-zinc-700 text-zinc-300"
+                      size="sm"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {/* Result Feedback */}
+                  <AnimatePresence>
+                    {result && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className={`
+                          mt-4 p-3 rounded-lg flex items-center gap-3
+                          ${result.is_correct 
+                            ? "bg-green-500/20 border border-green-500/50" 
+                            : "bg-red-500/20 border border-red-500/50"
+                          }
+                        `}
+                        data-testid="merkmale-result"
+                      >
+                        {result.is_correct ? (
+                          <Check className="w-5 h-5 text-green-400" />
+                        ) : (
+                          <X className="w-5 h-5 text-red-400" />
+                        )}
+                        <p className={`text-sm ${result.is_correct ? "text-green-300" : "text-red-300"}`}>
+                          {result.message}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
 
@@ -382,7 +495,7 @@ export default function Angleiten() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.5 }}
         className="mt-8 flex justify-between items-center"
       >
         <Link to="/ausgangsstellung">
@@ -400,12 +513,14 @@ export default function Angleiten() {
       </motion.div>
 
       {/* Video Modal */}
-      {selectedVideo && (
-        <VideoPlayer
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedVideo && (
+          <VideoPlayer
+            video={selectedVideo}
+            onClose={() => setSelectedVideo(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
