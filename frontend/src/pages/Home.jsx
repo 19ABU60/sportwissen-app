@@ -206,72 +206,18 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {/* Rollmenü Navigation - mit blauem Hintergrund */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mb-8"
-      >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-blue-600 rounded-xl">
-          <div className="flex-1">
-            <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-1">
-              Übersicht
-            </h2>
-            <p className="text-sm text-blue-100">
-              Wähle eine Phase des Bewegungsablaufs
-            </p>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                className="bg-white/20 hover:bg-white/30 text-white font-oswald uppercase tracking-wider min-w-[200px] justify-between border border-white/30"
-                data-testid="phasen-dropdown"
-              >
-                <span>Bewegungsphasen</span>
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              className="w-72 bg-zinc-900 border-zinc-700"
-              align="end"
-            >
-              <DropdownMenuLabel className="text-zinc-400 font-oswald uppercase text-xs tracking-wider">
-                Chronologischer Ablauf
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-zinc-700" />
-              {BEWEGUNGSPHASEN.map((phase) => (
-                <DropdownMenuItem key={phase.id} asChild>
-                  <Link 
-                    to={phase.path}
-                    className="flex flex-col items-start py-3 cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
-                    data-testid={`dropdown-${phase.id}`}
-                  >
-                    <span className="font-medium text-white">{phase.title}</span>
-                    <span className="text-xs text-zinc-500">{phase.description}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </motion.div>
-
-      {/* Info für Lehrer */}
+      {/* Info für Lehrkräfte */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="mt-12 p-6 rounded-xl bg-zinc-900/30 border border-zinc-800"
+        transition={{ delay: 0.5 }}
+        className="p-6 rounded-xl bg-zinc-800/50 border border-zinc-700"
       >
-        <h3 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-500 mb-3">
+        <h3 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-400 mb-3">
           Für Lehrkräfte und Ausbildung
         </h3>
-        <p className="text-zinc-400 text-sm leading-relaxed">
-          Diese Lern-App unterstützt den Vermittlungsprozess im Sportunterricht nach dem Prinzip des 
-          Vielkanal-Lernens. Die Inhalte sind sowohl für Schülerinnen und Schüler als auch für 
-          Lehrkräfte und Lehramtsanwärter konzipiert - von der didaktischen Reduktion bis zur Zieltechnik.
+        <p className="text-zinc-300 text-sm leading-relaxed">
+          Die Lern-App thematisiert ausgewählte didaktisch-methodische Inhalte des Vermittlungsprozesses – von der Reduktion zur Zieltechnik!
         </p>
       </motion.div>
     </div>
