@@ -77,9 +77,9 @@ class InfoCard(BaseModel):
 PHASES_DATA = PhasesData(
     phases=[
         Phase(id="phase_1", name="Ausgangsstellung", order=1, description="Rücken zur Stoßrichtung, Kugel am Hals"),
-        Phase(id="phase_2", name="Angleiten", order=2, description="Rückwärtige Bewegung zur Stoßauslage"),
-        Phase(id="phase_3", name="Stoßauslage", order=3, description="Optimale Position vor dem Stoß"),
-        Phase(id="phase_4", name="Stoß", order=4, description="Beschleunigung und Abwurf der Kugel"),
+        Phase(id="phase_2", name="Angleiten", order=2, description="Rückwärtige Bewegung in die Stoßauslage"),
+        Phase(id="phase_3", name="Stoßauslage", order=3, description="Momentum des Übergangs vom Angleiten zum Abstoßen"),
+        Phase(id="phase_4", name="Stoß", order=4, description="Hauptfunktionsphase"),
     ],
     correct_order=["phase_1", "phase_2", "phase_3", "phase_4"]
 )
