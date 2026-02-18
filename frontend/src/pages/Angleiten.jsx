@@ -8,17 +8,10 @@ import { Slider } from "@/components/ui/slider";
 const VIDEOS = [
   {
     id: "v1",
-    title: "Angleiten - Nachstellschritt",
+    title: "Nachstellschritt",
     url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     thumbnail: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80",
     description: "Das Angleiten mit Nachstellschritt-Technik",
-  },
-  {
-    id: "v2",
-    title: "Angleiten - Impulsschritt",
-    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    thumbnail: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&q=80",
-    description: "Das Angleiten mit Impulsschritt-Technik",
   },
   {
     id: "v3",
@@ -32,11 +25,12 @@ const VIDEOS = [
 const QUIZ_OPTIONS = [
   "Seitliche Ausgangsstellung",
   "Körper leicht versetzt zur Stoßrichtung ausrichten",
-  "Impulsschritt",
+  "Nachstellschritt",
   "gesamten Körper flach in Richtung Balken in die Stoßauslage beschleunigen",
   "Landung auf gebeugtem Druckbein",
-  "Schulterachsenneigung durch Stemmbein/Druckbein-Systematik",
-  "Stoßarm in Verlängerung der SA",
+  "Schulterachsenneigung durch fast vollständige Gewichtsverlagerung auf das Druckbein",
+  "Stemmbein leicht gebeugt mit Fußaußenkante am Balken",
+  "Stoßarm in Verlängerung der Schulterachse",
 ];
 
 function VideoCard({ video, onPlay }) {
