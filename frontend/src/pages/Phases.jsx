@@ -55,24 +55,21 @@ function SortablePhaseItem({ phase, index }) {
       transition={{ delay: index * 0.1 }}
       data-testid={`phase-item-${phase.id}`}
     >
-      <div className="phase-number">{index + 1}</div>
+      <div className="phase-number w-6 h-6 text-sm">{index + 1}</div>
       <div className="flex-1">
-        <p className="font-medium text-white">{phase.name}</p>
-        {phase.description && (
-          <p className="text-sm text-zinc-400 mt-1">{phase.description}</p>
-        )}
+        <p className="font-medium text-white text-sm">{phase.name}</p>
       </div>
-      <GripVertical className="w-5 h-5 text-zinc-500" />
+      <GripVertical className="w-4 h-4 text-zinc-500" />
     </motion.div>
   );
 }
 
 function PhaseOverlay({ phase }) {
   return (
-    <div className="phase-item dragging bg-zinc-800 border-blue-500">
-      <div className="phase-number">•</div>
+    <div className="phase-item dragging bg-zinc-800 border-blue-500 py-2 px-3">
+      <div className="phase-number w-6 h-6 text-sm">•</div>
       <div className="flex-1">
-        <p className="font-medium text-white">{phase.name}</p>
+        <p className="font-medium text-white text-sm">{phase.name}</p>
       </div>
       <GripVertical className="w-5 h-5 text-zinc-500" />
     </div>
