@@ -11,7 +11,7 @@ const MERKMALE_NACHSTELLSCHRITT = [
   "Kugel am Hals (unter dem Kinn)",
   "Ellbogen etwa auf Schulterhöhe",
   "Blick geradeaus",
-  "Körpergewicht auf dem leicht gebeugten Druckbein",
+  "Körpergewicht auf dem Druckbein",
   "Stemmbein nur leicht aufgesetzt"
 ];
 
