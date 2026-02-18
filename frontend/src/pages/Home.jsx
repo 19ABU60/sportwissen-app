@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   ChevronRight,
   BookOpen,
   Target,
-  Award,
-  Layers,
-  Play,
-  Video,
-  AlertTriangle,
-  ArrowRight
+  Award
 } from "lucide-react";
 import {
   DropdownMenu,
