@@ -43,54 +43,55 @@ export default function Ausgangsstellung() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Header */}
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Header - kompakter */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
+        className="mb-4"
       >
-        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
+        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-1">
           <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-zinc-300">Phase 1</span>
         </div>
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight uppercase text-white mb-2">
+        <h1 className="font-oswald text-2xl md:text-3xl font-bold tracking-tight uppercase text-white">
           1. Ausgangsstellung
         </h1>
-        <p className="text-zinc-400">
-          Die Startposition für den Kugelstoß - Grundlage für alle weiteren Bewegungsphasen
-        </p>
       </motion.div>
 
       {/* Zwei Spalten: Nachstellschritt seitwärts und O'Brien-Technik */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
         {/* Linke Spalte: Nachstellschritt seitwärts */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
+          transition={{ delay: 0.1 }}
+          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-3"
         >
-          <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-white mb-3">
+          <h2 className="font-oswald text-sm font-semibold uppercase tracking-wide text-white mb-2">
             Nachstellschritt seitwärts
           </h2>
           
-          {/* Merkmale */}
-          <ul className="space-y-1.5 mb-3">
-            {MERKMALE_NACHSTELLSCHRITT.map((merkmal, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-blue-400 text-xs font-medium">{index + 1}</span>
-                </div>
-                <span className="text-zinc-300 text-sm">{merkmal}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="flex gap-3">
+            {/* Merkmale links */}
+            <ul className="space-y-1 flex-1">
+              {MERKMALE_NACHSTELLSCHRITT.map((merkmal, index) => (
+                <li key={index} className="flex items-start gap-1.5">
+                  <div className="w-4 h-4 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-blue-400 text-[10px] font-medium">{index + 1}</span>
+                  </div>
+                  <span className="text-zinc-300 text-xs leading-tight">{merkmal}</span>
+                </li>
+              ))}
+            </ul>
 
-          {/* Bild-Platzhalter - noch kleiner */}
-          <div className="h-20 bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 flex items-center justify-center">
-            <span className="text-xs text-zinc-500">Bild-Platzhalter</span>
+            {/* Bild-Platzhalter rechts - Hochformat */}
+            <div className="w-24 flex-shrink-0">
+              <div className="aspect-[3/4] bg-zinc-700/50 rounded-lg border border-zinc-600 flex items-center justify-center">
+                <span className="text-[10px] text-zinc-500 text-center px-1">Bild<br/>Platzhalter</span>
+              </div>
+            </div>
           </div>
         </motion.div>
 
@@ -98,28 +99,32 @@ export default function Ausgangsstellung() {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
+          transition={{ delay: 0.2 }}
+          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-3"
         >
-          <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-white mb-3">
+          <h2 className="font-oswald text-sm font-semibold uppercase tracking-wide text-white mb-2">
             O'Brien-Technik
           </h2>
           
-          {/* Merkmale */}
-          <ul className="space-y-1.5 mb-3">
-            {MERKMALE_OBRIEN.map((merkmal, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-amber-400 text-xs font-medium">{index + 1}</span>
-                </div>
-                <span className="text-zinc-300 text-sm">{merkmal}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="flex gap-3">
+            {/* Merkmale links */}
+            <ul className="space-y-1 flex-1">
+              {MERKMALE_OBRIEN.map((merkmal, index) => (
+                <li key={index} className="flex items-start gap-1.5">
+                  <div className="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-amber-400 text-[10px] font-medium">{index + 1}</span>
+                  </div>
+                  <span className="text-zinc-300 text-xs leading-tight">{merkmal}</span>
+                </li>
+              ))}
+            </ul>
 
-          {/* Bild-Platzhalter - noch kleiner */}
-          <div className="h-20 bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 flex items-center justify-center">
-            <span className="text-xs text-zinc-500">Bild-Platzhalter</span>
+            {/* Bild-Platzhalter rechts - Hochformat */}
+            <div className="w-24 flex-shrink-0">
+              <div className="aspect-[3/4] bg-zinc-700/50 rounded-lg border border-zinc-600 flex items-center justify-center">
+                <span className="text-[10px] text-zinc-500 text-center px-1">Bild<br/>Platzhalter</span>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -128,17 +133,17 @@ export default function Ausgangsstellung() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-6"
+        transition={{ delay: 0.3 }}
+        className="mb-4"
       >
         <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl">
           {/* Rollmenü Header */}
           <button
             onClick={() => setShowLehrerHinweise(!showLehrerHinweise)}
-            className="w-full flex items-center justify-between p-4 hover:bg-zinc-700/30 transition-colors rounded-xl"
+            className="w-full flex items-center justify-between p-3 hover:bg-zinc-700/30 transition-colors rounded-xl"
             data-testid="toggle-lehrer-hinweise"
           >
-            <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200">
+            <h2 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-200">
               Hinweise zum Lehrerstandpunkt
             </h2>
             {showLehrerHinweise ? (
@@ -148,7 +153,7 @@ export default function Ausgangsstellung() {
             )}
           </button>
 
-          {/* Collapsible Hinweise */}
+          {/* Collapsible Hinweise - nach oben aufklappen */}
           <AnimatePresence>
             {showLehrerHinweise && (
               <motion.div
@@ -158,17 +163,17 @@ export default function Ausgangsstellung() {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="px-4 pb-4">
-                  <div className="space-y-2">
+                <div className="px-3 pb-3">
+                  <div className="grid grid-cols-1 gap-2">
                     {LEHRER_HINWEISE.map((hinweis, index) => (
                       <div 
                         key={index}
-                        className="flex items-start gap-3 p-3 bg-zinc-700/30 rounded-lg"
+                        className="flex items-start gap-2 p-2 bg-zinc-700/30 rounded-lg"
                       >
-                        <div className="w-6 h-6 rounded bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-green-400 text-xs font-medium">{index + 1}</span>
+                        <div className="w-5 h-5 rounded bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-400 text-[10px] font-medium">{index + 1}</span>
                         </div>
-                        <p className="text-zinc-300 text-sm leading-relaxed">{hinweis}</p>
+                        <p className="text-zinc-300 text-xs leading-relaxed">{hinweis}</p>
                       </div>
                     ))}
                   </div>
@@ -183,19 +188,19 @@ export default function Ausgangsstellung() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-6 flex justify-between items-center"
+        transition={{ delay: 0.4 }}
+        className="flex justify-between items-center"
       >
         <Link to="/phasen">
-          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
-            <ChevronLeft className="w-4 h-4 mr-2" />
+          <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+            <ChevronLeft className="w-4 h-4 mr-1" />
             Phasenübersicht
           </Button>
         </Link>
         <Link to="/angleiten">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
             Weiter: 2. Angleiten
-            <ChevronRight className="w-4 h-4 ml-2" />
+            <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         </Link>
       </motion.div>
