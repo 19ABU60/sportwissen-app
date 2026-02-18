@@ -45,7 +45,7 @@ function SortablePhaseItem({ phase, index }) {
       ref={setNodeRef}
       style={style}
       className={`
-        phase-item
+        phase-item py-2 px-3
         ${isDragging ? "dragging opacity-90" : ""}
       `}
       {...attributes}
