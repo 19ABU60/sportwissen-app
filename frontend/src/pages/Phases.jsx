@@ -338,22 +338,22 @@ export default function Phases() {
 
           {/* Info Cards - getauscht */}
           <div className="grid grid-cols-2 gap-3">
-            {/* Linke Karte: Zur Stoßauslage */}
+            {/* Linke Karte: In die Stoßauslage */}
             <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
               <div className="text-xs font-oswald font-semibold uppercase tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
-                Zur Stoßauslage
+                In die Stoßauslage
               </div>
               <ul className="space-y-1 text-sm text-zinc-300">
                 <li>• Ausgangsstellung</li>
                 <li>• Angleiten</li>
-                <li>• Impulsschritt oder</li>
+                <li>• Impulsschritt</li>
                 <li>• Nachstellschritt</li>
               </ul>
             </div>
-            {/* Rechte Karte: Wesentliche Aspekte der Stoßauslage */}
+            {/* Rechte Karte: Wesentliche Aspekte */}
             <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
               <div className="text-xs font-oswald font-semibold uppercase tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
-                Wesentliche Aspekte der Stoßauslage
+                Wesentliche Aspekte
               </div>
               <ul className="space-y-1 text-sm text-zinc-300">
                 <li>• Kugelhaltung</li>
