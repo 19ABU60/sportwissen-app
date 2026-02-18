@@ -58,6 +58,9 @@ function SortablePhaseItem({ phase, index }) {
       <div className="phase-number w-6 h-6 text-sm">{index + 1}</div>
       <div className="flex-1">
         <p className="font-medium text-white text-sm">{phase.name}</p>
+        {phase.description && (
+          <p className="text-xs text-zinc-400 mt-0.5">{phase.description}</p>
+        )}
       </div>
       <GripVertical className="w-4 h-4 text-zinc-500" />
     </motion.div>
@@ -70,6 +73,9 @@ function PhaseOverlay({ phase }) {
       <div className="phase-number w-6 h-6 text-sm">•</div>
       <div className="flex-1">
         <p className="font-medium text-white text-sm">{phase.name}</p>
+        {phase.description && (
+          <p className="text-xs text-zinc-400 mt-0.5">{phase.description}</p>
+        )}
       </div>
       <GripVertical className="w-5 h-5 text-zinc-500" />
     </div>
