@@ -32,52 +32,6 @@ const DIDAKTIK_ASPEKTE = [
   }
 ];
 
-// Chronologische Bewegungsphasen für das Rollmenü
-const BEWEGUNGSPHASEN = [
-  { 
-    id: "phasen", 
-    title: "Phasenstruktur", 
-    path: "/phasen",
-    description: "Übersicht aller Bewegungsphasen"
-  },
-  { 
-    id: "ausgangsstellung", 
-    title: "1. Ausgangsstellung", 
-    path: "/ausgangsstellung",
-    description: "Rücken zur Stoßrichtung, Kugel am Hals"
-  },
-  { 
-    id: "angleiten", 
-    title: "2. Angleiten", 
-    path: "/angleiten",
-    description: "Nachstellschritt oder Impulsschritt"
-  },
-  { 
-    id: "stossauslage", 
-    title: "3. Stoßauslage", 
-    path: "/technik",
-    description: "Optimale Position vor dem Stoß"
-  },
-  { 
-    id: "stoss", 
-    title: "4. Stoß", 
-    path: "/videos",
-    description: "Beschleunigung und Abwurf"
-  },
-  { 
-    id: "obrien", 
-    title: "O'Brien-Technik", 
-    path: "/obrien",
-    description: "Zieltechnik - Gesamtbewegung"
-  },
-  { 
-    id: "fehler", 
-    title: "Fehlerbilder", 
-    path: "/fehler",
-    description: "Kardinalfehler und Korrekturen"
-  }
-];
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
