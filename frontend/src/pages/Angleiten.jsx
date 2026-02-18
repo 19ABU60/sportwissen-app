@@ -273,12 +273,12 @@ export default function Angleiten() {
           2. Angleiten
         </h1>
         <p className="text-zinc-400">
-          Videos und Übungen zum Angleiten - Nachstellschritt und Impulsschritt (Didaktische Reduktion)
+          Videos und Übungen zum Angleiten - Nachstellschritt (Didaktische Reduktion)
         </p>
       </motion.div>
 
       {/* Videos Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         {VIDEOS.map((video, index) => (
           <motion.div
             key={video.id}
