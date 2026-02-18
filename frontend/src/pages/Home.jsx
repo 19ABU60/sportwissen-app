@@ -160,8 +160,8 @@ export default function Home() {
 
           {/* Titel und Beschreibung rechts */}
           <div className="flex-1">
-            <h1 className="font-oswald text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight uppercase text-white mb-6">
-              Kugelstoßen
+            <h1 className="font-oswald text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+              KUGELSTOẞEN
             </h1>
             
             {/* Die 3 didaktischen Aspekte */}
