@@ -340,26 +340,25 @@ export default function Phases() {
           <div className="grid grid-cols-2 gap-3">
             {/* Linke Karte: In die Stoßauslage */}
             <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
-              <div className="text-xs font-oswald font-semibold uppercase tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
+              <div className="text-xs font-oswald font-semibold tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
                 In die Stoßauslage
               </div>
               <ul className="space-y-1 text-sm text-zinc-300">
                 <li>• Ausgangsstellung</li>
                 <li>• Angleiten</li>
-                <li>• Impulsschritt</li>
-                <li>• Nachstellschritt</li>
               </ul>
             </div>
             {/* Rechte Karte: Wesentliche Aspekte */}
             <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
-              <div className="text-xs font-oswald font-semibold uppercase tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
+              <div className="text-xs font-oswald font-semibold tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
                 Wesentliche Aspekte
               </div>
               <ul className="space-y-1 text-sm text-zinc-300">
                 <li>• Kugelhaltung</li>
-                <li>• Fußaufsatz</li>
-                <li>• Oberkörperdrehung</li>
-                <li>• Gewichtsverlagerung</li>
+                <li>• Oberkörper absenken</li>
+                <li>• flach nach hinten-unten abdrücken</li>
+                <li>• bei gleichzeitiger Oberkörperdrehung</li>
+                <li>• mit Gewichtsverlagerung auf das Druckbein</li>
               </ul>
             </div>
           </div>
