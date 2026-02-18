@@ -79,17 +79,17 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
       {/* Header mit Titel und Bild */}
       <motion.div 
-        className="mb-12"
+        className="mb-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Bild links - kleiner */}
-          <div className="w-full lg:w-1/4 flex-shrink-0">
+        <div className="flex flex-row gap-6 items-start">
+          {/* Bild links - für Tablet optimiert */}
+          <div className="w-32 md:w-40 lg:w-48 flex-shrink-0">
             <div className="aspect-[3/4] rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 cursor-pointer hover:scale-105 transition-transform">
               <img 
                 src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80"
@@ -98,7 +98,7 @@ export default function Home() {
               />
             </div>
             <p className="text-xs text-zinc-500 text-center mt-2">
-              Platzhalter - Ihr Bild hier
+              Platzhalter
             </p>
           </div>
 
