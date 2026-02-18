@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Merkmale für Nachstellschritt seitwärts
@@ -26,7 +26,18 @@ const MERKMALE_OBRIEN = [
   "Standbein leicht gebeugt"
 ];
 
+// Hinweise zum Lehrerstandpunkt
+const LEHRER_HINWEISE = [
+  "Hinweis 1 - hier können Sie Ihre Anmerkungen zum Lehrerstandpunkt einfügen",
+  "Hinweis 2 - hier können Sie Ihre Anmerkungen zum Lehrerstandpunkt einfügen",
+  "Hinweis 3 - hier können Sie Ihre Anmerkungen zum Lehrerstandpunkt einfügen",
+  "Hinweis 4 - hier können Sie Ihre Anmerkungen zum Lehrerstandpunkt einfügen",
+  "Hinweis 5 - hier können Sie Ihre Anmerkungen zum Lehrerstandpunkt einfügen"
+];
+
 export default function Ausgangsstellung() {
+  const [showLehrerHinweise, setShowLehrerHinweise] = useState(false);
+
   useEffect(() => {
     document.title = "Ausgangsstellung | SportWissen";
   }, []);
@@ -53,7 +64,7 @@ export default function Ausgangsstellung() {
       </motion.div>
 
       {/* Zwei Spalten: Nachstellschritt seitwärts und O'Brien-Technik */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Linke Spalte: Nachstellschritt seitwärts */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -61,37 +72,26 @@ export default function Ausgangsstellung() {
           transition={{ delay: 0.2 }}
           className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
         >
-          <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-4">
+          <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-white mb-3">
             Nachstellschritt seitwärts
           </h2>
           
           {/* Merkmale */}
-          <ul className="space-y-2 mb-4">
+          <ul className="space-y-1.5 mb-3">
             {MERKMALE_NACHSTELLSCHRITT.map((merkmal, index) => (
-              <motion.li
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-                className="flex items-start gap-2"
-              >
+              <li key={index} className="flex items-start gap-2">
                 <div className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-blue-400 text-xs font-medium">{index + 1}</span>
                 </div>
                 <span className="text-zinc-300 text-sm">{merkmal}</span>
-              </motion.li>
+              </li>
             ))}
           </ul>
 
-          {/* Bild-Platzhalter - kleiner */}
-          <div className="aspect-[16/9] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 mt-2">
-            <img
-              src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&q=80"
-              alt="Nachstellschritt seitwärts"
-              className="w-full h-full object-cover opacity-60"
-            />
+          {/* Bild-Platzhalter - noch kleiner */}
+          <div className="h-20 bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 flex items-center justify-center">
+            <span className="text-xs text-zinc-500">Bild-Platzhalter</span>
           </div>
-          <p className="text-xs text-zinc-500 text-center mt-1">Platzhalter</p>
         </motion.div>
 
         {/* Rechte Spalte: O'Brien-Technik */}
@@ -101,46 +101,90 @@ export default function Ausgangsstellung() {
           transition={{ delay: 0.3 }}
           className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
         >
-          <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-white mb-4">
+          <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-white mb-3">
             O'Brien-Technik
           </h2>
           
           {/* Merkmale */}
-          <ul className="space-y-2 mb-4">
+          <ul className="space-y-1.5 mb-3">
             {MERKMALE_OBRIEN.map((merkmal, index) => (
-              <motion.li
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                className="flex items-start gap-2"
-              >
+              <li key={index} className="flex items-start gap-2">
                 <div className="w-5 h-5 rounded bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-amber-400 text-xs font-medium">{index + 1}</span>
                 </div>
                 <span className="text-zinc-300 text-sm">{merkmal}</span>
-              </motion.li>
+              </li>
             ))}
           </ul>
 
-          {/* Bild-Platzhalter - kleiner */}
-          <div className="aspect-[16/9] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 mt-2">
-            <img
-              src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=300&q=80"
-              alt="O'Brien-Technik"
-              className="w-full h-full object-cover opacity-60"
-            />
+          {/* Bild-Platzhalter - noch kleiner */}
+          <div className="h-20 bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 flex items-center justify-center">
+            <span className="text-xs text-zinc-500">Bild-Platzhalter</span>
           </div>
-          <p className="text-xs text-zinc-500 text-center mt-1">Platzhalter</p>
         </motion.div>
       </div>
+
+      {/* Hinweise zum Lehrerstandpunkt - Rollmenü */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mt-6"
+      >
+        <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl">
+          {/* Rollmenü Header */}
+          <button
+            onClick={() => setShowLehrerHinweise(!showLehrerHinweise)}
+            className="w-full flex items-center justify-between p-4 hover:bg-zinc-700/30 transition-colors rounded-xl"
+            data-testid="toggle-lehrer-hinweise"
+          >
+            <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200">
+              Hinweise zum Lehrerstandpunkt
+            </h2>
+            {showLehrerHinweise ? (
+              <ChevronUp className="w-5 h-5 text-zinc-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-zinc-400" />
+            )}
+          </button>
+
+          {/* Collapsible Hinweise */}
+          <AnimatePresence>
+            {showLehrerHinweise && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="px-4 pb-4">
+                  <div className="space-y-2">
+                    {LEHRER_HINWEISE.map((hinweis, index) => (
+                      <div 
+                        key={index}
+                        className="flex items-start gap-3 p-3 bg-zinc-700/30 rounded-lg"
+                      >
+                        <div className="w-6 h-6 rounded bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-400 text-xs font-medium">{index + 1}</span>
+                        </div>
+                        <p className="text-zinc-300 text-sm leading-relaxed">{hinweis}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
 
       {/* Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="mt-8 flex justify-between items-center"
+        transition={{ delay: 0.5 }}
+        className="mt-6 flex justify-between items-center"
       >
         <Link to="/phasen">
           <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
