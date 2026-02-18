@@ -83,17 +83,15 @@ export default function Ausgangsstellung() {
             ))}
           </ul>
 
-          {/* Bild-Platzhalter */}
-          <div className="aspect-[4/3] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600">
+          {/* Bild-Platzhalter - kleiner */}
+          <div className="aspect-[16/9] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 mt-2">
             <img
-              src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80"
+              src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&q=80"
               alt="Nachstellschritt seitwärts"
               className="w-full h-full object-cover opacity-60"
             />
-            <div className="relative -mt-8 text-center">
-              <span className="text-xs text-zinc-400 bg-zinc-800/80 px-2 py-1 rounded">Platzhalter</span>
-            </div>
           </div>
+          <p className="text-xs text-zinc-500 text-center mt-1">Platzhalter</p>
         </motion.div>
 
         {/* Rechte Spalte: O'Brien-Technik */}
@@ -125,17 +123,15 @@ export default function Ausgangsstellung() {
             ))}
           </ul>
 
-          {/* Bild-Platzhalter */}
-          <div className="aspect-[4/3] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600">
+          {/* Bild-Platzhalter - kleiner */}
+          <div className="aspect-[16/9] bg-zinc-700/50 rounded-lg overflow-hidden border border-zinc-600 mt-2">
             <img
-              src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&q=80"
+              src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=300&q=80"
               alt="O'Brien-Technik"
               className="w-full h-full object-cover opacity-60"
             />
-            <div className="relative -mt-8 text-center">
-              <span className="text-xs text-zinc-400 bg-zinc-800/80 px-2 py-1 rounded">Platzhalter</span>
-            </div>
           </div>
+          <p className="text-xs text-zinc-500 text-center mt-1">Platzhalter</p>
         </motion.div>
       </div>
 
