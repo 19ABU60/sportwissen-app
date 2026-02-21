@@ -87,11 +87,15 @@ export default function Ausgangsstellung() {
               ))}
             </ul>
 
-            {/* Bild-Platzhalter rechts - Hochformat größer */}
+            {/* Bild-Upload rechts - Nachstellschritt */}
             <div className="w-36 flex-shrink-0">
-              <div className="aspect-[3/4] bg-zinc-700/50 rounded-lg border border-zinc-600 flex items-center justify-center">
-                <span className="text-[10px] text-zinc-500 text-center px-1">Bild<br/>Platzhalter</span>
-              </div>
+              <MediaUpload
+                page="ausgangsstellung"
+                section="nachstellschritt"
+                mediaType="image"
+                aspectRatio="aspect-[3/4]"
+                placeholderText="Bild einfügen"
+              />
             </div>
           </div>
         </motion.div>
