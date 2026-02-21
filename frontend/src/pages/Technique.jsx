@@ -73,8 +73,8 @@ export default function Technique() {
         "Das gebeugte Druckbein",
         "Die Schulterachsenneigung",
         "Die Kugelhaltung",
-        "Das Stemmbein",
-        "Welches Bein trägt das Körpergewicht?"
+        "Welches Bein trägt das Körpergewicht?",
+        "Das Stemmbein"
       ],
       solutions: SOLUTION_MARKERS_BILD1
     },
