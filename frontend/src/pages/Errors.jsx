@@ -89,15 +89,12 @@ export default function Errors() {
         transition={{ duration: 0.5 }}
         className="mb-6"
       >
-        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
-          <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
-        </div>
-        <div className="flex items-center gap-3">
-          <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white">
-            Fehlerbilder
-          </h1>
-          <AlertTriangle className="w-7 h-7 text-amber-500" />
-        </div>
+        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white">
+          Fehlerbilder
+        </h1>
+        <p className="text-zinc-400 mt-2">
+          Fehlerbilder erkennen und Bewegungshilfen ableiten
+        </p>
       </motion.div>
 
       {/* 4 Bilder Grid - 2x2, kleiner */}
