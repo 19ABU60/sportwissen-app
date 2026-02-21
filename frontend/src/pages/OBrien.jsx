@@ -203,7 +203,7 @@ export default function OBrien() {
             Gesamtbewegung - O'Brien-Technik
           </h2>
           <p className="text-zinc-400">
-            Die komplette Bewegung von der Ausgangsstellung bis zum Abwurf in Zeitlupe analysieren.
+            Die komplette Bewegung von der Ausgangsstellung bis zum Abstoß in Zeitlupe analysieren.
           </p>
           <p className="text-sm text-zinc-500 mt-2">
             Platzhalter-Video - Hier kommt später das echte Demonstrationsvideo
