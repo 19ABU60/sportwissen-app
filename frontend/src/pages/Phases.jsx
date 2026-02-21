@@ -17,14 +17,31 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Check, X, RotateCcw, Play, ChevronDown, ChevronUp } from "lucide-react";
+import { GripVertical, Check, X, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import axios from "axios";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+// Phasen für Nachstellschritt seitwärts
+const PHASES_NACHSTELLSCHRITT = [
+  { id: "ns_1", name: "Ausgangsstellung", description: "Seitlich zur Stoßrichtung stehen, Kugel am Hals", order: 1 },
+  { id: "ns_2", name: "Angleiten", description: "Aus dem Nachstellschritt in die Stoßauslage", order: 2 },
+  { id: "ns_3", name: "Stoßauslage", description: "Momentum des Übergangs vom Angleiten zum Abstoßen", order: 3 },
+  { id: "ns_4", name: "Stoß", description: "Hauptfunktionsphase", order: 4 },
+];
 
-function SortablePhaseItem({ phase, index }) {
+const CORRECT_ORDER_NACHSTELLSCHRITT = ["ns_1", "ns_2", "ns_3", "ns_4"];
+
+// Phasen für O'Brien-Technik
+const PHASES_OBRIEN = [
+  { id: "ob_1", name: "Ausgangsstellung", description: "Rücken zur Stoßrichtung, Kugel am Hals", order: 1 },
+  { id: "ob_2", name: "Angleiten", description: "Rückwärtige Bewegung in die Stoßauslage", order: 2 },
+  { id: "ob_3", name: "Stoßauslage", description: "Momentum des Übergangs vom Angleiten zum Abstoßen", order: 3 },
+  { id: "ob_4", name: "Stoß", description: "Hauptfunktionsphase", order: 4 },
+];
+
+const CORRECT_ORDER_OBRIEN = ["ob_1", "ob_2", "ob_3", "ob_4"];
+
+function SortablePhaseItem({ phase, index, color = "blue" }) {
   const {
     attributes,
     listeners,
@@ -40,6 +57,10 @@ function SortablePhaseItem({ phase, index }) {
     zIndex: isDragging ? 50 : 1,
   };
 
+  const colorClasses = color === "amber" 
+    ? "bg-amber-500/20 text-amber-400" 
+    : "bg-blue-500/20 text-blue-400";
+
   return (
     <motion.div
       ref={setNodeRef}
@@ -50,12 +71,12 @@ function SortablePhaseItem({ phase, index }) {
       `}
       {...attributes}
       {...listeners}
-      initial={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.1 }}
+      transition={{ delay: index * 0.05 }}
       data-testid={`phase-item-${phase.id}`}
     >
-      <div className="phase-number w-6 h-6 text-sm">{index + 1}</div>
+      <div className={`phase-number w-6 h-6 text-sm ${colorClasses}`}>{index + 1}</div>
       <div className="flex-1">
         <p className="font-medium text-white text-sm">{phase.name}</p>
         {phase.description && (
@@ -67,61 +88,43 @@ function SortablePhaseItem({ phase, index }) {
   );
 }
 
-function PhaseOverlay({ phase }) {
+function PhaseOverlay({ phase, color = "blue" }) {
+  const colorClasses = color === "amber" 
+    ? "bg-amber-500/20 text-amber-400" 
+    : "bg-blue-500/20 text-blue-400";
+
   return (
     <div className="phase-item dragging bg-zinc-800 border-blue-500 py-2 px-3">
-      <div className="phase-number w-6 h-6 text-sm">•</div>
+      <div className={`phase-number w-6 h-6 text-sm ${colorClasses}`}>•</div>
       <div className="flex-1">
         <p className="font-medium text-white text-sm">{phase.name}</p>
         {phase.description && (
           <p className="text-xs text-zinc-400 mt-0.5">{phase.description}</p>
         )}
       </div>
-      <GripVertical className="w-5 h-5 text-zinc-500" />
+      <GripVertical className="w-4 h-4 text-zinc-500" />
     </div>
   );
 }
 
-export default function Phases() {
-  const [phases, setPhases] = useState([]);
-  const [correctOrder, setCorrectOrder] = useState([]);
+// Reusable Drag & Drop Section Component
+function PhaseSection({ 
+  title, 
+  phases, 
+  setPhases, 
+  correctOrder, 
+  color = "blue",
+  isOpen,
+  onToggle,
+  testId
+}) {
   const [activeId, setActiveId] = useState(null);
   const [result, setResult] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showPhases, setShowPhases] = useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
-
-  useEffect(() => {
-    document.title = "Phasen | SportWissen";
-    fetchPhases();
-  }, []);
-
-  const fetchPhases = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(`${API}/phases`);
-      // Shuffle phases for the exercise
-      const shuffled = [...response.data.phases].sort(() => Math.random() - 0.5);
-      setPhases(shuffled);
-      setCorrectOrder(response.data.correct_order);
-      setResult(null);
-    } catch (error) {
-      console.error("Error fetching phases:", error);
-      toast.error("Fehler beim Laden der Phasen");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
@@ -141,28 +144,156 @@ export default function Phases() {
     }
   };
 
-  const validateOrder = async () => {
+  const validateOrder = () => {
     const userOrder = phases.map((p) => p.id);
-    try {
-      const response = await axios.post(`${API}/validate-phases`, userOrder);
-      setResult(response.data);
-      
-      if (response.data.is_correct) {
-        toast.success("Perfekt! Die Reihenfolge stimmt! 🎉");
-      } else {
-        toast.error("Nicht ganz richtig. Versuche es noch einmal!");
-      }
-    } catch (error) {
-      console.error("Error validating:", error);
-      toast.error("Fehler bei der Überprüfung");
+    const isCorrect = JSON.stringify(userOrder) === JSON.stringify(correctOrder);
+    
+    setResult({
+      is_correct: isCorrect,
+      message: isCorrect ? "Perfekt! Die Reihenfolge stimmt!" : "Nicht ganz richtig. Versuche es noch einmal!"
+    });
+
+    if (isCorrect) {
+      toast.success("Perfekt! Die Reihenfolge stimmt! 🎉");
+    } else {
+      toast.error("Nicht ganz richtig. Versuche es noch einmal!");
     }
   };
 
   const resetExercise = () => {
-    fetchPhases();
+    const shuffled = [...phases].sort(() => Math.random() - 0.5);
+    setPhases(shuffled);
+    setResult(null);
   };
 
   const activePhase = activeId ? phases.find((p) => p.id === activeId) : null;
+
+  return (
+    <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl">
+      {/* Rollmenü Header */}
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between p-3 hover:bg-zinc-700/30 transition-colors rounded-xl"
+        data-testid={testId}
+      >
+        <h2 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-200 text-left">
+          {title}
+        </h2>
+        {isOpen ? (
+          <ChevronUp className="w-5 h-5 text-zinc-400 flex-shrink-0" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-zinc-400 flex-shrink-0" />
+        )}
+      </button>
+
+      {/* Collapsible Content */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-3 pb-3">
+              <p className="text-xs text-zinc-400 mb-3">
+                Bringe sie in die richtige Reihenfolge!
+              </p>
+
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={phases.map((p) => p.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-2">
+                    {phases.map((phase, index) => (
+                      <SortablePhaseItem
+                        key={phase.id}
+                        phase={phase}
+                        index={index}
+                        color={color}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+
+                <DragOverlay>
+                  {activePhase ? <PhaseOverlay phase={activePhase} color={color} /> : null}
+                </DragOverlay>
+              </DndContext>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-4">
+                <Button
+                  onClick={validateOrder}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider text-sm"
+                  size="sm"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  Überprüfen
+                </Button>
+                <Button
+                  onClick={resetExercise}
+                  variant="outline"
+                  className="border-zinc-600 hover:bg-zinc-700 text-zinc-300"
+                  size="sm"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Result Feedback */}
+              <AnimatePresence>
+                {result && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={`
+                      mt-4 p-3 rounded-lg flex items-center gap-3
+                      ${result.is_correct 
+                        ? "bg-green-500/20 border border-green-500/50" 
+                        : "bg-red-500/20 border border-red-500/50"
+                      }
+                    `}
+                  >
+                    {result.is_correct ? (
+                      <Check className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <X className="w-5 h-5 text-red-400" />
+                    )}
+                    <p className={`text-sm ${result.is_correct ? "text-green-300" : "text-red-300"}`}>
+                      {result.message}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default function Phases() {
+  const [showNachstellschritt, setShowNachstellschritt] = useState(false);
+  const [showOBrien, setShowOBrien] = useState(false);
+  const [phasesNachstellschritt, setPhasesNachstellschritt] = useState([]);
+  const [phasesOBrien, setPhasesOBrien] = useState([]);
+
+  useEffect(() => {
+    document.title = "Phasenstruktur | SportWissen";
+    // Shuffle phases on load
+    setPhasesNachstellschritt([...PHASES_NACHSTELLSCHRITT].sort(() => Math.random() - 0.5));
+    setPhasesOBrien([...PHASES_OBRIEN].sort(() => Math.random() - 0.5));
+  }, []);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -172,142 +303,55 @@ export default function Phases() {
         transition={{ duration: 0.5 }}
         className="mb-6"
       >
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
-          Phasen des Kugelstoßens
+        <h1 className="font-oswald text-2xl md:text-3xl font-bold tracking-tight uppercase text-white mb-2">
+          Phasenstruktur
         </h1>
-        <p className="text-zinc-400">
-          Bringe sie in die richtige Reihenfolge!
+        <p className="text-zinc-400 text-sm">
+          Ordne die Bewegungsphasen in die richtige Reihenfolge
         </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Drag & Drop Section */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4"
-        >
-          {/* Rollmenü Header */}
-          <button
-            onClick={() => setShowPhases(!showPhases)}
-            className="w-full flex items-center justify-between p-3 bg-zinc-700/50 rounded-lg hover:bg-zinc-700 transition-colors"
-            data-testid="toggle-phases"
+        {/* Linke Spalte: Beide Rollmenüs */}
+        <div className="space-y-4">
+          {/* 1. Nachstellschritt seitwärts */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
           >
-            <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200">
-              Bewegungsphasen
-            </h2>
-            {showPhases ? (
-              <ChevronUp className="w-5 h-5 text-zinc-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-zinc-400" />
-            )}
-          </button>
+            <PhaseSection
+              title="Phasen des Stoßes aus dem Nachstellschritt seitwärts"
+              phases={phasesNachstellschritt}
+              setPhases={setPhasesNachstellschritt}
+              correctOrder={CORRECT_ORDER_NACHSTELLSCHRITT}
+              color="blue"
+              isOpen={showNachstellschritt}
+              onToggle={() => setShowNachstellschritt(!showNachstellschritt)}
+              testId="toggle-nachstellschritt"
+            />
+          </motion.div>
 
-          {/* Collapsible Phasen-Liste */}
-          <AnimatePresence>
-            {showPhases && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="pt-4">
-                  {isLoading ? (
-                    <div className="space-y-2">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          className="h-10 bg-zinc-700 rounded-lg animate-pulse"
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                    >
-                      <SortableContext
-                        items={phases.map((p) => p.id)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        <div className="space-y-2" data-testid="phases-list">
-                          {phases.map((phase, index) => (
-                            <SortablePhaseItem
-                              key={phase.id}
-                              phase={phase}
-                              index={index}
-                            />
-                          ))}
-                        </div>
-                      </SortableContext>
+          {/* 2. O'Brien-Technik */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <PhaseSection
+              title="Phasen des Stoßes - O'Brien-Technik"
+              phases={phasesOBrien}
+              setPhases={setPhasesOBrien}
+              correctOrder={CORRECT_ORDER_OBRIEN}
+              color="amber"
+              isOpen={showOBrien}
+              onToggle={() => setShowOBrien(!showOBrien)}
+              testId="toggle-obrien"
+            />
+          </motion.div>
+        </div>
 
-                      <DragOverlay>
-                        {activePhase ? <PhaseOverlay phase={activePhase} /> : null}
-                      </DragOverlay>
-                    </DndContext>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 mt-4">
-                    <Button
-                      onClick={validateOrder}
-                      data-testid="check-order-btn"
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider text-sm"
-                      size="sm"
-                    >
-                      <Check className="w-4 h-4 mr-2" />
-                      Überprüfen
-                    </Button>
-                    <Button
-                      onClick={resetExercise}
-                      variant="outline"
-                      data-testid="reset-btn"
-                      className="border-zinc-600 hover:bg-zinc-700 text-zinc-300"
-                      size="sm"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {/* Result Feedback */}
-                  <AnimatePresence>
-                    {result && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className={`
-                          mt-4 p-3 rounded-lg flex items-center gap-3
-                          ${result.is_correct 
-                            ? "bg-green-500/20 border border-green-500/50" 
-                            : "bg-red-500/20 border border-red-500/50"
-                          }
-                        `}
-                        data-testid="result-feedback"
-                      >
-                        {result.is_correct ? (
-                          <Check className="w-5 h-5 text-green-400" />
-                        ) : (
-                          <X className="w-5 h-5 text-red-400" />
-                        )}
-                        <p className={`text-sm ${result.is_correct ? "text-green-300" : "text-red-300"}`}>
-                          {result.message}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* Video Section */}
+        {/* Rechte Spalte: Video und Info */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -336,20 +380,18 @@ export default function Phases() {
             </p>
           </div>
 
-          {/* Info Cards - getauscht */}
+          {/* Info Cards */}
           <div className="grid grid-cols-2 gap-3">
-            {/* Linke Karte: In die Stoßauslage */}
             <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
               <div className="text-xs font-oswald font-semibold tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
                 In die Stoßauslage
               </div>
               <ul className="space-y-1 text-sm text-zinc-300">
-                <li>• Ausgangsstellung</li>
-                <li>• Angleiten</li>
-                <li>• Stoßauslage</li>
+                <li className="flex"><span className="mr-1">•</span><span>Ausgangsstellung</span></li>
+                <li className="flex"><span className="mr-1">•</span><span>Angleiten</span></li>
+                <li className="flex"><span className="mr-1">•</span><span>Stoßauslage</span></li>
               </ul>
             </div>
-            {/* Rechte Karte: Wesentliche Aspekte */}
             <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
               <div className="text-xs font-oswald font-semibold tracking-wide text-zinc-400 mb-2 pb-2 border-b border-zinc-700">
                 Wesentliche Aspekte
