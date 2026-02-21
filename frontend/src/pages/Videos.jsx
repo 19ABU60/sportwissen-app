@@ -7,10 +7,10 @@ import { Slider } from "@/components/ui/slider";
 
 const MAIN_VIDEO = {
   id: "main",
-  title: "Der Stoß - Beschleunigung und Abwurf",
+  title: "Der Stoß - Beschleunigung und Abstoß",
   url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
   thumbnail: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
-  description: "Die Stoßphase - von der Stoßauslage zum Abwurf",
+  description: "Die Stoßphase - von der Stoßauslage zum Abstoß",
 };
 
 export default function Videos() {
