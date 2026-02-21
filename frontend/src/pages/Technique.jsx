@@ -120,43 +120,51 @@ export default function Technique() {
         className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 md:p-6 mb-8"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {PLACEHOLDER_IMAGES.map((img, index) => (
-            <div
-              key={img.id}
-              className="relative rounded-lg overflow-hidden border-2 border-zinc-700 hover:border-blue-500/50 transition-colors"
-              data-testid={`technique-image-${index + 1}`}
-            >
-              <div className="aspect-[4/3]">
-                <img
-                  src={img.url}
-                  alt={img.alt}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                <p className="text-white text-sm font-medium">Bild {index + 1}</p>
-                <p className="text-zinc-400 text-xs">{img.alt}</p>
-              </div>
-              {img.isError && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center cursor-help">
-                        <Info className="w-4 h-4 text-amber-400" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Erkennst du den Kardinalfehler?</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+          {/* Bild 1 */}
+          <div className="relative rounded-lg overflow-hidden border-2 border-zinc-700">
+            <MediaUpload
+              page="stossauslage"
+              section="bild1"
+              mediaType="image"
+              aspectRatio="aspect-[4/3]"
+              placeholderText="Bild 1 einfügen"
+            />
+            <div className="p-2 bg-zinc-800/50">
+              <p className="text-white text-sm font-medium">Bild 1</p>
+              <p className="text-zinc-400 text-xs">Professionelle Stoßauslage</p>
             </div>
-          ))}
+          </div>
+
+          {/* Bild 2 */}
+          <div className="relative rounded-lg overflow-hidden border-2 border-zinc-700">
+            <MediaUpload
+              page="stossauslage"
+              section="bild2"
+              mediaType="image"
+              aspectRatio="aspect-[4/3]"
+              placeholderText="Bild 2 einfügen"
+            />
+            <div className="p-2 bg-zinc-800/50">
+              <p className="text-white text-sm font-medium">Bild 2</p>
+              <p className="text-zinc-400 text-xs">Schüler-Ausführung</p>
+            </div>
+          </div>
+
+          {/* Bild 3 */}
+          <div className="relative rounded-lg overflow-hidden border-2 border-zinc-700">
+            <MediaUpload
+              page="stossauslage"
+              section="bild3"
+              mediaType="image"
+              aspectRatio="aspect-[4/3]"
+              placeholderText="Bild 3 einfügen"
+            />
+            <div className="p-2 bg-zinc-800/50">
+              <p className="text-white text-sm font-medium">Bild 3</p>
+              <p className="text-zinc-400 text-xs">Stoßauslage Seitenansicht</p>
+            </div>
+          </div>
         </div>
-        <p className="text-sm text-zinc-500 mt-4 text-center">
-          Platzhalter-Bilder - Hier kommen später die echten Technikbilder
-        </p>
       </motion.div>
 
       {/* Selection Section */}
