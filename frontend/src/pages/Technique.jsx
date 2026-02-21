@@ -22,28 +22,6 @@ import { MediaUpload } from "@/components/MediaUpload";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Placeholder images for technique demonstration
-const PLACEHOLDER_IMAGES = [
-  {
-    id: "img1",
-    url: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80",
-    alt: "Professionelle Stoßauslage",
-    isError: false,
-  },
-  {
-    id: "img2",
-    url: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400&q=80",
-    alt: "Schüler-Ausführung",
-    isError: true,
-  },
-  {
-    id: "img3",
-    url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80",
-    alt: "Stoßauslage Seitenansicht",
-    isError: true,
-  },
-];
-
 export default function Technique() {
   const [merkmale, setMerkmale] = useState([]);
   const [selections, setSelections] = useState({});
