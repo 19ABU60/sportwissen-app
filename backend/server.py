@@ -291,6 +291,115 @@ async def validate_phases(user_order: List[str]):
     }
 
 
+# ==== MEDIA ROUTES ====
+
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+ALLOWED_VIDEO_TYPES = {"video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"}
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB for videos
+
+@api_router.post("/media/upload", response_model=MediaUploadResponse)
+async def upload_media(
+    file: UploadFile = File(...),
+    page: str = Form(...),
+    section: str = Form(...),
+    is_default: bool = Form(False)
+):
+    """Upload a media file (image or video) for a specific page section"""
+    try:
+        # Determine media type
+        content_type = file.content_type or ""
+        if content_type in ALLOWED_IMAGE_TYPES:
+            media_type = "image"
+        elif content_type in ALLOWED_VIDEO_TYPES:
+            media_type = "video"
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Nicht unterstützter Dateityp: {content_type}. Erlaubt: JPG, PNG, WebP, GIF, MP4, WebM"
+            )
+        
+        # Generate unique filename
+        file_ext = Path(file.filename).suffix.lower() or ".jpg"
+        unique_filename = f"{page}_{section}_{uuid.uuid4().hex[:8]}{file_ext}"
+        file_path = UPLOAD_DIR / unique_filename
+        
+        # Save file in chunks (handles large videos)
+        async with aiofiles.open(file_path, 'wb') as out_file:
+            while chunk := await file.read(1024 * 1024):  # 1MB chunks
+                await out_file.write(chunk)
+        
+        # Create media record
+        media_id = str(uuid.uuid4())
+        media_item = {
+            "id": media_id,
+            "page": page,
+            "section": section,
+            "media_type": media_type,
+            "filename": unique_filename,
+            "original_name": file.filename,
+            "url": f"/uploads/{unique_filename}",
+            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+            "is_default": is_default
+        }
+        
+        # Delete old media for this page/section if exists (replace functionality)
+        old_media = await db.media.find_one({"page": page, "section": section})
+        if old_media:
+            # Delete old file
+            old_file_path = UPLOAD_DIR / old_media.get("filename", "")
+            if old_file_path.exists():
+                old_file_path.unlink()
+            # Remove from DB
+            await db.media.delete_one({"page": page, "section": section})
+        
+        # Save to MongoDB
+        await db.media.insert_one(media_item)
+        
+        return MediaUploadResponse(
+            success=True,
+            media=MediaItem(**media_item),
+            message=f"{media_type.capitalize()} erfolgreich hochgeladen!"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Upload error: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload fehlgeschlagen: {str(e)}")
+
+
+@api_router.get("/media/{page}", response_model=List[MediaItem])
+async def get_media_for_page(page: str):
+    """Get all media for a specific page"""
+    media_list = await db.media.find({"page": page}, {"_id": 0}).to_list(100)
+    return media_list
+
+
+@api_router.get("/media/{page}/{section}")
+async def get_media_for_section(page: str, section: str):
+    """Get media for a specific page section"""
+    media = await db.media.find_one({"page": page, "section": section}, {"_id": 0})
+    return media
+
+
+@api_router.delete("/media/{media_id}")
+async def delete_media(media_id: str):
+    """Delete a media item"""
+    media = await db.media.find_one({"id": media_id})
+    if not media:
+        raise HTTPException(status_code=404, detail="Medium nicht gefunden")
+    
+    # Delete file
+    file_path = UPLOAD_DIR / media.get("filename", "")
+    if file_path.exists():
+        file_path.unlink()
+    
+    # Remove from DB
+    await db.media.delete_one({"id": media_id})
+    
+    return {"success": True, "message": "Medium erfolgreich gelöscht"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
