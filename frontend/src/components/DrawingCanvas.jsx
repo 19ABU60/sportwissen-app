@@ -261,122 +261,121 @@ export function DrawingCanvas({
         </AnimatePresence>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-lg p-2">
-        {/* Tools */}
-        <div className="flex items-center gap-1 border-r border-zinc-600 pr-2">
-          {TOOLS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTool(t.id)}
-              className={`p-2 rounded-lg transition-colors ${
-                tool === t.id 
-                  ? "bg-blue-600 text-white" 
-                  : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
-              }`}
-              title={t.name}
-            >
-              <t.icon className="w-4 h-4" />
-            </button>
-          ))}
-        </div>
-
-        {/* Colors */}
-        <div className="flex items-center gap-1 border-r border-zinc-600 pr-2">
-          {COLORS.map((c) => (
-            <button
-              key={c.value}
-              onClick={() => setColor(c.value)}
-              className={`w-6 h-6 rounded-full border-2 transition-transform ${
-                color === c.value 
-                  ? "border-white scale-110" 
-                  : "border-zinc-500 hover:scale-105"
-              }`}
-              style={{ backgroundColor: c.value }}
-              title={c.name}
+      {/* Canvas with vertical toolbar on right */}
+      <div className="flex gap-3">
+        {/* Canvas container */}
+        <div 
+          ref={containerRef}
+          className="relative rounded-lg overflow-hidden border-2 border-zinc-700 cursor-crosshair flex-1"
+          style={{ touchAction: "none" }}
+        >
+          {/* Background image */}
+          {imageSrc ? (
+            <img 
+              src={imageSrc} 
+              alt={imageAlt}
+              className="w-full h-auto"
+              onLoad={() => {
+                if (containerRef.current) {
+                  const rect = containerRef.current.getBoundingClientRect();
+                  setCanvasSize({ width: rect.width, height: rect.height });
+                }
+              }}
             />
-          ))}
+          ) : (
+            <div className="aspect-[4/3] bg-zinc-800 flex items-center justify-center">
+              <span className="text-zinc-500 text-sm">Bild wird geladen...</span>
+            </div>
+          )}
+
+          {/* Drawing canvas overlay */}
+          <canvas
+            ref={canvasRef}
+            width={canvasSize.width || 400}
+            height={canvasSize.height || 300}
+            className="absolute inset-0 w-full h-full"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          />
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={undoLast}
-            disabled={drawings.length === 0}
-            className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Letzte Zeichnung entfernen"
-          >
-            <Eraser className="w-4 h-4" />
-          </button>
-          <button
-            onClick={clearAll}
-            disabled={drawings.length === 0}
-            className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Alles löschen"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Vertical Toolbar on right */}
+        <div className="flex flex-col gap-2 bg-zinc-800/50 border border-zinc-700 rounded-lg p-2">
+          {/* Tools */}
+          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
+            {TOOLS.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTool(t.id)}
+                className={`p-2 rounded-lg transition-colors ${
+                  tool === t.id 
+                    ? "bg-blue-600 text-white" 
+                    : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                }`}
+                title={t.name}
+              >
+                <t.icon className="w-4 h-4" />
+              </button>
+            ))}
+          </div>
 
-        {/* Solution toggle */}
-        {solutionMarkers.length > 0 && (
-          <div className="flex items-center gap-1 ml-auto">
+          {/* Colors */}
+          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
+            {COLORS.map((c) => (
+              <button
+                key={c.value}
+                onClick={() => setColor(c.value)}
+                className={`w-6 h-6 rounded-full border-2 transition-transform ${
+                  color === c.value 
+                    ? "border-white scale-110" 
+                    : "border-zinc-500 hover:scale-105"
+                }`}
+                style={{ backgroundColor: c.value }}
+                title={c.name}
+              />
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
+            <button
+              onClick={undoLast}
+              disabled={drawings.length === 0}
+              className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Letzte Zeichnung entfernen"
+            >
+              <Eraser className="w-4 h-4" />
+            </button>
+            <button
+              onClick={clearAll}
+              disabled={drawings.length === 0}
+              className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Alles löschen"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Solution toggle */}
+          {solutionMarkers.length > 0 && (
             <button
               onClick={() => setShowSolution(!showSolution)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-colors ${
                 showSolution 
                   ? "bg-green-600 text-white" 
                   : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
               }`}
+              title={showSolution ? "Lösung ausblenden" : "Lösung zeigen"}
             >
               {showSolution ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              <span className="text-xs font-medium">
-                {showSolution ? "Lösung ausblenden" : "Lösung zeigen"}
-              </span>
             </button>
-          </div>
-        )}
-      </div>
-
-      {/* Canvas container */}
-      <div 
-        ref={containerRef}
-        className="relative rounded-lg overflow-hidden border-2 border-zinc-700 cursor-crosshair"
-        style={{ touchAction: "none" }}
-      >
-        {/* Background image */}
-        {imageSrc ? (
-          <img 
-            src={imageSrc} 
-            alt={imageAlt}
-            className="w-full h-auto"
-            onLoad={() => {
-              if (containerRef.current) {
-                const rect = containerRef.current.getBoundingClientRect();
-                setCanvasSize({ width: rect.width, height: rect.height });
-              }
-            }}
-          />
-        ) : (
-          <div className="aspect-[4/3] bg-zinc-800 flex items-center justify-center">
-            <span className="text-zinc-500 text-sm">Bild wird geladen...</span>
-          </div>
-        )}
-
-        {/* Drawing canvas overlay */}
-        <canvas
-          ref={canvasRef}
-          width={canvasSize.width || 400}
-          height={canvasSize.height || 300}
-          className="absolute inset-0 w-full h-full"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        />
+          )}
+        </div>
       </div>
 
       {/* Drawing count */}
