@@ -28,8 +28,8 @@ db = client[os.environ['DB_NAME']]
 # Create the main app without a prefix
 app = FastAPI(title="SportWissen Kugelstoßen API")
 
-# Mount uploads directory for serving static files
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+# Mount uploads directory for serving static files (via /api/uploads path)
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
