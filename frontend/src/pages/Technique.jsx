@@ -69,11 +69,12 @@ export default function Technique() {
       section: "bild1",
       title: "Stoßauslage",
       tasks: [
+        "Markiere wesentliche Merkmale der Stoßauslage",
         "Markiere das gebeugte Druckbein",
         "Markiere die Schulterachsenneigung",
         "Markiere die Kugelhaltung",
-        "Markiere die Hüftstellung",
-        "Markiere den Blick des Sportlers"
+        "Zeichne das Stemmbein ein",
+        "Zeichne ein, welches Bein das Körpergewicht trägt"
       ],
       solutions: SOLUTION_MARKERS_BILD1
     },
