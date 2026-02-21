@@ -363,21 +363,15 @@ export default function Phases() {
             <h2 className="font-oswald text-base font-semibold uppercase tracking-wide text-zinc-200 mb-3">
               Gesamtbewegung (didaktisch reduziert)
             </h2>
-            <div className="aspect-video bg-zinc-800 rounded-lg overflow-hidden relative group">
-              <video
-                className="w-full h-full object-cover"
-                poster="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80"
-                controls
-                data-testid="phase-video"
-              >
-                <source
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                  type="video/mp4"
-                />
-              </video>
-            </div>
+            <MediaUpload
+              page="phasen"
+              section="gesamtbewegung"
+              mediaType="video"
+              aspectRatio="aspect-video"
+              placeholderText="Video einfügen"
+            />
             <p className="text-xs text-zinc-500 mt-2">
-              Platzhalter-Video
+              Klicken Sie auf das Video, um es zu ersetzen
             </p>
           </div>
 
