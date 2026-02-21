@@ -20,7 +20,7 @@ const OBRIEN_MERKMALE = [
   },
   {
     phase: "Stoß",
-    merkmale: ["Drehstreckung", "Kugel beschleunigen", "Abwurf im Moment der vollen Streckung"]
+    merkmale: ["Drehstreckung", "Kugel beschleunigen", "Abstoß im Moment der vollen Streckung"]
   }
 ];
 
