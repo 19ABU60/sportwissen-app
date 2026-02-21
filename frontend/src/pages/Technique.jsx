@@ -140,12 +140,9 @@ export default function Technique() {
                 section={img.section}
                 mediaType="image"
                 aspectRatio="aspect-[4/3]"
-                placeholderText={`${img.title.split(":")[0]} einfügen`}
+                placeholderText="Bild einfügen"
                 onMediaChange={(media) => handleImageChange(img.section, media)}
               />
-              <div className="p-2 bg-zinc-800/50">
-                <p className="text-white text-xs font-medium">{img.title}</p>
-              </div>
             </div>
           ))}
         </motion.div>
