@@ -347,14 +347,12 @@ export default function Angleiten() {
       >
         <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
           <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-zinc-300">Phase 2</span>
         </div>
         <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight uppercase text-white mb-2">
           2. Angleiten
         </h1>
         <p className="text-zinc-400">
-          Videos und Übungen zum Angleiten - Nachstellschritt (Didaktische Reduktion)
+          Nachstellschritt (Didaktische Reduktion)
         </p>
       </motion.div>
 
