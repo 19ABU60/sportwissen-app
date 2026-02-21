@@ -26,6 +26,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { MediaUpload } from "@/components/MediaUpload";
 
 const VIDEOS = [
   {
