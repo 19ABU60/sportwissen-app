@@ -220,9 +220,45 @@ export function DrawingCanvas({
 
   return (
     <div className="space-y-3">
-      {/* Task description */}
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-        <p className="text-blue-300 text-sm font-medium">{task}</p>
+      {/* Task dropdown */}
+      <div className="relative">
+        <button
+          onClick={() => setIsTaskMenuOpen(!isTaskMenuOpen)}
+          className="w-full flex items-center justify-between bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 hover:bg-blue-500/20 transition-colors"
+        >
+          <span className="text-blue-300 text-sm font-medium">
+            {tasks[selectedTask]}
+          </span>
+          <ChevronDown className={`w-5 h-5 text-blue-400 transition-transform ${isTaskMenuOpen ? "rotate-180" : ""}`} />
+        </button>
+        
+        <AnimatePresence>
+          {isTaskMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute top-full left-0 right-0 mt-1 bg-zinc-800 border border-zinc-600 rounded-lg overflow-hidden z-20 shadow-xl"
+            >
+              {tasks.map((task, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedTask(index);
+                    setIsTaskMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 text-sm transition-colors ${
+                    selectedTask === index 
+                      ? "bg-blue-600 text-white" 
+                      : "text-zinc-300 hover:bg-zinc-700"
+                  }`}
+                >
+                  {task}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Toolbar */}
