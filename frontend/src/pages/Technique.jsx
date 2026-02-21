@@ -69,12 +69,12 @@ export default function Technique() {
       section: "bild1",
       title: "Stoßauslage",
       tasks: [
-        "Markiere wesentliche Merkmale der Stoßauslage",
-        "Markiere das gebeugte Druckbein",
-        "Markiere die Schulterachsenneigung",
-        "Markiere die Kugelhaltung",
-        "Zeichne das Stemmbein ein",
-        "Zeichne ein, welches Bein das Körpergewicht trägt"
+        "Merkmale der Stoßauslage",
+        "Das gebeugte Druckbein",
+        "Die Schulterachsenneigung",
+        "Die Kugelhaltung",
+        "Das Stemmbein",
+        "Welches Bein trägt das Körpergewicht?"
       ],
       solutions: SOLUTION_MARKERS_BILD1
     },
@@ -83,10 +83,10 @@ export default function Technique() {
       section: "bild2",
       title: "Schüler-Ausführung",
       tasks: [
-        "Markiere Unterschiede zur korrekten Technik",
-        "Markiere Fehler in der Beinstellung",
-        "Markiere Fehler in der Armhaltung",
-        "Markiere Fehler in der Körperhaltung"
+        "Unterschiede zur korrekten Technik",
+        "Fehler in der Beinstellung",
+        "Fehler in der Armhaltung",
+        "Fehler in der Körperhaltung"
       ],
       solutions: []
     },
