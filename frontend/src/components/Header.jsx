@@ -18,7 +18,7 @@ const BEWEGUNGSPHASEN = [
   { title: "1. Ausgangsstellung", path: "/ausgangsstellung", description: "Start der Bewegung" },
   { title: "2. Angleiten", path: "/angleiten", description: "Nachstell-/Impulsschritt" },
   { title: "3. Stoßauslage", path: "/technik", description: "Optimale Position" },
-  { title: "4. Stoß", path: "/videos", description: "Beschleunigung & Abwurf" },
+  { title: "4. Stoß", path: "/videos", description: "Beschleunigung & Abstoß" },
   { title: "O'Brien-Technik", path: "/obrien", description: "Zieltechnik" },
   { title: "Fehlerbilder", path: "/fehler", description: "Korrekturen" },
 ];
