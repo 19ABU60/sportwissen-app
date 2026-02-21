@@ -89,12 +89,9 @@ export default function Errors() {
         transition={{ duration: 0.5 }}
         className="mb-6"
       >
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white">
-          Fehlerbilder
-        </h1>
-        <p className="text-zinc-400 mt-2">
+        <h1 className="font-oswald text-2xl md:text-3xl font-bold tracking-tight text-white">
           Fehlerbilder erkennen und Bewegungshilfen ableiten
-        </p>
+        </h1>
       </motion.div>
 
       {/* 4 Bilder Grid - 2x2, kleiner */}

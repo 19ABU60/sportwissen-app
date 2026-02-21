@@ -51,11 +51,6 @@ export default function Ausgangsstellung() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-4"
       >
-        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-1">
-          <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-zinc-300">Phase 1</span>
-        </div>
         <h1 className="font-oswald text-2xl md:text-3xl font-bold tracking-tight uppercase text-white">
           1. Ausgangsstellung
         </h1>
