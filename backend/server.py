@@ -337,7 +337,7 @@ async def upload_media(
             "media_type": media_type,
             "filename": unique_filename,
             "original_name": file.filename,
-            "url": f"/uploads/{unique_filename}",
+            "url": f"/api/uploads/{unique_filename}",
             "uploaded_at": datetime.now(timezone.utc).isoformat(),
             "is_default": is_default
         }
