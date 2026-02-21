@@ -81,7 +81,7 @@ export function DrawingCanvas({
   const drawShape = (ctx, shape) => {
     ctx.strokeStyle = shape.isSolution ? "#22c55e" : shape.color;
     ctx.fillStyle = shape.isSolution ? "rgba(34, 197, 94, 0.1)" : `${shape.color}20`;
-    ctx.lineWidth = shape.isSolution ? 3 : 2;
+    ctx.lineWidth = shape.isSolution ? 4 : 3;
     ctx.setLineDash(shape.isSolution ? [5, 5] : []);
 
     if (shape.type === "circle") {
