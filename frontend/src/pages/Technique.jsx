@@ -67,22 +67,15 @@ export default function Technique() {
     { 
       id: 1, 
       section: "bild1",
-      title: "Bild 1: Professionelle Stoßauslage",
+      title: "Professionelle Stoßauslage",
       task: "Markiere: 1) Das gebeugte Druckbein  2) Die Schulterachsenneigung  3) Die Kugelhaltung",
       solutions: SOLUTION_MARKERS_BILD1
     },
     { 
       id: 2, 
       section: "bild2",
-      title: "Bild 2: Schüler-Ausführung",
+      title: "Schüler-Ausführung",
       task: "Markiere die Unterschiede zur korrekten Technik. Wo siehst du Fehler?",
-      solutions: []
-    },
-    { 
-      id: 3, 
-      section: "bild3",
-      title: "Bild 3: Stoßauslage Seitenansicht",
-      task: "Markiere: 1) Die Gewichtsverlagerung  2) Die Beinstellung  3) Die Oberkörperposition",
       solutions: []
     },
   ];
