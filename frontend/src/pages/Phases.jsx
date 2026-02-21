@@ -20,6 +20,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Check, X, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { MediaUpload } from "@/components/MediaUpload";
 
 // Phasen für Nachstellschritt seitwärts
 const PHASES_NACHSTELLSCHRITT = [
