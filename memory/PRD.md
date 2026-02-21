@@ -32,6 +32,13 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
 ---
 
 ## What's Been Implemented
+### Version 1.2 - 2026-02-21
+- ✅ Phasenstruktur-Seite: Zwei separate Drag-and-Drop-Menüs implementiert
+  - "Phasen des Stoßes aus dem Nachstellschritt seitwärts"
+  - "Phasen des Stoßes - O'Brien-Technik"
+- ✅ Korrekte "ß"-Schreibung (Stoß, Stoßauslage, Stoßes) in allen UI-Elementen
+- ✅ CSS uppercase-Bug bei "ß" behoben (entfernt uppercase von Menü-Titeln)
+
 ### Version 1.1 - 2026-02-08
 - ✅ Neue Startseite mit 3 didaktischen Aspekten
 - ✅ Rollmenü-Navigation im Header für alle Bewegungsphasen
