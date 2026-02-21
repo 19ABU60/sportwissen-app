@@ -162,7 +162,7 @@ export default function Technique() {
             <DrawingCanvas
               imageSrc={imageUrls[currentImage?.section]}
               imageAlt={currentImage?.title}
-              task={currentImage?.task}
+              tasks={currentImage?.tasks || ["Markiere die Technikmerkmale"]}
               solutionMarkers={currentImage?.solutions || []}
             />
           </div>
