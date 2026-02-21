@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Circle, Minus, Eraser, RotateCcw, Eye, EyeOff, 
-  MousePointer, Pencil
+  MousePointer, Pencil, ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Lightbox } from "./Lightbox";
@@ -24,7 +24,7 @@ export function DrawingCanvas({
   imageSrc, 
   imageAlt,
   solutionMarkers = [], // Array of {type, x, y, x2, y2, color, label}
-  task = "Markiere die Technikmerkmale auf dem Bild"
+  tasks = ["Markiere die Technikmerkmale auf dem Bild"] // Array of tasks for dropdown
 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -33,6 +33,8 @@ export function DrawingCanvas({
   const [color, setColor] = useState(COLORS[0].value);
   const [drawings, setDrawings] = useState([]);
   const [currentDrawing, setCurrentDrawing] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(0);
+  const [isTaskMenuOpen, setIsTaskMenuOpen] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
