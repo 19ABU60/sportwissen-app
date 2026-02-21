@@ -48,12 +48,9 @@ export default function OBrien() {
             placeholderText="Video einfügen"
           />
           <div className="p-4">
-            <h3 className="font-oswald text-lg font-semibold text-white mb-1">
+            <h3 className="font-oswald text-lg font-semibold text-white">
               Gesamtbewegung
             </h3>
-            <p className="text-sm text-zinc-400">
-              Die komplette O'Brien-Technik
-            </p>
           </div>
         </motion.div>
 
