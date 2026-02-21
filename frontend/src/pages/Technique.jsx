@@ -82,7 +82,7 @@ export default function Technique() {
           <ChevronRight className="w-4 h-4" />
           <span className="text-zinc-300">Phase 3</span>
         </div>
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight uppercase text-white mb-2">
+        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
           3. Stoßauslage
         </h1>
         <p className="text-zinc-400">
