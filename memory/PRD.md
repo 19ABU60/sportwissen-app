@@ -38,6 +38,17 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
   - "Phasen des Stoßes - O'Brien-Technik"
 - ✅ Korrekte "ß"-Schreibung (Stoß, Stoßauslage, Stoßes) in allen UI-Elementen
 - ✅ CSS uppercase-Bug bei "ß" behoben (entfernt uppercase von Menü-Titeln)
+- ✅ **Medien-Upload-System** implementiert:
+  - Backend-API für Bild/Video-Upload mit MongoDB-Speicherung
+  - Chunked Upload für große Videos (bis 100MB)
+  - Ersetzen und Löschen von Medien möglich
+  - Medien werden seitenspezifisch gespeichert
+- ✅ **Lightbox-Funktion** für Bildvergrößerung:
+  - Klick auf Bild öffnet Vollbild-Ansicht
+  - Schließen per X-Button oder Escape-Taste oder Klick außerhalb
+- ✅ MediaUpload-Komponente auf Seiten:
+  - Ausgangsstellung: Bilder für Nachstellschritt und O'Brien
+  - Phasenstruktur: Video für Gesamtbewegung
 
 ### Version 1.1 - 2026-02-08
 - ✅ Neue Startseite mit 3 didaktischen Aspekten
