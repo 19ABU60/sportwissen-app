@@ -81,6 +81,25 @@ class InfoCard(BaseModel):
     items: List[str]
 
 
+# ==== MEDIA MODELS ====
+
+class MediaItem(BaseModel):
+    id: str
+    page: str  # e.g., "ausgangsstellung", "angleiten", "technik"
+    section: str  # e.g., "nachstellschritt", "obrien", "main"
+    media_type: str  # "image" or "video"
+    filename: str
+    original_name: str
+    url: str
+    uploaded_at: str
+    is_default: bool = False  # True = Admin-uploaded default media
+
+class MediaUploadResponse(BaseModel):
+    success: bool
+    media: Optional[MediaItem] = None
+    message: str
+
+
 # ==== STATIC DATA ====
 
 PHASES_DATA = PhasesData(
