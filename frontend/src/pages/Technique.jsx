@@ -1,81 +1,102 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Info, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { toast } from "sonner";
-import axios from "axios";
+import { DrawingCanvas } from "@/components/DrawingCanvas";
 import { MediaUpload } from "@/components/MediaUpload";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Beispiel-Musterlösungen für die Bilder (Koordinaten sind relativ zur Bildgröße)
+const SOLUTION_MARKERS_BILD1 = [
+  { type: "circle", x: 180, y: 200, x2: 210, y2: 230, color: "#ef4444", label: "Druckbein gebeugt" },
+  { type: "arrow", x: 100, y: 100, x2: 150, y2: 150, color: "#3b82f6", label: "Schulterachse" },
+  { type: "circle", x: 250, y: 80, x2: 280, y2: 110, color: "#22c55e", label: "Kugelhaltung" },
+];
+
 export default function Technique() {
-  const [merkmale, setMerkmale] = useState([]);
-  const [selections, setSelections] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState(1);
+  const [imageUrls, setImageUrls] = useState({
+    bild1: null,
+    bild2: null,
+    bild3: null
+  });
 
   useEffect(() => {
-    document.title = "Technik | SportWissen";
-    fetchMerkmale();
+    document.title = "Stoßauslage | SportWissen";
+    // Fetch existing images
+    fetchImages();
   }, []);
 
-  const fetchMerkmale = async () => {
+  const fetchImages = async () => {
     try {
-      setIsLoading(true);
-      const response = await axios.get(`${API}/technik/merkmale`);
-      setMerkmale(response.data);
+      const sections = ["bild1", "bild2", "bild3"];
+      for (const section of sections) {
+        const response = await fetch(`${API}/media/stossauslage/${section}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.url) {
+            setImageUrls(prev => ({
+              ...prev,
+              [section]: `${process.env.REACT_APP_BACKEND_URL}${data.url}`
+            }));
+          }
+        }
+      }
     } catch (error) {
-      console.error("Error fetching merkmale:", error);
-      // Fallback data
-      setMerkmale([
-        { id: "m1", text: "Oberkörper 90 Grad zur Stoßrichtung gedreht" },
-        { id: "m2", text: "Druckbein gebeugt" },
-        { id: "m3", text: "Körpergewicht vollständig auf dem Druckbein" },
-        { id: "m4", text: "Kugelhaltung - Oberarm in Verlängerung der Schulterachse" },
-        { id: "m5", text: "Schulterachsenneigung" },
-        { id: "m6", text: "Stemmbein - Druckbein leicht versetzt" },
-      ]);
-    } finally {
-      setIsLoading(false);
+      console.error("Error fetching images:", error);
     }
   };
 
-  const handleSelection = (slotIndex, merkmalId) => {
-    setSelections((prev) => ({
-      ...prev,
-      [slotIndex]: merkmalId,
-    }));
+  const handleImageChange = (section, media) => {
+    if (media?.url) {
+      setImageUrls(prev => ({
+        ...prev,
+        [section]: `${process.env.REACT_APP_BACKEND_URL}${media.url}`
+      }));
+    } else {
+      setImageUrls(prev => ({
+        ...prev,
+        [section]: null
+      }));
+    }
   };
 
-  const checkAnswers = () => {
-    const filledSlots = Object.keys(selections).length;
-    if (filledSlots < 2) {
-      toast.warning("Bitte wähle mindestens 2 Merkmale aus");
-      return;
-    }
-    toast.success("Gut gemacht! Deine Auswahl wurde gespeichert.");
-  };
+  const images = [
+    { 
+      id: 1, 
+      section: "bild1",
+      title: "Bild 1: Professionelle Stoßauslage",
+      task: "Markiere: 1) Das gebeugte Druckbein  2) Die Schulterachsenneigung  3) Die Kugelhaltung",
+      solutions: SOLUTION_MARKERS_BILD1
+    },
+    { 
+      id: 2, 
+      section: "bild2",
+      title: "Bild 2: Schüler-Ausführung",
+      task: "Markiere die Unterschiede zur korrekten Technik. Wo siehst du Fehler?",
+      solutions: []
+    },
+    { 
+      id: 3, 
+      section: "bild3",
+      title: "Bild 3: Stoßauslage Seitenansicht",
+      task: "Markiere: 1) Die Gewichtsverlagerung  2) Die Beinstellung  3) Die Oberkörperposition",
+      solutions: []
+    },
+  ];
+
+  const currentImage = images.find(img => img.id === activeImage);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8"
+        className="mb-6"
       >
         <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
           <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
@@ -84,148 +105,75 @@ export default function Technique() {
           3. Stoßauslage
         </h1>
         <p className="text-zinc-400">
-          Erkenne die Technikmerkmale auf den Bildern und ordne sie zu
+          Markiere die Technikmerkmale auf den Bildern
         </p>
       </motion.div>
 
-      {/* Images Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 md:p-6 mb-8"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Bild 1 */}
-          <div className="relative rounded-lg overflow-hidden border-2 border-zinc-700">
-            <MediaUpload
-              page="stossauslage"
-              section="bild1"
-              mediaType="image"
-              aspectRatio="aspect-[4/3]"
-              placeholderText="Bild 1 einfügen"
-            />
-            <div className="p-2 bg-zinc-800/50">
-              <p className="text-white text-sm font-medium">Bild 1</p>
-              <p className="text-zinc-400 text-xs">Professionelle Stoßauslage</p>
-            </div>
-          </div>
-
-          {/* Bild 2 */}
-          <div className="relative rounded-lg overflow-hidden border-2 border-zinc-700">
-            <MediaUpload
-              page="stossauslage"
-              section="bild2"
-              mediaType="image"
-              aspectRatio="aspect-[4/3]"
-              placeholderText="Bild 2 einfügen"
-            />
-            <div className="p-2 bg-zinc-800/50">
-              <p className="text-white text-sm font-medium">Bild 2</p>
-              <p className="text-zinc-400 text-xs">Schüler-Ausführung</p>
-            </div>
-          </div>
-
-          {/* Bild 3 */}
-          <div className="relative rounded-lg overflow-hidden border-2 border-zinc-700">
-            <MediaUpload
-              page="stossauslage"
-              section="bild3"
-              mediaType="image"
-              aspectRatio="aspect-[4/3]"
-              placeholderText="Bild 3 einfügen"
-            />
-            <div className="p-2 bg-zinc-800/50">
-              <p className="text-white text-sm font-medium">Bild 3</p>
-              <p className="text-zinc-400 text-xs">Stoßauslage Seitenansicht</p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Selection Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 md:p-6"
-      >
-        <h2 className="font-oswald text-lg font-semibold uppercase tracking-wide text-zinc-300 mb-6">
-          Ordne die Technikmerkmale zu
-        </h2>
-
-        <div className="space-y-4">
-          {[1, 2].map((slotIndex) => (
-            <div key={slotIndex} className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-400 font-oswald font-bold">
-                  {slotIndex}
-                </span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Image thumbnails for upload */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="lg:col-span-1 space-y-4"
+        >
+          <h2 className="font-oswald text-sm font-semibold tracking-wide text-zinc-400 mb-3">
+            Bilder verwalten
+          </h2>
+          
+          {images.map((img) => (
+            <div 
+              key={img.id}
+              className={`rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
+                activeImage === img.id 
+                  ? "border-blue-500" 
+                  : "border-zinc-700 hover:border-zinc-500"
+              }`}
+              onClick={() => setActiveImage(img.id)}
+            >
+              <MediaUpload
+                page="stossauslage"
+                section={img.section}
+                mediaType="image"
+                aspectRatio="aspect-[4/3]"
+                placeholderText={`${img.title.split(":")[0]} einfügen`}
+                onMediaChange={(media) => handleImageChange(img.section, media)}
+              />
+              <div className="p-2 bg-zinc-800/50">
+                <p className="text-white text-xs font-medium">{img.title}</p>
               </div>
-              <Select
-                value={selections[slotIndex] || ""}
-                onValueChange={(value) => handleSelection(slotIndex, value)}
-              >
-                <SelectTrigger
-                  className="w-full bg-zinc-800 border-zinc-700 text-white"
-                  data-testid={`merkmal-select-${slotIndex}`}
-                >
-                  <SelectValue placeholder="Merkmal auswählen..." />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700">
-                  {merkmale.map((m) => (
-                    <SelectItem
-                      key={m.id}
-                      value={m.id}
-                      className="text-white hover:bg-zinc-700 focus:bg-zinc-700"
-                    >
-                      {m.text}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           ))}
-        </div>
+        </motion.div>
 
-        <Button
-          onClick={checkAnswers}
-          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider"
-          data-testid="check-technique-btn"
+        {/* Right: Drawing canvas */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="lg:col-span-2"
         >
-          <Check className="w-4 h-4 mr-2" />
-          Auswahl bestätigen
-        </Button>
-      </motion.div>
-
-      {/* Question Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-8 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 md:p-6"
-      >
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-            <Info className="w-5 h-5 text-amber-400" />
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
+            <h2 className="font-oswald text-lg font-semibold tracking-wide text-white mb-4">
+              {currentImage?.title}
+            </h2>
+            
+            <DrawingCanvas
+              imageSrc={imageUrls[currentImage?.section]}
+              imageAlt={currentImage?.title}
+              task={currentImage?.task}
+              solutionMarkers={currentImage?.solutions || []}
+            />
           </div>
-          <div>
-            <h3 className="font-oswald text-lg font-semibold text-amber-300 mb-2">
-              Erkennst du auf Bild 2 und 3 die Kardinalfehler?
-            </h3>
-            <p className="text-zinc-400 text-sm">
-              Klicke auf das Info-Symbol bei den Bildern, um mehr zu erfahren.
-            </p>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 flex justify-between items-center"
+        transition={{ delay: 0.4 }}
+        className="flex justify-between items-center mt-8"
       >
         <Link to="/angleiten">
           <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
