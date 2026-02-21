@@ -176,7 +176,7 @@ function PhaseSection({
         className="w-full flex items-center justify-between p-3 hover:bg-zinc-700/30 transition-colors rounded-xl"
         data-testid={testId}
       >
-        <h2 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-200 text-left">
+        <h2 className="font-oswald text-sm font-semibold tracking-wide text-zinc-200 text-left">
           {title}
         </h2>
         {isOpen ? (
