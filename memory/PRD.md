@@ -98,7 +98,7 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
 ---
 
 ## Next Tasks
-1. Echte Kugelstoß-Videos vom Benutzer erhalten und einbinden
-2. Echte Technikbilder einbinden
+1. MediaUpload-Komponente auf alle anderen Seiten erweitern
+2. Echte Kugelstoß-Videos/Bilder vom Benutzer hochladen
 3. Mehr interaktive Übungen pro Phase
 4. Struktur als Template für weitere Sport-Apps
