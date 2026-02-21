@@ -24,7 +24,8 @@ export function DrawingCanvas({
   imageSrc, 
   imageAlt,
   solutionMarkers = [], // Array of {type, x, y, x2, y2, color, label}
-  tasks = ["Markiere die Technikmerkmale auf dem Bild"] // Array of tasks for dropdown
+  tasks = ["Markiere die Technikmerkmale auf dem Bild"], // Array of tasks for dropdown
+  title = "Zeichne wesentliche Merkmale ins Bild!"
 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
