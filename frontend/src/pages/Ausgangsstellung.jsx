@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MediaUpload } from "@/components/MediaUpload";
 
 // Merkmale für Nachstellschritt seitwärts
 const MERKMALE_NACHSTELLSCHRITT = [
