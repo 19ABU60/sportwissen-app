@@ -89,14 +89,12 @@ export default function Videos() {
       >
         <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
           <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-zinc-300">Phase 4</span>
         </div>
-        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight uppercase text-white mb-2">
+        <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
           4. Stoß
         </h1>
         <p className="text-zinc-400">
-          Beschleunigung und Abwurf - die entscheidende Stoßphase
+          Die Hauptbeschleunigungsphase und der Abstoß
         </p>
       </motion.div>
 
