@@ -18,9 +18,6 @@ export default function Videos() {
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
-        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
-          <Link to="/" className="hover:text-zinc-300">Übersicht</Link>
-        </div>
         <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
           4. Stoß
         </h1>
