@@ -359,16 +359,46 @@ export default function Angleiten() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column - Videos */}
+        {/* Left Column - Videos mit Upload */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
           className="space-y-4"
         >
-          {VIDEOS.map((video, index) => (
-            <VideoCard key={video.id} video={video} onPlay={setSelectedVideo} />
-          ))}
+          {/* Video 1: Nachstellschritt */}
+          <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl overflow-hidden">
+            <MediaUpload
+              page="angleiten"
+              section="nachstellschritt"
+              mediaType="video"
+              aspectRatio="aspect-video"
+              placeholderText="Video: Nachstellschritt einfügen"
+            />
+            <div className="p-3">
+              <h3 className="font-oswald text-base font-semibold text-white mb-1">
+                Nachstellschritt
+              </h3>
+              <p className="text-xs text-zinc-400">Das Angleiten mit Nachstellschritt-Technik</p>
+            </div>
+          </div>
+
+          {/* Video 2: Stoßauslage - Stoß */}
+          <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl overflow-hidden">
+            <MediaUpload
+              page="angleiten"
+              section="stossauslage"
+              mediaType="video"
+              aspectRatio="aspect-video"
+              placeholderText="Video: Stoßauslage - Stoß einfügen"
+            />
+            <div className="p-3">
+              <h3 className="font-oswald text-base font-semibold text-white mb-1">
+                Stoßauslage - Stoß
+              </h3>
+              <p className="text-xs text-zinc-400">Von der Stoßauslage zum Stoß</p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Right Column - Merkmale Drag & Drop */}
