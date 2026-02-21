@@ -1,104 +1,33 @@
-# SportWissen Kugelstoßen - Product Requirements Document
+# PRD - SportWissen Kugelstoßen App
 
 ## Original Problem Statement
-Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern-Apps modernisieren. Erste App: Kugelstoßen (O'Brien-Technik) für Schüler UND Lehrer.
+Der Benutzer, ein Sportlehrer in Deutschland, möchte eine moderne Web-App erstellen, um seine alten FileMaker-basierten Lernwerkzeuge zu ersetzen. Das erste Projekt ist für Kugelstoßen mit der O'Brien-Technik.
 
-## User Choices
-- Dark Theme (wie Speakly-App)
-- Keine Login/Fortschrittsspeicherung (einfacher Start)
-- Platzhalter für Videos/Bilder (später durch echte Medien ersetzen)
-- Copyright "© A. Busse" und "SportWissen" Logo beibehalten
-- Rollmenü-Navigation für chronologischen Bewegungsablauf
-- Jede Bewegungsphase als eigene Seite
+## Completed Work (Februar 2026)
+- ✅ Media-Upload-System (MongoDB-basiert)
+- ✅ Interaktives Zeichenwerkzeug (Stoßauslage-Seite)
+- ✅ Lightbox/Zoom für Bilder
+- ✅ Alle Seiten refaktoriert (Phasen, Angleiten, Ausgangsstellung, Technique, Videos, O'Brien, Errors)
+- ✅ "Übersicht" Breadcrumbs entfernt von: Ausgangsstellung, 4. Stoß, O'Brien-Technik
+- ✅ Fehlerbilder-Seite: Neuer Titel, 4 Bilder mit Dropdowns
+- ✅ Angleiten: 2. Video umbenannt zu "Angleiten in der O'Brien-Technik" / "Vorschau"
+- ✅ Dropdowns zeigen "häufige Fehlerbilder"
 
-## User Personas
-1. **Schüler (12-18 Jahre)** - Lernen die Kugelstoß-Technik
-2. **Sportlehrer** - Nutzen die App im Unterricht
-3. **Lehramtsanwärter** - Vertiefen Fachwissen
+## In Progress
+- Dropdowns auf Fehlerbilder-Seite mit 3-4 konkreten Fehlerbeschreibungen pro Phase befüllen (wartet auf Benutzereingabe)
 
-## Core Requirements (Static)
-- Responsive Design (PC, Tablet, Handy)
-- Dark Theme
-- Deutsche Sprache
-- Interaktive Übungen (Drag & Drop, Quiz, Video)
-- Keine Anmeldung erforderlich
-- Chronologischer Bewegungsablauf als Struktur
+## Backlog (P1/P2)
+- P1: Fehlerbeschreibungen für Dropdowns einfügen
+- P2: Schüler-Upload-Funktion
+- P2: App-Vorlage für andere Sportarten
 
-## Didaktische Struktur (3 Aspekte)
-1. **Didaktisch-methodische Aspekte der Erstvermittlung**
-2. **Kugelstoßen aus dem Nachstellschritt seitwärts oder mit einem Impulsschritt** (Didaktische Reduktion)
-3. **O'Brien-Technik** (Zieltechnik)
+## Tech Stack
+- Frontend: React, Tailwind CSS, Framer Motion, dnd-kit
+- Backend: FastAPI (Python), Motor (async MongoDB)
+- Database: MongoDB
+- File Storage: /app/backend/uploads/
 
----
-
-## What's Been Implemented
-### Version 1.2 - 2026-02-21
-- ✅ Phasenstruktur-Seite: Zwei separate Drag-and-Drop-Menüs implementiert
-  - "Phasen des Stoßes aus dem Nachstellschritt seitwärts"
-  - "Phasen des Stoßes - O'Brien-Technik"
-- ✅ Korrekte "ß"-Schreibung (Stoß, Stoßauslage, Stoßes) in allen UI-Elementen
-- ✅ CSS uppercase-Bug bei "ß" behoben (entfernt uppercase von Menü-Titeln)
-- ✅ **Medien-Upload-System** implementiert:
-  - Backend-API für Bild/Video-Upload mit MongoDB-Speicherung
-  - Chunked Upload für große Videos (bis 100MB)
-  - Ersetzen und Löschen von Medien möglich
-  - Medien werden seitenspezifisch gespeichert
-- ✅ **Lightbox-Funktion** für Bildvergrößerung:
-  - Klick auf Bild öffnet Vollbild-Ansicht
-  - Schließen per X-Button oder Escape-Taste oder Klick außerhalb
-- ✅ MediaUpload-Komponente auf Seiten:
-  - Ausgangsstellung: Bilder für Nachstellschritt und O'Brien
-  - Phasenstruktur: Video für Gesamtbewegung
-
-### Version 1.1 - 2026-02-08
-- ✅ Neue Startseite mit 3 didaktischen Aspekten
-- ✅ Rollmenü-Navigation im Header für alle Bewegungsphasen
-- ✅ Chronologischer Ablauf: Ausgangsstellung → Angleiten → Stoßauslage → Stoß → O'Brien
-- ✅ Jede Phase als eigene Seite mit Vor/Zurück-Navigation
-- ✅ Neue Seite: Ausgangsstellung (Phase 1)
-- ✅ Neue Seite: O'Brien-Technik (Zieltechnik)
-- ✅ Breadcrumb-Navigation auf allen Seiten
-
-### Version 1.0 - 2026-02-08
-- ✅ Homepage mit Bento Grid Navigation
-- ✅ Phasen-Seite mit Drag & Drop Sortierung
-- ✅ Technik-Seite (Stoßauslage) mit Bildern und Dropdown-Zuordnung
-- ✅ Angleiten-Seite mit Videos und Multiple-Choice Quiz
-- ✅ Videos-Seite (Stoß) mit Hauptvideo-Player
-- ✅ Fehlerbilder-Seite mit aufklappbaren Karten
-- ✅ Backend API für Phasen, Technikmerkmale, Videos
-
-### Technical Stack
-- Frontend: React 19, Tailwind CSS, Framer Motion, @dnd-kit
-- Backend: FastAPI, MongoDB
-- Design: Dark Theme, Oswald + Inter Fonts
-
----
-
-## Prioritized Backlog
-
-### P0 - Critical (Done)
-- [x] Chronologische Kapitelstruktur
-- [x] Rollmenü-Navigation
-- [x] 3 didaktische Aspekte auf Startseite
-- [x] Einzelseiten für jede Phase
-
-### P1 - High Priority (Next Phase)
-- [ ] MediaUpload auf alle weiteren Seiten hinzufügen (Angleiten, Technik, Videos, OBrien)
-- [ ] Mehr Drag & Drop Übungen pro Phase
-- [ ] Lückentext-Übungen interaktiv machen
-- [ ] Arbeitskarten-Sektion
-
-### P2 - Medium Priority
-- [ ] Fortschrittsspeicherung (optional)
-- [ ] Lehrer-Admin-Bereich
-- [ ] Weitere Disziplinen (Gerätturnen, Spiele)
-- [ ] Print-Funktion für Arbeitskarten
-
----
-
-## Next Tasks
-1. MediaUpload-Komponente auf alle anderen Seiten erweitern
-2. Echte Kugelstoß-Videos/Bilder vom Benutzer hochladen
-3. Mehr interaktive Übungen pro Phase
-4. Struktur als Template für weitere Sport-Apps
+## Key Files
+- /app/frontend/src/pages/Errors.jsx - Fehlerbilder-Seite
+- /app/frontend/src/components/MediaUpload.jsx - Media-Upload Komponente
+- /app/backend/server.py - API Server
