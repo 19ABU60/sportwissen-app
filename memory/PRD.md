@@ -84,7 +84,7 @@ Sportlehrer und Ausbilder aus Rheinland-Pfalz möchte seine FileMaker Sport-Lern
 - [x] Einzelseiten für jede Phase
 
 ### P1 - High Priority (Next Phase)
-- [ ] Echte Videos/Bilder einbinden
+- [ ] MediaUpload auf alle weiteren Seiten hinzufügen (Angleiten, Technik, Videos, OBrien)
 - [ ] Mehr Drag & Drop Übungen pro Phase
 - [ ] Lückentext-Übungen interaktiv machen
 - [ ] Arbeitskarten-Sektion
