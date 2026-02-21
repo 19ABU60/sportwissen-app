@@ -119,10 +119,6 @@ export default function Technique() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-1 space-y-4"
         >
-          <h2 className="font-oswald text-sm font-semibold tracking-wide text-zinc-400 mb-3">
-            Bilder verwalten
-          </h2>
-          
           {images.map((img) => (
             <div 
               key={img.id}
