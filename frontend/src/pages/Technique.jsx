@@ -109,9 +109,6 @@ export default function Technique() {
         <h1 className="font-oswald text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
           3. Stoßauslage
         </h1>
-        <p className="text-zinc-400">
-          Markiere die Technikmerkmale auf den Bildern
-        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
