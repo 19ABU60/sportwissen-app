@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn } from "lucide-react";
 
@@ -102,6 +102,3 @@ export function ZoomableImage({ src, alt, className = "", placeholderText = "Bil
     </>
   );
 }
-
-// Need useState import
-import { useState } from "react";
