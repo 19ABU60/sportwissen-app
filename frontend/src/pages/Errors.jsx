@@ -7,24 +7,24 @@ import { MediaUpload } from "@/components/MediaUpload";
 // Fehlerkategorien für jedes Bild (später vom Admin anpassbar)
 const FEHLER_KATEGORIEN = {
   angleiten: [
-    "Fehlerkategorie 1",
-    "Fehlerkategorie 2",
-    "Fehlerkategorie 3"
+    "häufige Fehlerbilder",
+    "Fehlerbild 2",
+    "Fehlerbild 3"
   ],
   stossauslage: [
-    "Fehlerkategorie 1",
-    "Fehlerkategorie 2",
-    "Fehlerkategorie 3"
+    "häufige Fehlerbilder",
+    "Fehlerbild 2",
+    "Fehlerbild 3"
   ],
   drehstreck: [
-    "Fehlerkategorie 1",
-    "Fehlerkategorie 2",
-    "Fehlerkategorie 3"
+    "häufige Fehlerbilder",
+    "Fehlerbild 2",
+    "Fehlerbild 3"
   ],
   abstoss: [
-    "Fehlerkategorie 1",
-    "Fehlerkategorie 2",
-    "Fehlerkategorie 3"
+    "häufige Fehlerbilder",
+    "Fehlerbild 2",
+    "Fehlerbild 3"
   ]
 };
 
