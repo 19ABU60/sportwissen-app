@@ -153,15 +153,12 @@ export default function Technique() {
           className="lg:col-span-2"
         >
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
-            <h2 className="font-oswald text-lg font-semibold tracking-wide text-white mb-4">
-              {currentImage?.title}
-            </h2>
-            
             <DrawingCanvas
               imageSrc={imageUrls[currentImage?.section]}
               imageAlt={currentImage?.title}
               tasks={currentImage?.tasks || ["Markiere die Technikmerkmale"]}
               solutionMarkers={currentImage?.solutions || []}
+              title="Zeichne wesentliche Merkmale der Stoßauslage ins Bild!"
             />
           </div>
         </motion.div>
