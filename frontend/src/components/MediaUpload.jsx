@@ -173,9 +173,9 @@ export function MediaUpload({
               />
             )}
             
-            {/* Overlay actions */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors">
-              <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Overlay actions - positioned in top right corner for videos */}
+            <div className={`absolute ${media.media_type === "video" ? "top-2 right-2" : "inset-0"} ${media.media_type === "image" ? "bg-black/0 group-hover:bg-black/40" : ""} transition-colors`}>
+              <div className={`${media.media_type === "video" ? "flex gap-2" : "absolute inset-0 flex items-center justify-center gap-2"} opacity-0 group-hover:opacity-100 transition-opacity`}>
                 {media.media_type === "image" && (
                   <button
                     onClick={() => setShowLightbox(true)}
