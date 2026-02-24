@@ -288,10 +288,15 @@ export default function Errors() {
   };
 
   const handleDropFrame = (phaseId, frame) => {
-    setDroppedFrames(prev => ({
-      ...prev,
-      [phaseId]: frame
-    }));
+    console.log("handleDropFrame called:", phaseId, frame);
+    setDroppedFrames(prev => {
+      const newState = {
+        ...prev,
+        [phaseId]: frame
+      };
+      console.log("New droppedFrames state:", newState);
+      return newState;
+    });
   };
 
   const handleClearFrame = (phaseId) => {
