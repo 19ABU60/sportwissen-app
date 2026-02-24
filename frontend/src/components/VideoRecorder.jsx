@@ -434,7 +434,16 @@ export function VideoRecorder({
               onLoadedMetadata={handleLoadedMetadata}
               onEnded={() => setIsPlaying(false)}
               playsInline
+              webkit-playsinline="true"
+              controls={false}
+              preload="metadata"
             />
+            {/* Overlay to show video is ready */}
+            {duration === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <p className="text-white text-sm">Video wird geladen...</p>
+              </div>
+            )}
           </div>
           
           {/* Timeline Scrubber - Draggable */}
