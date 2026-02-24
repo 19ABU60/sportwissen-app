@@ -87,6 +87,13 @@ function PhaseWindow({
   const [isDragOver, setIsDragOver] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
 
+  // Debug log
+  useEffect(() => {
+    if (droppedFrame) {
+      console.log(`Phase ${bild.id} received frame:`, droppedFrame);
+    }
+  }, [droppedFrame, bild.id]);
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
@@ -118,10 +125,12 @@ function PhaseWindow({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-zinc-800/50 border-2 rounded-lg overflow-hidden transition-colors ${
+        className={`bg-zinc-800/50 border-2 rounded-lg overflow-hidden transition-all ${
           isDragOver 
             ? "border-blue-500 bg-blue-500/10" 
-            : "border-zinc-700"
+            : droppedFrame 
+              ? "border-green-500" 
+              : "border-zinc-700"
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -136,8 +145,12 @@ function PhaseWindow({
                 alt={bild.title}
                 className="w-full h-full object-cover"
               />
-              {/* Overlay Actions */}
-              <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 hover:opacity-100">
+              {/* Success indicator */}
+              <div className="absolute top-1 left-1 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+                ✓ Zugewiesen
+              </div>
+              {/* Overlay Actions - always visible on touch */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 flex justify-center gap-2">
                 <button
                   onClick={() => setShowLightbox(true)}
                   className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30"
