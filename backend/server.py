@@ -375,7 +375,7 @@ async def get_media_for_page(page: str):
     return media_list
 
 
-@api_router.get("/media")
+@api_router.get("/media/list/all")
 async def get_all_media():
     """Get all media items for the media library"""
     media_list = await db.media.find({}, {"_id": 0}).to_list(1000)
