@@ -82,6 +82,7 @@ function PhaseWindow({
   onDrop, 
   onClear,
   onAnalyze,
+  onSave,
   isAnalyzing
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
