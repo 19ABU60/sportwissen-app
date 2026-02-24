@@ -476,63 +476,62 @@ export function VideoRecorder({
             </div>
           </div>
           
-          {/* Playback Controls */}
-          <div className="p-4 flex items-center justify-center gap-2">
-            <Button 
-              onClick={() => stepFrame(-1)}
-              variant="outline"
-              size="icon"
-              className="border-zinc-600"
-              title="Ein Frame zurück"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            
-            <Button 
-              onClick={togglePlayback}
-              className="bg-blue-600 hover:bg-blue-700"
-              size="icon"
-            >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-            </Button>
-            
-            <Button 
-              onClick={() => stepFrame(1)}
-              variant="outline"
-              size="icon"
-              className="border-zinc-600"
-              title="Ein Frame vor"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-            
-            <div className="w-px h-6 bg-zinc-600 mx-2" />
+          {/* Playback Controls - Compact for iPad */}
+          <div className="p-2 flex flex-wrap items-center justify-center gap-1">
+            <div className="flex items-center gap-1">
+              <Button 
+                onClick={() => stepFrame(-1)}
+                variant="outline"
+                size="icon"
+                className="border-zinc-600 h-8 w-8"
+                title="Ein Frame zurück"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              
+              <Button 
+                onClick={togglePlayback}
+                className="bg-blue-600 hover:bg-blue-700 h-8 w-8"
+                size="icon"
+              >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+              </Button>
+              
+              <Button 
+                onClick={() => stepFrame(1)}
+                variant="outline"
+                size="icon"
+                className="border-zinc-600 h-8 w-8"
+                title="Ein Frame vor"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
             
             <Button 
               onClick={captureFrame}
-              className="bg-amber-600 hover:bg-amber-700"
-              title="Standbild aufnehmen"
+              className="bg-amber-600 hover:bg-amber-700 h-8"
+              size="sm"
             >
-              <Camera className="w-4 h-4 mr-2" />
+              <Camera className="w-4 h-4 mr-1" />
               Standbild
             </Button>
-            
-            <div className="w-px h-6 bg-zinc-600 mx-2" />
             
             <Button 
               onClick={saveVideoPermanently}
               variant="outline"
-              className="border-green-600 text-green-400 hover:bg-green-600/20"
-              title="Video dauerhaft speichern"
+              className="border-green-600 text-green-400 hover:bg-green-600/20 h-8"
+              size="sm"
             >
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="w-4 h-4 mr-1" />
               Speichern
             </Button>
             
             <Button 
               onClick={resetRecording}
               variant="outline"
-              className="border-zinc-600"
+              className="border-zinc-600 h-8 w-8"
+              size="icon"
               title="Neue Aufnahme"
             >
               <RotateCcw className="w-4 h-4" />
