@@ -1,10 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { AlertTriangle, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ChevronDown, ChevronUp, Trash2, Edit3, Save, X,
+  Image as ImageIcon, Maximize2
+} from "lucide-react";
 import { MediaUpload } from "@/components/MediaUpload";
+import { VideoRecorder } from "@/components/VideoRecorder";
+import { DrawingCanvas } from "@/components/DrawingCanvas";
+import { Lightbox } from "@/components/Lightbox";
+import { toast } from "sonner";
 
-// Fehlerkategorien für jedes Bild (später vom Admin anpassbar)
+// Fehlerkategorien für jedes Bild
 const FEHLER_KATEGORIEN = {
   angleiten: [
     "häufige Fehlerbilder",
@@ -28,7 +35,7 @@ const FEHLER_KATEGORIEN = {
   ]
 };
 
-function FehlerDropdown({ kategorien, label }) {
+function FehlerDropdown({ kategorien }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(0);
 
@@ -68,7 +75,186 @@ function FehlerDropdown({ kategorien, label }) {
   );
 }
 
+// Droppable Phase Window Component
+function PhaseWindow({ 
+  bild, 
+  droppedFrame, 
+  onDrop, 
+  onClear,
+  onAnalyze,
+  isAnalyzing
+}) {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    try {
+      const data = e.dataTransfer.getData('application/json');
+      if (data) {
+        const frame = JSON.parse(data);
+        onDrop(bild.id, frame);
+        toast.success(`Standbild zu "${bild.title}" hinzugefügt`);
+      }
+    } catch (err) {
+      console.error("Drop error:", err);
+    }
+  };
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`bg-zinc-800/50 border-2 rounded-lg overflow-hidden transition-colors ${
+          isDragOver 
+            ? "border-blue-500 bg-blue-500/10" 
+            : "border-zinc-700"
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {/* Image Area */}
+        <div className="relative aspect-square bg-zinc-900">
+          {droppedFrame ? (
+            <>
+              <img 
+                src={droppedFrame.imageUrl} 
+                alt={bild.title}
+                className="w-full h-full object-cover"
+              />
+              {/* Overlay Actions */}
+              <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 hover:opacity-100">
+                <button
+                  onClick={() => setShowLightbox(true)}
+                  className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30"
+                  title="Vergrößern"
+                >
+                  <Maximize2 className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={() => onAnalyze(bild.id)}
+                  className="p-2 bg-blue-500/80 backdrop-blur-sm rounded-full hover:bg-blue-500"
+                  title="Analysieren"
+                >
+                  <Edit3 className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={() => onClear(bild.id)}
+                  className="p-2 bg-red-500/80 backdrop-blur-sm rounded-full hover:bg-red-500"
+                  title="Entfernen"
+                >
+                  <Trash2 className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 p-2">
+              <ImageIcon className="w-8 h-8 mb-1" />
+              <p className="text-[10px] text-center">
+                {isDragOver ? "Hier ablegen" : "Standbild hierher ziehen"}
+              </p>
+            </div>
+          )}
+        </div>
+        
+        {/* Info Area */}
+        <div className="p-2 space-y-2">
+          <h3 className="font-oswald text-sm font-semibold text-white">
+            {bild.title}
+          </h3>
+          <FehlerDropdown kategorien={bild.kategorien} />
+        </div>
+      </motion.div>
+      
+      {/* Lightbox */}
+      {showLightbox && droppedFrame && (
+        <Lightbox 
+          src={droppedFrame.imageUrl} 
+          alt={bild.title}
+          onClose={() => setShowLightbox(false)}
+        />
+      )}
+    </>
+  );
+}
+
+// Analysis Modal with Drawing Canvas
+function AnalysisModal({ frame, phaseTitle, onClose, onSave }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-5xl bg-zinc-900 rounded-xl overflow-hidden max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-zinc-700">
+          <h2 className="font-oswald text-xl font-bold text-white">
+            Fehleranalyse: {phaseTitle}
+          </h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onSave}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              Speichern
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-zinc-400" />
+            </button>
+          </div>
+        </div>
+        
+        {/* Drawing Canvas */}
+        <div className="p-4">
+          <DrawingCanvas
+            imageSrc={frame.imageUrl}
+            imageAlt={phaseTitle}
+            title="Markiere Fehler und Korrekturen im Bild"
+            tasks={[
+              "Markiere den Hauptfehler",
+              "Zeichne die korrekte Körperposition ein",
+              "Zeige die Bewegungsrichtung"
+            ]}
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function Errors() {
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
+  const [capturedFrames, setCapturedFrames] = useState([]);
+  const [droppedFrames, setDroppedFrames] = useState({});
+  const [analyzingPhase, setAnalyzingPhase] = useState(null);
+
   useEffect(() => {
     document.title = "Fehlerbilder | SportWissen";
   }, []);
@@ -80,8 +266,44 @@ export default function Errors() {
     { id: 4, section: "bild4", title: "4. Abstoß", kategorien: FEHLER_KATEGORIEN.abstoss },
   ];
 
+  const handleFrameCaptured = (frame) => {
+    setCapturedFrames(prev => [...prev, frame]);
+  };
+
+  const handleDeleteFrame = (frameId) => {
+    setCapturedFrames(prev => prev.filter(f => f.id !== frameId));
+  };
+
+  const handleDropFrame = (phaseId, frame) => {
+    setDroppedFrames(prev => ({
+      ...prev,
+      [phaseId]: frame
+    }));
+  };
+
+  const handleClearFrame = (phaseId) => {
+    setDroppedFrames(prev => {
+      const newState = { ...prev };
+      delete newState[phaseId];
+      return newState;
+    });
+  };
+
+  const handleAnalyze = (phaseId) => {
+    setAnalyzingPhase(phaseId);
+  };
+
+  const handleSaveAnalysis = async () => {
+    // Here you would save the analysis to the database
+    toast.success("Analyse gespeichert!");
+    setAnalyzingPhase(null);
+  };
+
+  const analyzingBild = bilder.find(b => b.id === analyzingPhase);
+  const analyzingFrame = analyzingPhase ? droppedFrames[analyzingPhase] : null;
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -92,36 +314,97 @@ export default function Errors() {
         <h1 className="font-oswald text-2xl md:text-3xl font-bold tracking-tight text-white">
           Fehlerbilder erkennen und Bewegungshilfen ableiten
         </h1>
+        <p className="text-zinc-400 text-sm mt-1">
+          Nehmen Sie ein Video auf, extrahieren Sie Standbilder und analysieren Sie Bewegungsfehler
+        </p>
       </motion.div>
 
-      {/* 4 Bilder Grid - 2x2, kleiner */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {bilder.map((bild, index) => (
-          <motion.div
+      {/* Phase Windows Grid */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
+      >
+        {bilder.map((bild) => (
+          <PhaseWindow
             key={bild.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-zinc-800/50 border border-zinc-700 rounded-lg overflow-hidden"
-          >
-            <MediaUpload
-              page="fehlerbilder"
-              section={bild.section}
-              mediaType="image"
-              aspectRatio="aspect-square"
-              placeholderText="Bild einfügen"
-            />
-            <div className="p-2 space-y-2">
-              <h3 className="font-oswald text-sm font-semibold text-white">
-                {bild.title}
-              </h3>
-              <FehlerDropdown kategorien={bild.kategorien} />
-            </div>
-          </motion.div>
+            bild={bild}
+            droppedFrame={droppedFrames[bild.id]}
+            onDrop={handleDropFrame}
+            onClear={handleClearFrame}
+            onAnalyze={handleAnalyze}
+          />
         ))}
-      </div>
+      </motion.div>
 
-      {/* Zurück Button */}
+      {/* Video Recorder Toggle */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <button
+          onClick={() => setShowVideoRecorder(!showVideoRecorder)}
+          className="w-full flex items-center justify-between bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 hover:bg-blue-500/20 transition-colors mb-4"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="text-left">
+              <h3 className="font-oswald text-base font-semibold text-white">
+                Video-Aufnahme & Standbild-Extraktion
+              </h3>
+              <p className="text-xs text-zinc-400">
+                Bewegungsabläufe aufnehmen und analysieren
+              </p>
+            </div>
+          </div>
+          {showVideoRecorder ? (
+            <ChevronUp className="w-5 h-5 text-blue-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-blue-400" />
+          )}
+        </button>
+
+        {/* Video Recorder */}
+        <AnimatePresence>
+          {showVideoRecorder && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <VideoRecorder
+                onFrameCaptured={handleFrameCaptured}
+                savedFrames={capturedFrames}
+                onDeleteFrame={handleDeleteFrame}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Instructions when frames are captured */}
+      {capturedFrames.length > 0 && !showVideoRecorder && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4"
+        >
+          <p className="text-amber-300 text-sm">
+            <strong>{capturedFrames.length} Standbild(er)</strong> verfügbar. 
+            Öffnen Sie die Video-Aufnahme oben, um Standbilder in die Phasen-Fenster zu ziehen.
+          </p>
+        </motion.div>
+      )}
+
+      {/* Back Button */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -134,6 +417,18 @@ export default function Errors() {
           </button>
         </Link>
       </motion.div>
+
+      {/* Analysis Modal */}
+      <AnimatePresence>
+        {analyzingPhase && analyzingFrame && analyzingBild && (
+          <AnalysisModal
+            frame={analyzingFrame}
+            phaseTitle={analyzingBild.title}
+            onClose={() => setAnalyzingPhase(null)}
+            onSave={handleSaveAnalysis}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
