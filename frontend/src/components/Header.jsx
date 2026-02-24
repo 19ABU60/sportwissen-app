@@ -21,6 +21,7 @@ const BEWEGUNGSPHASEN = [
   { title: "4. Stoß", path: "/videos", description: "Beschleunigung & Abstoß" },
   { title: "O'Brien-Technik", path: "/obrien", description: "Zieltechnik" },
   { title: "Fehlerbilder", path: "/fehler", description: "Korrekturen" },
+  { title: "Medienverwaltung", path: "/medien", description: "Videos & Bilder verwalten" },
 ];
 
 export const Header = () => {
