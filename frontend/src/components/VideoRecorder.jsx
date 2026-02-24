@@ -372,14 +372,15 @@ export function VideoRecorder({
           </div>
           
           {/* Controls */}
-          <div className="p-4 flex items-center justify-center gap-3">
+          <div className="p-3 flex items-center justify-center gap-2">
             {!isStreaming ? (
               <Button 
                 onClick={startCamera}
                 className="bg-blue-600 hover:bg-blue-700"
                 disabled={!hasCamera}
+                size="sm"
               >
-                <Video className="w-4 h-4 mr-2" />
+                <Video className="w-4 h-4 mr-1" />
                 Kamera starten
               </Button>
             ) : !isRecording ? (
@@ -387,33 +388,35 @@ export function VideoRecorder({
                 <Button 
                   onClick={startRecording}
                   className="bg-red-600 hover:bg-red-700"
+                  size="sm"
                 >
-                  <Circle className="w-4 h-4 mr-2 fill-current" />
-                  Aufnahme starten
+                  <Circle className="w-4 h-4 mr-1 fill-current" />
+                  Aufnahme
                 </Button>
                 <Button 
                   onClick={stopCamera}
                   variant="outline"
                   className="border-zinc-600"
+                  size="sm"
                 >
-                  <VideoOff className="w-4 h-4 mr-2" />
-                  Kamera stoppen
+                  <VideoOff className="w-4 h-4" />
                 </Button>
               </>
             ) : (
               <Button 
                 onClick={stopRecording}
                 className="bg-red-600 hover:bg-red-700"
+                size="sm"
               >
-                <Square className="w-4 h-4 mr-2 fill-current" />
-                Aufnahme beenden
+                <Square className="w-4 h-4 mr-1 fill-current" />
+                Stopp
               </Button>
             )}
           </div>
           
           {!hasCamera && (
-            <p className="text-center text-amber-400 text-sm pb-4">
-              Keine Kamera gefunden oder Zugriff verweigert.
+            <p className="text-center text-amber-400 text-xs pb-2">
+              Keine Kamera gefunden.
             </p>
           )}
         </div>
