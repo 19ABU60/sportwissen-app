@@ -10,10 +10,10 @@ import { toast } from "sonner";
 
 // Phase definitions for assignment
 const PHASES = [
-  { id: 1, title: "1. Angleiten", short: "1" },
-  { id: 2, title: "2. Stoßauslage", short: "2" },
-  { id: 3, title: "3. Dreh-Streck", short: "3" },
-  { id: 4, title: "4. Abstoß", short: "4" },
+  { id: 1, title: "Angleiten", short: "1. Angl." },
+  { id: 2, title: "Stoßauslage", short: "2. Stoß." },
+  { id: 3, title: "Dreh-Streck", short: "3. Dreh" },
+  { id: 4, title: "Abstoß", short: "4. Abst." },
 ];
 
 export function VideoRecorder({ 
