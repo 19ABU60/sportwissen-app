@@ -410,7 +410,11 @@ export default function Errors() {
                   Video-Aufnahme
                 </h2>
                 <button
-                  onClick={() => setShowVideoRecorder(false)}
+                  onClick={() => {
+                    setShowVideoRecorder(false);
+                    // Clear temporary captured frames when closing
+                    setCapturedFrames([]);
+                  }}
                   className="flex items-center gap-1 px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white text-sm rounded-lg transition-colors"
                 >
                   <X className="w-4 h-4" />
