@@ -401,60 +401,48 @@ export default function Errors() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-zinc-950"
+            className="fixed inset-0 z-50 bg-zinc-950 flex flex-col"
           >
-            {/* Header */}
-            <div className="sticky top-0 z-10 bg-zinc-900 border-b border-zinc-700 px-4 py-3 flex items-center justify-between">
-              <h2 className="font-oswald text-lg font-bold text-white">
-                Video-Aufnahme & Standbild-Extraktion
-              </h2>
-              <button
-                onClick={() => setShowVideoRecorder(false)}
-                className="flex items-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Schließen
-              </button>
-            </div>
-            
-            {/* Mini Phase Preview - Shows assigned frames */}
-            <div className="bg-zinc-900/50 border-b border-zinc-700 px-4 py-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-zinc-400">Zugewiesen:</span>
-                <div className="flex gap-1">
-                  {bilder.map((bild) => (
-                    <div 
-                      key={bild.id}
-                      className={`w-10 h-10 rounded border-2 flex items-center justify-center text-xs font-bold ${
-                        droppedFrames[bild.id] 
-                          ? "border-green-500 bg-green-500/20 text-green-400" 
-                          : "border-zinc-600 bg-zinc-800 text-zinc-500"
-                      }`}
-                    >
-                      {droppedFrames[bild.id] ? "✓" : bild.id}
-                    </div>
-                  ))}
-                </div>
-                {Object.keys(droppedFrames).length > 0 && (
-                  <span className="text-xs text-green-400 ml-2">
-                    {Object.keys(droppedFrames).length} von 4 zugewiesen
-                  </span>
-                )}
+            {/* Compact Header with Phase Preview */}
+            <div className="flex-shrink-0 bg-zinc-900 border-b border-zinc-700 px-3 py-2">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-oswald text-base font-bold text-white">
+                  Video-Aufnahme
+                </h2>
+                <button
+                  onClick={() => setShowVideoRecorder(false)}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white text-sm rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Schließen
+                </button>
+              </div>
+              
+              {/* Mini Phase Preview - Compact with names */}
+              <div className="grid grid-cols-4 gap-1">
+                {bilder.map((bild) => (
+                  <div 
+                    key={bild.id}
+                    className={`py-1 px-1 rounded text-center text-[10px] font-medium border ${
+                      droppedFrames[bild.id] 
+                        ? "border-green-500 bg-green-500/20 text-green-400" 
+                        : "border-zinc-600 bg-zinc-800 text-zinc-500"
+                    }`}
+                  >
+                    {droppedFrames[bild.id] ? "✓ " : ""}{bild.title.replace(/^\d+\.\s*/, '')}
+                  </div>
+                ))}
               </div>
             </div>
             
-            {/* Video Recorder Content */}
-            <div className="overflow-y-auto p-4" style={{ height: "calc(100vh - 120px)" }}>
+            {/* Video Recorder Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-3">
               <VideoRecorder
                 onFrameCaptured={handleFrameCaptured}
                 savedFrames={capturedFrames}
                 onDeleteFrame={handleDeleteFrame}
                 onAssignFrame={(phaseId, frame) => {
                   handleDropFrame(phaseId, frame);
-                  // Optional: Auto-close after all phases are assigned
-                  // if (Object.keys(droppedFrames).length >= 3) {
-                  //   setShowVideoRecorder(false);
-                  // }
                 }}
               />
             </div>
