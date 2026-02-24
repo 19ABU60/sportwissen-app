@@ -162,11 +162,63 @@ export function VideoRecorder({
 
   const handleSeek = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     if (playbackRef.current) {
       playbackRef.current.currentTime = percent * duration;
+      setCurrentTime(percent * duration);
     }
   };
+
+  // Slider drag state
+  const [isDragging, setIsDragging] = useState(false);
+  const sliderRef = useRef(null);
+
+  const handleSliderStart = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+    if (playbackRef.current && isPlaying) {
+      playbackRef.current.pause();
+      setIsPlaying(false);
+    }
+    handleSeek(e);
+  };
+
+  const handleSliderMove = (e) => {
+    if (!isDragging || !sliderRef.current) return;
+    e.preventDefault();
+    const rect = sliderRef.current.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    if (playbackRef.current) {
+      playbackRef.current.currentTime = percent * duration;
+      setCurrentTime(percent * duration);
+    }
+  };
+
+  const handleSliderEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Add global listeners for drag
+  useEffect(() => {
+    if (isDragging) {
+      const handleGlobalMove = (e) => handleSliderMove(e);
+      const handleGlobalEnd = () => handleSliderEnd();
+      
+      window.addEventListener('mousemove', handleGlobalMove);
+      window.addEventListener('mouseup', handleGlobalEnd);
+      window.addEventListener('touchmove', handleGlobalMove, { passive: false });
+      window.addEventListener('touchend', handleGlobalEnd);
+      
+      return () => {
+        window.removeEventListener('mousemove', handleGlobalMove);
+        window.removeEventListener('mouseup', handleGlobalEnd);
+        window.removeEventListener('touchmove', handleGlobalMove);
+        window.removeEventListener('touchend', handleGlobalEnd);
+      };
+    }
+  }, [isDragging, duration]);
 
   const stepFrame = (direction) => {
     if (!playbackRef.current) return;
