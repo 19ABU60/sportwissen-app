@@ -86,11 +86,6 @@ export default function OBrien() {
             Zurück: 4. Stoß
           </Button>
         </Link>
-        <Link to="/">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            Zur Übersicht
-          </Button>
-        </Link>
       </motion.div>
     </div>
   );
