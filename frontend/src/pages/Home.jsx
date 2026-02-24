@@ -88,17 +88,17 @@ export default function Home() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-row gap-6 items-start">
-          {/* Bild links - für Tablet optimiert */}
+          {/* Einstein Bild links */}
           <div className="w-32 md:w-40 lg:w-48 flex-shrink-0">
-            <div className="aspect-[3/4] rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 cursor-pointer hover:scale-105 transition-transform">
+            <div className="aspect-[3/4] rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800">
               <img 
-                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80"
-                alt="Kugelstoßen Demonstration"
+                src="https://static.prod-images.emergentagent.com/jobs/435d1218-a264-469a-a09f-82ca5e0ec0f2/images/9b0b65165a055b4ef0a97be2179d4d6fcd92d174c485a9932800a6b8375a8db9.png"
+                alt="Einstein als Kugelstoßer"
                 className="w-full h-full object-cover"
               />
             </div>
-            <p className="text-xs text-zinc-500 text-center mt-2">
-              Platzhalter
+            <p className="text-xs text-zinc-400 text-center mt-2 italic">
+              "Es ist alles nur Mathematik!"
             </p>
           </div>
 
