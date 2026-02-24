@@ -129,7 +129,9 @@ function PhaseWindow({
           isDragOver 
             ? "border-blue-500 bg-blue-500/10" 
             : droppedFrame 
-              ? "border-green-500" 
+              ? droppedFrame.saved 
+                ? "border-blue-500" 
+                : "border-green-500" 
               : "border-zinc-700"
         }`}
         onDragOver={handleDragOver}
@@ -145,9 +147,11 @@ function PhaseWindow({
                 alt={bild.title}
                 className="w-full h-full object-cover"
               />
-              {/* Success indicator */}
-              <div className="absolute top-1 left-1 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded">
-                ✓ Zugewiesen
+              {/* Status indicator */}
+              <div className={`absolute top-1 left-1 text-white text-[10px] px-1.5 py-0.5 rounded ${
+                droppedFrame.saved ? "bg-blue-500" : "bg-green-500"
+              }`}>
+                {droppedFrame.saved ? "✓ Gespeichert" : "✓ Zugewiesen"}
               </div>
               {/* Overlay Actions - always visible on touch */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 flex justify-center gap-2">
@@ -165,6 +169,15 @@ function PhaseWindow({
                 >
                   <Edit3 className="w-4 h-4 text-white" />
                 </button>
+                {!droppedFrame.saved && (
+                  <button
+                    onClick={() => onSave(bild.id, droppedFrame)}
+                    className="p-2 bg-green-500/80 backdrop-blur-sm rounded-full hover:bg-green-500"
+                    title="Speichern"
+                  >
+                    <Save className="w-4 h-4 text-white" />
+                  </button>
+                )}
                 <button
                   onClick={() => onClear(bild.id)}
                   className="p-2 bg-red-500/80 backdrop-blur-sm rounded-full hover:bg-red-500"
