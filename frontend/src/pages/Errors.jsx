@@ -398,6 +398,7 @@ export default function Errors() {
             onDrop={handleDropFrame}
             onClear={handleClearFrame}
             onAnalyze={handleAnalyze}
+            onSave={handleSaveFrame}
           />
         ))}
       </motion.div>
