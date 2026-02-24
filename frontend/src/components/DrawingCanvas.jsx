@@ -308,6 +308,23 @@ export function DrawingCanvas({
   };
 
   const handleStart = (pos) => {
+    // For freeAngle tool: check if we're adding second line
+    if (tool === "freeAngle" && freeAngleFirstLine) {
+      // Start drawing second line from the vertex (endpoint of first line)
+      setIsDrawing(true);
+      setCurrentDrawing({
+        type: "freeAngle",
+        x: freeAngleFirstLine.x,
+        y: freeAngleFirstLine.y,
+        x2: freeAngleFirstLine.x2,
+        y2: freeAngleFirstLine.y2,
+        x3: pos.x,
+        y3: pos.y,
+        color: color
+      });
+      return;
+    }
+    
     setIsDrawing(true);
     setCurrentDrawing({
       type: tool,
@@ -321,6 +338,17 @@ export function DrawingCanvas({
 
   const handleMove = (pos) => {
     if (!isDrawing || !currentDrawing) return;
+    
+    // For freeAngle with second line being drawn
+    if (currentDrawing.type === "freeAngle" && currentDrawing.x3 !== undefined) {
+      setCurrentDrawing({
+        ...currentDrawing,
+        x3: pos.x,
+        y3: pos.y
+      });
+      return;
+    }
+    
     setCurrentDrawing({
       ...currentDrawing,
       x2: pos.x,
@@ -330,12 +358,32 @@ export function DrawingCanvas({
 
   const handleEnd = () => {
     if (currentDrawing) {
-      // Only save if shape has some size
       const minSize = 5;
       const dx = Math.abs(currentDrawing.x2 - currentDrawing.x);
       const dy = Math.abs(currentDrawing.y2 - currentDrawing.y);
-      if (dx > minSize || dy > minSize) {
-        setDrawings([...drawings, currentDrawing]);
+      
+      // For freeAngle tool
+      if (currentDrawing.type === "freeAngle") {
+        // If this is the first line (no x3/y3 yet)
+        if (currentDrawing.x3 === undefined) {
+          if (dx > minSize || dy > minSize) {
+            // Save first line and wait for second
+            setFreeAngleFirstLine(currentDrawing);
+          }
+        } else {
+          // This is the complete angle (both lines)
+          const dx3 = Math.abs(currentDrawing.x3 - currentDrawing.x2);
+          const dy3 = Math.abs(currentDrawing.y3 - currentDrawing.y2);
+          if (dx3 > minSize || dy3 > minSize) {
+            setDrawings([...drawings, currentDrawing]);
+          }
+          setFreeAngleFirstLine(null);
+        }
+      } else {
+        // Normal tools
+        if (dx > minSize || dy > minSize) {
+          setDrawings([...drawings, currentDrawing]);
+        }
       }
     }
     setIsDrawing(false);
