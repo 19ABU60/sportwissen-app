@@ -11,6 +11,7 @@ import Angleiten from "@/pages/Angleiten";
 import Videos from "@/pages/Videos";
 import OBrien from "@/pages/OBrien";
 import Errors from "@/pages/Errors";
+import MediaLibrary from "@/pages/MediaLibrary";
 
 // Components
 import Header from "@/components/Header";
@@ -31,6 +32,7 @@ function App() {
             <Route path="/videos" element={<Videos />} />
             <Route path="/obrien" element={<OBrien />} />
             <Route path="/fehler" element={<Errors />} />
+            <Route path="/medien" element={<MediaLibrary />} />
           </Routes>
         </main>
         <Footer />
