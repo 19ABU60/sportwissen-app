@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Circle, Minus, Eraser, RotateCcw, Eye, EyeOff, 
-  MousePointer, Pencil, ChevronDown, Triangle, Compass
+  MousePointer, ArrowUpRight, ChevronDown, Triangle, Compass
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Lightbox } from "./Lightbox";
@@ -17,7 +17,7 @@ const COLORS = [
 const TOOLS = [
   { id: "circle", name: "Kreis", icon: Circle },
   { id: "line", name: "Linie", icon: Minus },
-  { id: "arrow", name: "Pfeil", icon: Pencil },
+  { id: "arrow", name: "Pfeil", icon: ArrowUpRight },
   { id: "angle", name: "Winkel zur Horizontalen", icon: Triangle },
   { id: "freeAngle", name: "Freier Winkel (2 Linien)", icon: Compass },
 ];
