@@ -532,41 +532,106 @@ export function VideoRecorder({
       {/* Captured Frames Gallery */}
       {capturedFrames.length > 0 && (
         <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4">
-          <h3 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-200 mb-3">
-            Aufgenommene Standbilder ({capturedFrames.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-oswald text-sm font-semibold uppercase tracking-wide text-zinc-200">
+              Aufgenommene Standbilder ({capturedFrames.length})
+            </h3>
+            {selectedFrame && (
+              <button
+                onClick={() => setSelectedFrame(null)}
+                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1"
+              >
+                <X className="w-3 h-3" />
+                Auswahl aufheben
+              </button>
+            )}
+          </div>
+          
           <p className="text-xs text-zinc-400 mb-3">
-            Ziehen Sie ein Standbild in eines der Phasen-Fenster oben
+            <ArrowUp className="w-3 h-3 inline mr-1" />
+            Tippen Sie auf ein Standbild und wählen Sie die Ziel-Phase
           </p>
           
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {capturedFrames.map((frame) => (
               <div 
                 key={frame.id}
-                className="relative group aspect-video bg-zinc-900 rounded-lg overflow-hidden cursor-grab"
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.setData('application/json', JSON.stringify(frame));
-                  e.dataTransfer.effectAllowed = 'copy';
-                }}
+                className={`relative rounded-lg overflow-hidden transition-all ${
+                  selectedFrame?.id === frame.id 
+                    ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-zinc-900' 
+                    : ''
+                }`}
               >
-                <img 
-                  src={frame.imageUrl} 
-                  alt={`Frame at ${frame.timestamp.toFixed(2)}s`}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1">
-                  <span className="text-[10px] text-white">{frame.timestamp.toFixed(2)}s</span>
-                </div>
-                <button
-                  onClick={() => deleteFrame(frame.id)}
-                  className="absolute top-1 right-1 p-1 bg-red-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Standbild löschen"
+                {/* Frame Image */}
+                <div 
+                  className="aspect-video bg-zinc-900 cursor-pointer"
+                  onClick={() => setSelectedFrame(selectedFrame?.id === frame.id ? null : frame)}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('application/json', JSON.stringify(frame));
+                    e.dataTransfer.effectAllowed = 'copy';
+                  }}
                 >
-                  <Trash2 className="w-3 h-3 text-white" />
-                </button>
+                  <img 
+                    src={frame.imageUrl} 
+                    alt={`Frame at ${frame.timestamp.toFixed(2)}s`}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1">
+                    <span className="text-[10px] text-white">{frame.timestamp.toFixed(2)}s</span>
+                  </div>
+                </div>
+                
+                {/* Assignment Buttons - Show when selected */}
+                <AnimatePresence>
+                  {selectedFrame?.id === frame.id && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-2 p-2"
+                    >
+                      <span className="text-[10px] text-zinc-300 mb-1">Zuweisen zu:</span>
+                      <div className="grid grid-cols-2 gap-1 w-full">
+                        {PHASES.map((phase) => (
+                          <button
+                            key={phase.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAssignToPhase(phase.id);
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] py-2 px-1 rounded font-medium transition-colors"
+                          >
+                            {phase.short}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteFrame(frame.id);
+                          setSelectedFrame(null);
+                        }}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white text-[10px] py-1.5 rounded flex items-center justify-center gap-1 mt-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Löschen
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ))}
+          </div>
+          
+          {/* Quick Assign Legend */}
+          <div className="mt-3 pt-3 border-t border-zinc-700">
+            <div className="flex flex-wrap gap-2 text-[10px] text-zinc-500">
+              <span className="font-medium text-zinc-400">Phasen:</span>
+              {PHASES.map((phase) => (
+                <span key={phase.id}>{phase.short} = {phase.title}</span>
+              ))}
+            </div>
           </div>
         </div>
       )}
