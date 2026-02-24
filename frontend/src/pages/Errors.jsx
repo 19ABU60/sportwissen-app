@@ -356,14 +356,14 @@ export default function Errors() {
         ))}
       </motion.div>
 
-      {/* Video Recorder Toggle */}
+      {/* Video Recorder Button - Opens Fullscreen */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         <button
-          onClick={() => setShowVideoRecorder(!showVideoRecorder)}
+          onClick={() => setShowVideoRecorder(true)}
           className="w-full flex items-center justify-between bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 hover:bg-blue-500/20 transition-colors mb-4"
         >
           <div className="flex items-center gap-3">
@@ -381,33 +381,86 @@ export default function Errors() {
               </p>
             </div>
           </div>
-          {showVideoRecorder ? (
-            <ChevronUp className="w-5 h-5 text-blue-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-blue-400" />
-          )}
+          <div className="flex items-center gap-2">
+            {capturedFrames.length > 0 && (
+              <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
+                {capturedFrames.length} Bilder
+              </span>
+            )}
+            <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+          </div>
         </button>
+      </motion.div>
 
-        {/* Video Recorder */}
-        <AnimatePresence>
-          {showVideoRecorder && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
+      {/* Fullscreen Video Recorder Overlay */}
+      <AnimatePresence>
+        {showVideoRecorder && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-zinc-950"
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-zinc-900 border-b border-zinc-700 px-4 py-3 flex items-center justify-between">
+              <h2 className="font-oswald text-lg font-bold text-white">
+                Video-Aufnahme & Standbild-Extraktion
+              </h2>
+              <button
+                onClick={() => setShowVideoRecorder(false)}
+                className="flex items-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Schließen
+              </button>
+            </div>
+            
+            {/* Mini Phase Preview - Shows assigned frames */}
+            <div className="bg-zinc-900/50 border-b border-zinc-700 px-4 py-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-400">Zugewiesen:</span>
+                <div className="flex gap-1">
+                  {bilder.map((bild) => (
+                    <div 
+                      key={bild.id}
+                      className={`w-10 h-10 rounded border-2 flex items-center justify-center text-xs font-bold ${
+                        droppedFrames[bild.id] 
+                          ? "border-green-500 bg-green-500/20 text-green-400" 
+                          : "border-zinc-600 bg-zinc-800 text-zinc-500"
+                      }`}
+                    >
+                      {droppedFrames[bild.id] ? "✓" : bild.id}
+                    </div>
+                  ))}
+                </div>
+                {Object.keys(droppedFrames).length > 0 && (
+                  <span className="text-xs text-green-400 ml-2">
+                    {Object.keys(droppedFrames).length} von 4 zugewiesen
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            {/* Video Recorder Content */}
+            <div className="overflow-y-auto p-4" style={{ height: "calc(100vh - 120px)" }}>
               <VideoRecorder
                 onFrameCaptured={handleFrameCaptured}
                 savedFrames={capturedFrames}
                 onDeleteFrame={handleDeleteFrame}
-                onAssignFrame={handleDropFrame}
+                onAssignFrame={(phaseId, frame) => {
+                  handleDropFrame(phaseId, frame);
+                  // Optional: Auto-close after all phases are assigned
+                  // if (Object.keys(droppedFrames).length >= 3) {
+                  //   setShowVideoRecorder(false);
+                  // }
+                }}
               />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Instructions when frames are captured */}
       {capturedFrames.length > 0 && !showVideoRecorder && (
