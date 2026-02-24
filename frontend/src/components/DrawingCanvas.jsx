@@ -417,6 +417,7 @@ export function DrawingCanvas({
   const clearAll = () => {
     setDrawings([]);
     setCurrentDrawing(null);
+    setFreeAngleFirstLine(null);
   };
 
   const undoLast = () => {
