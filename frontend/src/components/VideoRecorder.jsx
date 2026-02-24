@@ -556,6 +556,18 @@ export function VideoRecorder({
                 Auswahl aufheben
               </button>
             )}
+            {/* Clear All Button */}
+            <button
+              onClick={() => {
+                setCapturedFrames([]);
+                setSelectedFrame(null);
+                toast.success("Alle Standbilder gelöscht");
+              }}
+              className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 ml-auto"
+            >
+              <Trash2 className="w-3 h-3" />
+              Alle löschen
+            </button>
           </div>
           
           <p className="text-xs text-zinc-400 mb-3">
