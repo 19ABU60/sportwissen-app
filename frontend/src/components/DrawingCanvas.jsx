@@ -74,6 +74,11 @@ export function DrawingCanvas({
     if (currentDrawing) {
       drawShape(ctx, currentDrawing);
     }
+    
+    // Draw first line of freeAngle while waiting for second line
+    if (freeAngleFirstLine && !currentDrawing) {
+      drawShape(ctx, freeAngleFirstLine);
+    }
 
     // Draw solution if enabled
     if (showSolution && solutionMarkers.length > 0) {
@@ -81,7 +86,7 @@ export function DrawingCanvas({
         drawShape(ctx, { ...marker, isSolution: true });
       });
     }
-  }, [drawings, currentDrawing, showSolution, solutionMarkers, canvasSize]);
+  }, [drawings, currentDrawing, freeAngleFirstLine, showSolution, solutionMarkers, canvasSize]);
 
   const drawShape = (ctx, shape) => {
     ctx.strokeStyle = shape.isSolution ? "#22c55e" : shape.color;
