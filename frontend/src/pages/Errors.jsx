@@ -462,20 +462,6 @@ export default function Errors() {
         )}
       </AnimatePresence>
 
-      {/* Instructions when frames are captured */}
-      {capturedFrames.length > 0 && !showVideoRecorder && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4"
-        >
-          <p className="text-amber-300 text-sm">
-            <strong>{capturedFrames.length} Standbild(er)</strong> verfügbar. 
-            Öffnen Sie die Video-Aufnahme oben, um Standbilder in die Phasen-Fenster zu ziehen.
-          </p>
-        </motion.div>
-      )}
-
       {/* Back Button */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
