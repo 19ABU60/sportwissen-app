@@ -125,7 +125,9 @@ export function DrawingCanvas({
       );
       ctx.stroke();
     } else if (shape.type === "angle") {
-      // Draw the user's line (e.g., shoulder axis)
+      // Winkel zur Horizontalen - simplified without arc
+      
+      // Draw the user's line
       ctx.beginPath();
       ctx.moveTo(shape.x, shape.y);
       ctx.lineTo(shape.x2, shape.y2);
@@ -143,47 +145,33 @@ export function DrawingCanvas({
       
       const displayAngle = Math.abs(angleDeg).toFixed(1);
       
-      // Draw horizontal reference line (dashed)
+      // Draw horizontal reference line (dashed, subtle)
       const lineLength = Math.sqrt(dx * dx + dy * dy);
       const midX = (shape.x + shape.x2) / 2;
       const midY = (shape.y + shape.y2) / 2;
       
       ctx.save();
-      ctx.setLineDash([5, 5]);
-      ctx.strokeStyle = shape.isSolution ? "#22c55e" : "#888888";
-      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = "#666666";
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(midX - lineLength / 2, midY);
       ctx.lineTo(midX + lineLength / 2, midY);
       ctx.stroke();
       ctx.restore();
       
-      // Draw angle arc
-      const arcRadius = Math.min(40, lineLength / 3);
-      ctx.save();
-      ctx.strokeStyle = shape.isSolution ? "#22c55e" : shape.color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      if (angleDeg >= 0) {
-        ctx.arc(midX, midY, arcRadius, 0, -angleRad, true);
-      } else {
-        ctx.arc(midX, midY, arcRadius, 0, -angleRad, false);
-      }
-      ctx.stroke();
-      ctx.restore();
-      
       // Draw angle label with background
-      const labelX = midX + arcRadius + 10;
-      const labelY = midY - 5;
+      const labelX = midX + 15;
+      const labelY = midY - 10;
       const labelText = `${displayAngle}°`;
       
       ctx.save();
-      ctx.font = "bold 14px sans-serif";
+      ctx.font = "bold 16px sans-serif";
       const textWidth = ctx.measureText(labelText).width;
       
       // Background for better readability
-      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-      ctx.fillRect(labelX - 4, labelY - 14, textWidth + 8, 20);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+      ctx.fillRect(labelX - 6, labelY - 18, textWidth + 12, 26);
       
       // Text
       ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
@@ -194,12 +182,94 @@ export function DrawingCanvas({
       ctx.save();
       ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
       ctx.beginPath();
-      ctx.arc(shape.x, shape.y, 5, 0, 2 * Math.PI);
+      ctx.arc(shape.x, shape.y, 4, 0, 2 * Math.PI);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(shape.x2, shape.y2, 5, 0, 2 * Math.PI);
+      ctx.arc(shape.x2, shape.y2, 4, 0, 2 * Math.PI);
       ctx.fill();
       ctx.restore();
+      
+    } else if (shape.type === "freeAngle") {
+      // Freier Winkel - zwei Linien mit Winkelmessung
+      
+      // Draw first line
+      ctx.beginPath();
+      ctx.moveTo(shape.x, shape.y);
+      ctx.lineTo(shape.x2, shape.y2);
+      ctx.stroke();
+      
+      // Draw second line if exists
+      if (shape.x3 !== undefined && shape.y3 !== undefined) {
+        ctx.beginPath();
+        ctx.moveTo(shape.x2, shape.y2); // Start from endpoint of first line (vertex)
+        ctx.lineTo(shape.x3, shape.y3);
+        ctx.stroke();
+        
+        // Calculate angle between the two lines
+        // Vector 1: from vertex (x2,y2) to first point (x,y)
+        const v1x = shape.x - shape.x2;
+        const v1y = shape.y - shape.y2;
+        // Vector 2: from vertex (x2,y2) to second point (x3,y3)
+        const v2x = shape.x3 - shape.x2;
+        const v2y = shape.y3 - shape.y2;
+        
+        // Calculate angle using dot product
+        const dot = v1x * v2x + v1y * v2y;
+        const mag1 = Math.sqrt(v1x * v1x + v1y * v1y);
+        const mag2 = Math.sqrt(v2x * v2x + v2y * v2y);
+        
+        if (mag1 > 0 && mag2 > 0) {
+          const cosAngle = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+          const angleDeg = (Math.acos(cosAngle) * 180) / Math.PI;
+          const displayAngle = angleDeg.toFixed(1);
+          
+          // Draw angle label at vertex
+          const labelX = shape.x2 + 15;
+          const labelY = shape.y2 - 10;
+          const labelText = `${displayAngle}°`;
+          
+          ctx.save();
+          ctx.font = "bold 16px sans-serif";
+          const textWidth = ctx.measureText(labelText).width;
+          
+          // Background
+          ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+          ctx.fillRect(labelX - 6, labelY - 18, textWidth + 12, 26);
+          
+          // Text
+          ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
+          ctx.fillText(labelText, labelX, labelY);
+          ctx.restore();
+        }
+        
+        // Draw circles at all three points
+        ctx.save();
+        ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
+        [{ px: shape.x, py: shape.y }, { px: shape.x2, py: shape.y2 }, { px: shape.x3, py: shape.y3 }].forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.px, p.py, 4, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+        ctx.restore();
+      } else {
+        // Only first line drawn - show instruction
+        ctx.save();
+        ctx.font = "12px sans-serif";
+        ctx.fillStyle = shape.color;
+        ctx.fillText("2. Linie ziehen...", shape.x2 + 10, shape.y2 + 20);
+        ctx.restore();
+        
+        // Draw circles at endpoints
+        ctx.save();
+        ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
+        ctx.beginPath();
+        ctx.arc(shape.x, shape.y, 4, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(shape.x2, shape.y2, 4, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
     }
 
     // Draw label for solution
