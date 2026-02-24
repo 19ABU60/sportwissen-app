@@ -384,6 +384,7 @@ export default function Errors() {
                 onFrameCaptured={handleFrameCaptured}
                 savedFrames={capturedFrames}
                 onDeleteFrame={handleDeleteFrame}
+                onAssignFrame={handleDropFrame}
               />
             </motion.div>
           )}
