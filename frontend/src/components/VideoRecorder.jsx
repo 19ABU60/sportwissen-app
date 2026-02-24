@@ -415,19 +415,27 @@ export function VideoRecorder({
             />
           </div>
           
-          {/* Timeline Scrubber */}
+          {/* Timeline Scrubber - Draggable */}
           <div className="px-4 pt-3">
             <div 
-              className="relative h-2 bg-zinc-700 rounded-full cursor-pointer group"
-              onClick={handleSeek}
+              ref={sliderRef}
+              className="relative h-8 flex items-center cursor-pointer touch-none"
+              onMouseDown={handleSliderStart}
+              onTouchStart={handleSliderStart}
             >
+              {/* Track Background */}
+              <div className="absolute left-0 right-0 h-2 bg-zinc-700 rounded-full">
+                {/* Progress */}
+                <div 
+                  className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+                  style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+                />
+              </div>
+              
+              {/* Slider Thumb */}
               <div 
-                className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
-                style={{ width: `${(currentTime / duration) * 100}%` }}
-              />
-              <div 
-                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ left: `calc(${(currentTime / duration) * 100}% - 8px)` }}
+                className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg border-2 border-blue-500 transition-transform ${isDragging ? 'scale-125' : 'hover:scale-110'}`}
+                style={{ left: `calc(${duration > 0 ? (currentTime / duration) * 100 : 0}% - 12px)` }}
               />
             </div>
             <div className="flex justify-between text-xs text-zinc-400 mt-1">
