@@ -302,13 +302,11 @@ export default function Errors() {
   };
 
   const handleDropFrame = (phaseId, frame) => {
-    console.log("handleDropFrame called:", phaseId, frame);
     setDroppedFrames(prev => {
       const newState = {
         ...prev,
         [phaseId]: frame
       };
-      console.log("New droppedFrames state:", newState);
       return newState;
     });
   };
@@ -325,8 +323,42 @@ export default function Errors() {
     setAnalyzingPhase(phaseId);
   };
 
+  const handleSaveFrame = async (phaseId, frame) => {
+    try {
+      // Convert base64/dataURL to blob
+      const response = await fetch(frame.imageUrl);
+      const blob = await response.blob();
+      
+      // Create form data
+      const formData = new FormData();
+      const phaseName = bilder.find(b => b.id === phaseId)?.title || `phase_${phaseId}`;
+      formData.append('file', blob, `fehler_${phaseName}_${Date.now()}.jpg`);
+      formData.append('page', 'fehleranalyse');
+      formData.append('section', `fehler_phase_${phaseId}`);
+      formData.append('media_type', 'image');
+      
+      const uploadResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (uploadResponse.ok) {
+        // Mark as saved
+        setDroppedFrames(prev => ({
+          ...prev,
+          [phaseId]: { ...frame, saved: true }
+        }));
+        toast.success(`Bild "${phaseName}" gespeichert!`);
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      toast.error("Fehler beim Speichern");
+    }
+  };
+
   const handleSaveAnalysis = async () => {
-    // Here you would save the analysis to the database
     toast.success("Analyse gespeichert!");
     setAnalyzingPhase(null);
   };
