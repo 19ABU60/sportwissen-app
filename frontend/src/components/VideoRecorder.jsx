@@ -44,6 +44,17 @@ export function VideoRecorder({
   const canvasRef = useRef(null);
   const [capturedFrames, setCapturedFrames] = useState([]);
   
+  // Frame Assignment State
+  const [selectedFrame, setSelectedFrame] = useState(null);
+  
+  const handleAssignToPhase = (phaseId) => {
+    if (selectedFrame && onAssignFrame) {
+      onAssignFrame(phaseId, selectedFrame);
+      toast.success(`Standbild zu Phase ${phaseId} zugewiesen`);
+      setSelectedFrame(null);
+    }
+  };
+  
   // Check for camera support
   useEffect(() => {
     const checkCamera = async () => {
