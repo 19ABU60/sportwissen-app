@@ -120,6 +120,82 @@ export function DrawingCanvas({
         shape.y2 - headLength * Math.sin(angle + Math.PI / 6)
       );
       ctx.stroke();
+    } else if (shape.type === "angle") {
+      // Draw the user's line (e.g., shoulder axis)
+      ctx.beginPath();
+      ctx.moveTo(shape.x, shape.y);
+      ctx.lineTo(shape.x2, shape.y2);
+      ctx.stroke();
+
+      // Calculate angle to horizontal
+      const dx = shape.x2 - shape.x;
+      const dy = shape.y2 - shape.y;
+      const angleRad = Math.atan2(dy, dx);
+      let angleDeg = (angleRad * 180) / Math.PI;
+      
+      // Normalize angle to be between -90 and 90 degrees
+      if (angleDeg > 90) angleDeg = angleDeg - 180;
+      if (angleDeg < -90) angleDeg = angleDeg + 180;
+      
+      const displayAngle = Math.abs(angleDeg).toFixed(1);
+      
+      // Draw horizontal reference line (dashed)
+      const lineLength = Math.sqrt(dx * dx + dy * dy);
+      const midX = (shape.x + shape.x2) / 2;
+      const midY = (shape.y + shape.y2) / 2;
+      
+      ctx.save();
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = shape.isSolution ? "#22c55e" : "#888888";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(midX - lineLength / 2, midY);
+      ctx.lineTo(midX + lineLength / 2, midY);
+      ctx.stroke();
+      ctx.restore();
+      
+      // Draw angle arc
+      const arcRadius = Math.min(40, lineLength / 3);
+      ctx.save();
+      ctx.strokeStyle = shape.isSolution ? "#22c55e" : shape.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      if (angleDeg >= 0) {
+        ctx.arc(midX, midY, arcRadius, 0, -angleRad, true);
+      } else {
+        ctx.arc(midX, midY, arcRadius, 0, -angleRad, false);
+      }
+      ctx.stroke();
+      ctx.restore();
+      
+      // Draw angle label with background
+      const labelX = midX + arcRadius + 10;
+      const labelY = midY - 5;
+      const labelText = `${displayAngle}°`;
+      
+      ctx.save();
+      ctx.font = "bold 14px sans-serif";
+      const textWidth = ctx.measureText(labelText).width;
+      
+      // Background for better readability
+      ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      ctx.fillRect(labelX - 4, labelY - 14, textWidth + 8, 20);
+      
+      // Text
+      ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
+      ctx.fillText(labelText, labelX, labelY);
+      ctx.restore();
+      
+      // Draw small circles at endpoints
+      ctx.save();
+      ctx.fillStyle = shape.isSolution ? "#22c55e" : shape.color;
+      ctx.beginPath();
+      ctx.arc(shape.x, shape.y, 5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(shape.x2, shape.y2, 5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.restore();
     }
 
     // Draw label for solution
