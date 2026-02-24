@@ -3,16 +3,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Video, VideoOff, Circle, Square, Play, Pause, 
   Camera, Save, Trash2, Download, RotateCcw,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, X, ArrowUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+
+// Phase definitions for assignment
+const PHASES = [
+  { id: 1, title: "1. Angleiten", short: "1" },
+  { id: 2, title: "2. Stoßauslage", short: "2" },
+  { id: 3, title: "3. Dreh-Streck", short: "3" },
+  { id: 4, title: "4. Abstoß", short: "4" },
+];
 
 export function VideoRecorder({ 
   onFrameCaptured,
   onVideoSaved,
   savedFrames = [],
-  onDeleteFrame
+  onDeleteFrame,
+  onAssignFrame
 }) {
   // Camera & Recording State
   const videoRef = useRef(null);
