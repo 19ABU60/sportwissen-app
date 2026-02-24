@@ -87,6 +87,7 @@ export default function MediaLibrary() {
     "angleiten": "Angleiten",
     "ausgangsstellung": "Ausgangsstellung",
     "technique": "Stoßauslage",
+    "stossauslage": "Stoßauslage",
     "videos": "Stoß",
     "obrien": "O'Brien-Technik",
     "phasen": "Phasenstruktur"
