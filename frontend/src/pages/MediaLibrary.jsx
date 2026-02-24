@@ -25,7 +25,7 @@ export default function MediaLibrary() {
 
   const fetchMedia = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/list`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/list/all`);
       if (response.ok) {
         const data = await response.json();
         setMedia(data.media || []);
