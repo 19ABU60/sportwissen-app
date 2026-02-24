@@ -340,7 +340,7 @@ export function VideoRecorder({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Hidden canvas for frame capture */}
       <canvas ref={canvasRef} className="hidden" />
       
