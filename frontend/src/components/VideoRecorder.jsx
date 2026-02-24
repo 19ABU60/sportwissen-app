@@ -52,6 +52,8 @@ export function VideoRecorder({
       onAssignFrame(phaseId, selectedFrame);
       toast.success(`Standbild zu Phase ${phaseId} zugewiesen`);
       setSelectedFrame(null);
+      // Scroll to top to show the assigned frame
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
