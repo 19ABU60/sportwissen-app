@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Circle, Minus, Eraser, RotateCcw, Eye, EyeOff, 
-  MousePointer, Pencil, ChevronDown
+  MousePointer, Pencil, ChevronDown, Triangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Lightbox } from "./Lightbox";
@@ -18,6 +18,7 @@ const TOOLS = [
   { id: "circle", name: "Kreis", icon: Circle },
   { id: "line", name: "Linie", icon: Minus },
   { id: "arrow", name: "Pfeil", icon: Pencil },
+  { id: "angle", name: "Winkel messen", icon: Triangle },
 ];
 
 export function DrawingCanvas({ 
