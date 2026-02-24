@@ -41,6 +41,9 @@ export function DrawingCanvas({
   const [showSolution, setShowSolution] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  
+  // State for free angle tool (two-line angle)
+  const [freeAngleFirstLine, setFreeAngleFirstLine] = useState(null);
 
   // Initialize canvas size
   useEffect(() => {
