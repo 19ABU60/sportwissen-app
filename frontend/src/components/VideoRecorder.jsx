@@ -90,28 +90,41 @@ export function VideoRecorder({
     chunksRef.current = [];
     const stream = videoRef.current.srcObject;
     
-    const mediaRecorder = new MediaRecorder(stream, {
-      mimeType: 'video/webm;codecs=vp9'
-    });
+    // Check for supported MIME types (Safari/iOS uses mp4, Chrome/Firefox use webm)
+    let mimeType = 'video/mp4';
+    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+      mimeType = 'video/webm;codecs=vp9';
+    } else if (MediaRecorder.isTypeSupported('video/webm')) {
+      mimeType = 'video/webm';
+    } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+      mimeType = 'video/mp4';
+    }
     
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        chunksRef.current.push(e.data);
-      }
-    };
-    
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      setRecordedVideoUrl(url);
-      setRecordedBlob(blob);
-      stopCamera();
-    };
-    
-    mediaRecorderRef.current = mediaRecorder;
-    mediaRecorder.start(100); // Collect data every 100ms
-    setIsRecording(true);
-    toast.success("Aufnahme gestartet");
+    try {
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        setRecordedVideoUrl(url);
+        setRecordedBlob(blob);
+        stopCamera();
+      };
+      
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start(100); // Collect data every 100ms
+      setIsRecording(true);
+      toast.success("Aufnahme gestartet");
+    } catch (err) {
+      console.error("MediaRecorder error:", err);
+      toast.error("Aufnahme konnte nicht gestartet werden. Browser unterstützt diese Funktion möglicherweise nicht.");
+    }
   };
 
   // Stop recording
