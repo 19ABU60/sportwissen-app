@@ -51,9 +51,16 @@ const itemVariants = {
 };
 
 export default function Home() {
+  const [showExit, setShowExit] = useState(false);
+
   useEffect(() => {
     document.title = "SportWissen | Kugelstoßen";
   }, []);
+
+  const handleExit = () => {
+    window.close();
+    setTimeout(() => setShowExit(true), 300);
+  };
 
   const getColorClasses = (color) => {
     const colors = {
