@@ -276,6 +276,7 @@ export default function Angleiten() {
   const [merkmale, setMerkmale] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [result, setResult] = useState(null);
+  const [showSolution, setShowSolution] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -308,6 +309,7 @@ export default function Angleiten() {
         return arrayMove(items, oldIndex, newIndex);
       });
       setResult(null);
+      setShowSolution(false);
     }
   };
 
@@ -333,6 +335,19 @@ export default function Angleiten() {
     const shuffled = [...MERKMALE_DATA].sort(() => Math.random() - 0.5);
     setMerkmale(shuffled);
     setResult(null);
+    setShowSolution(false);
+  };
+
+  const revealSolution = () => {
+    // Sort merkmale according to correct order
+    const sortedMerkmale = [...MERKMALE_DATA].sort((a, b) => a.order - b.order);
+    setMerkmale(sortedMerkmale);
+    setShowSolution(true);
+    setResult({
+      is_correct: true,
+      message: "Lösung angezeigt - so ist die richtige Reihenfolge!"
+    });
+    toast.success("Lösung wird angezeigt!");
   };
 
   const activeMerkmal = activeId ? merkmale.find((m) => m.id === activeId) : null;
