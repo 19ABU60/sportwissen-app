@@ -111,8 +111,6 @@ export function MediaUpload({
   const handleDelete = async () => {
     if (!media?.id) return;
 
-    if (!confirm("Möchten Sie dieses Medium wirklich löschen?")) return;
-
     try {
       const response = await fetch(`${API_URL}/api/media/${media.id}`, {
         method: "DELETE",
@@ -121,7 +119,10 @@ export function MediaUpload({
       if (response.ok) {
         setMedia(null);
         onMediaChange?.(null);
+        setShowDeleteConfirm(false);
         toast.success("Medium erfolgreich gelöscht");
+      } else {
+        throw new Error("Delete failed");
       }
     } catch (error) {
       console.error("Delete error:", error);
