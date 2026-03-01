@@ -440,7 +440,6 @@ async def copy_media(request: CopyMediaRequest):
         raise HTTPException(status_code=404, detail="Quelldatei nicht gefunden")
     
     # Generate new filename
-    import shutil
     ext = source_file.suffix
     new_filename = f"{request.target_page}_{request.target_section}_{uuid.uuid4().hex[:8]}{ext}"
     new_file = UPLOAD_DIR / new_filename
