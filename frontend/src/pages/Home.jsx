@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen,
   Target,
-  Award
+  Award,
+  LogOut
 } from "lucide-react";
 
 // Die 3 didaktischen Hauptaspekte
