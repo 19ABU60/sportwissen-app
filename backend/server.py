@@ -407,6 +407,67 @@ async def delete_media(media_id: str):
     return {"success": True, "message": "Medium erfolgreich gelöscht"}
 
 
+class CopyMediaRequest(BaseModel):
+    source_id: str
+    target_page: str
+    target_section: str
+
+
+@api_router.post("/media/copy")
+async def copy_media(request: CopyMediaRequest):
+    """Copy a media item to a different page/section"""
+    # Find source media
+    source = await db.media.find_one({"id": request.source_id})
+    if not source:
+        raise HTTPException(status_code=404, detail="Quell-Medium nicht gefunden")
+    
+    # Check if target already has media
+    existing = await db.media.find_one({
+        "page": request.target_page, 
+        "section": request.target_section
+    })
+    
+    if existing:
+        # Delete existing media at target
+        old_file = UPLOAD_DIR / existing.get("filename", "")
+        if old_file.exists():
+            old_file.unlink()
+        await db.media.delete_one({"id": existing["id"]})
+    
+    # Copy the file
+    source_file = UPLOAD_DIR / source.get("filename", "")
+    if not source_file.exists():
+        raise HTTPException(status_code=404, detail="Quelldatei nicht gefunden")
+    
+    # Generate new filename
+    import shutil
+    ext = source_file.suffix
+    new_filename = f"{request.target_page}_{request.target_section}_{uuid.uuid4().hex[:8]}{ext}"
+    new_file = UPLOAD_DIR / new_filename
+    
+    shutil.copy2(source_file, new_file)
+    
+    # Create new media entry
+    new_media = {
+        "id": str(uuid.uuid4()),
+        "page": request.target_page,
+        "section": request.target_section,
+        "media_type": source.get("media_type", "image"),
+        "filename": new_filename,
+        "original_name": source.get("original_name", ""),
+        "url": f"/api/uploads/{new_filename}",
+        "uploaded_at": datetime.now().isoformat(),
+        "is_default": False
+    }
+    
+    await db.media.insert_one(new_media)
+    
+    # Remove _id for response
+    new_media.pop("_id", None)
+    
+    return {"success": True, "media": new_media, "message": "Medium erfolgreich kopiert"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
