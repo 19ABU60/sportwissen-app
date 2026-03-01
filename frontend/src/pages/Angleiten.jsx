@@ -486,9 +486,20 @@ export default function Angleiten() {
                       data-testid="check-merkmale-btn"
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-oswald uppercase tracking-wider text-sm"
                       size="sm"
+                      disabled={showSolution}
                     >
                       <Check className="w-4 h-4 mr-2" />
                       Überprüfen
+                    </Button>
+                    <Button
+                      onClick={revealSolution}
+                      variant="outline"
+                      data-testid="solution-merkmale-btn"
+                      className="border-amber-600 hover:bg-amber-600/20 text-amber-400"
+                      size="sm"
+                      disabled={showSolution}
+                    >
+                      Lösung
                     </Button>
                     <Button
                       onClick={resetExercise}
