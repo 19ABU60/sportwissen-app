@@ -298,8 +298,16 @@ export default function MediaLibrary() {
                                 </a>
                               )}
                               <button
+                                onClick={() => setCopyModal(item)}
+                                className="p-1 bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white rounded transition-colors"
+                                title="Kopieren nach..."
+                              >
+                                <Copy className="w-3 h-3" />
+                              </button>
+                              <button
                                 onClick={() => setDeleteConfirm(item)}
                                 className="p-1 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded transition-colors"
+                                title="Löschen"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
