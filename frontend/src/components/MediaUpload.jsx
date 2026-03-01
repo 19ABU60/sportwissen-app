@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, Image, Video, Trash2, ZoomIn, Loader2 } from "lucide-react";
+import { Upload, X, Image, Video, Trash2, ZoomIn, Loader2, FolderOpen, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Lightbox } from "./Lightbox";
@@ -20,6 +20,9 @@ export function MediaUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [libraryMedia, setLibraryMedia] = useState([]);
+  const [loadingLibrary, setLoadingLibrary] = useState(false);
   const fileInputRef = useRef(null);
 
   // Fetch existing media on mount
