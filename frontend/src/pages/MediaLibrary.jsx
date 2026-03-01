@@ -379,6 +379,73 @@ export default function MediaLibrary() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Copy Modal */}
+      <AnimatePresence>
+        {copyModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+            onClick={() => setCopyModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-900 rounded-xl p-4 max-w-md w-full border border-zinc-700 max-h-[80vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-oswald text-lg font-bold text-white">
+                  Kopieren nach...
+                </h3>
+                <button
+                  onClick={() => setCopyModal(null)}
+                  className="p-1 hover:bg-zinc-700 rounded"
+                >
+                  <X className="w-5 h-5 text-zinc-400" />
+                </button>
+              </div>
+              
+              <p className="text-zinc-400 text-sm mb-4">
+                <span className="text-white font-medium">{copyModal.filename}</span>
+                <br />
+                <span className="text-xs">Typ: {copyModal.media_type === "video" ? "Video" : "Bild"}</span>
+              </p>
+              
+              <div className="text-xs text-zinc-500 mb-2">Ziel auswählen:</div>
+              
+              <div className="overflow-y-auto flex-1 space-y-1">
+                {COPY_DESTINATIONS
+                  .filter(dest => dest.type === copyModal.media_type || dest.type === "both")
+                  .map((dest, index) => (
+                    <button
+                      key={index}
+                      onClick={() => copyMediaTo(copyModal, dest)}
+                      className="w-full flex items-center justify-between p-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-left"
+                    >
+                      <span className="text-sm text-zinc-200">{dest.label}</span>
+                      <ArrowRight className="w-4 h-4 text-zinc-500" />
+                    </button>
+                  ))
+                }
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-zinc-700">
+                <Button
+                  onClick={() => setCopyModal(null)}
+                  variant="outline"
+                  className="w-full border-zinc-600"
+                >
+                  Abbrechen
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
