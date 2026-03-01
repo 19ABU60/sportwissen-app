@@ -1,29 +1,25 @@
 version: '3.8'
 
 services:
-  # Frontend (React)
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
       args:
         - REACT_APP_BACKEND_URL=${DOMAIN_URL}
-    image: sportwissen-frontend:latest
     container_name: sportwissen-frontend
     restart: unless-stopped
-    expose:
-      - "80"
+    ports:
+      - "8080:80"
     depends_on:
       - backend
     networks:
       - sportwissen-network
 
-  # Backend (FastAPI)
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    image: sportwissen-backend:latest
     container_name: sportwissen-backend
     restart: unless-stopped
     environment:
