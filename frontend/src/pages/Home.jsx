@@ -172,6 +172,54 @@ export default function Home() {
           Die Lern-App thematisiert ausgewählte didaktisch-methodische Inhalte des Vermittlungsprozesses – von der Reduktion zur Zieltechnik!
         </p>
       </motion.div>
+
+      {/* Beenden Button */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="flex justify-center"
+      >
+        <button
+          onClick={handleExit}
+          className="flex items-center gap-2 px-6 py-3 bg-zinc-800/50 border border-zinc-700 hover:bg-red-500/10 hover:border-red-500/30 text-zinc-400 hover:text-red-400 rounded-xl transition-all duration-300"
+          data-testid="exit-app-btn"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="text-sm font-medium">App beenden</span>
+        </button>
+      </motion.div>
+
+      {/* Exit Screen */}
+      <AnimatePresence>
+        {showExit && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-zinc-950 flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-center max-w-sm"
+            >
+              <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                <LogOut className="w-8 h-8 text-amber-500" />
+              </div>
+              <h2 className="font-oswald text-2xl font-bold text-white mb-2">Sitzung beendet</h2>
+              <p className="text-zinc-400 text-sm mb-6">Sie können dieses Fenster jetzt schließen.</p>
+              <button
+                onClick={() => setShowExit(false)}
+                className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm rounded-lg transition-colors"
+                data-testid="back-to-app-btn"
+              >
+                Zurück zur App
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
