@@ -3,11 +3,27 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Trash2, Video, Image as ImageIcon, 
-  Download, ChevronDown, ChevronUp, Folder, X
+  Download, ChevronDown, ChevronUp, Folder, X, Copy, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Lightbox } from "@/components/Lightbox";
 import { toast } from "sonner";
+
+// Target destinations for copying media
+const COPY_DESTINATIONS = [
+  { page: "phasen", section: "phase1", label: "Phasenstruktur - Phase 1", type: "image" },
+  { page: "phasen", section: "phase2", label: "Phasenstruktur - Phase 2", type: "image" },
+  { page: "phasen", section: "phase3", label: "Phasenstruktur - Phase 3", type: "image" },
+  { page: "phasen", section: "phase4", label: "Phasenstruktur - Phase 4", type: "image" },
+  { page: "ausgangsstellung", section: "hauptbild", label: "Ausgangsstellung - Hauptbild", type: "image" },
+  { page: "angleiten", section: "nachstellschritt", label: "Angleiten - Video Nachstellschritt", type: "video" },
+  { page: "angleiten", section: "obrien-angleiten", label: "Angleiten - Video O'Brien", type: "video" },
+  { page: "stossauslage", section: "hauptbild", label: "Stoßauslage - Hauptbild", type: "image" },
+  { page: "videos", section: "stossphase", label: "4. Stoß - Video Stoßphase", type: "video" },
+  { page: "videos", section: "zeitlupe", label: "4. Stoß - Video Zeitlupe", type: "video" },
+  { page: "obrien", section: "technik1", label: "O'Brien - Bild 1", type: "image" },
+  { page: "obrien", section: "technik2", label: "O'Brien - Bild 2", type: "image" },
+];
 
 export default function MediaLibrary() {
   const [media, setMedia] = useState([]);
@@ -17,6 +33,7 @@ export default function MediaLibrary() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [showLightbox, setShowLightbox] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [copyModal, setCopyModal] = useState(null); // Media item to copy
 
   useEffect(() => {
     document.title = "Medienverwaltung | SportWissen";
@@ -35,6 +52,31 @@ export default function MediaLibrary() {
       toast.error("Fehler beim Laden der Medien");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const copyMediaTo = async (mediaItem, destination) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/copy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source_id: mediaItem.id,
+          target_page: destination.page,
+          target_section: destination.section
+        })
+      });
+      
+      if (response.ok) {
+        toast.success(`Medium kopiert nach "${destination.label}"`);
+        setCopyModal(null);
+        fetchMedia(); // Refresh list
+      } else {
+        throw new Error("Copy failed");
+      }
+    } catch (err) {
+      console.error("Copy error:", err);
+      toast.error("Fehler beim Kopieren");
     }
   };
 
