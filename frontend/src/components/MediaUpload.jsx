@@ -384,6 +384,49 @@ export function MediaUpload({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-900 rounded-xl p-6 max-w-sm w-full border border-zinc-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="font-oswald text-lg font-bold text-white mb-2">
+                Medium löschen?
+              </h3>
+              <p className="text-zinc-400 text-sm mb-4">
+                Möchten Sie dieses Medium wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  variant="outline"
+                  className="flex-1 border-zinc-600"
+                >
+                  Abbrechen
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                >
+                  Löschen
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
