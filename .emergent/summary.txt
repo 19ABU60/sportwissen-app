@@ -7,110 +7,133 @@ The user, a sports teacher in Germany, wants to create a series of modern web ap
     1.  **Phase Structure:** Interactive exercises on movement phases.
     2.  **Technique Characteristics:** Displaying images with descriptions and interactive analysis.
     3.  **Videos:** Integration of technique videos.
-    4.  **Error Analysis:** Identifying common mistakes.
+    4.  **Error Analysis:** Identifying common mistakes via video recording, frame extraction, and on-image drawing.
     5.  **Methodical Exercises:** Series of drills.
 - **Technical Specifications:**
     - Modern, appealing dark theme.
     - Fully responsive, with a focus on tablets (iPad).
-    - Interactive elements (Drag & Drop, Drawing Canvas).
-    - A media upload system allowing the admin (and potentially users) to add/update images and videos.
+    - Interactive elements (Drag & Drop, Drawing Canvas with angle measurement).
+    - A comprehensive media management system (upload, library, copy/move, delete).
+    - A video recording tool to capture, extract frames, and assign them for analysis.
 
-**User's preferred language**: German. The user consistently communicates in German. All responses MUST be in German.
+**User's preferred language**: German. The user consistently communicates in German. All agent responses MUST be in German.
 
 **what currently exists?**
-A full-stack application with a React frontend and a FastAPI backend. A significant feature is the media management system, which uses a MongoDB database to allow for persistent uploading, updating, and deleting of images and videos across the app. Another key feature is an interactive drawing canvas on the Stoßauslage page, where users can draw on images to identify technique characteristics, complete with a toolbar and a show solution function. Nearly all pages have been refactored to use this new media system, providing a consistent look and feel.
+A feature-rich, full-stack application with a React frontend and a FastAPI backend using MongoDB. Key features include:
+-   **Media Management:** A full-fledged media library () to view, manage, and delete all uploaded content. Users can also populate empty media slots directly from this library.
+-   **Video Analysis Tool:** On the Fehlerbilder page, a sophisticated tool allows users to record video using their device's camera, play it back with a slider, extract still frames, and assign them to different analysis windows. This tool runs in a full-screen overlay for a better mobile/tablet experience.
+-   **Interactive Drawing Canvas:** The drawing tool on the Technique page has been enhanced with two angle measurement tools (angle to horizontal and a free two-line angle measure).
+-   The application has been extensively refined through numerous small UI/UX fixes and feature additions based on direct user feedback.
+-   Docker configuration files (, ) and a deployment guide have been created to prepare the application for hosting on the user's external VPS.
 
 **Last working item**:
--   **Last item agent was working:** The agent was about to implement a series of UI changes on the Fehlerbilder (Error Images) page, as requested by the user. This involves changing the page title, making the images smaller, updating their labels, and adding placeholder dropdown menus under each image.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?**  tool to visually verify the new layout of the  page after the changes are made.
--   **User Testing Done:** N
+-   **Last item agent was working:** Guiding the user through deploying the application to their Hostinger VPS using the pre-installed Coolify panel. The agent correctly diagnosed that Coolify needed to use the  file and that the app's GitHub repository needed to be public. The final deployment attempt failed because the  file was missing from the GitHub repository.
+-   **Status:** BLOCKED
+-   **Agent Testing Done:** N/A
+-   **Which testing method agent to use?** N/A. The task is to guide the user through a manual deployment process. The next step is to have the user update their GitHub repository.
+-   **User Testing Done:** N/A
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Implement UI changes for the Fehlerbilder page (P0)**
-    -   **Description:** The user requested several changes to the  page (). The previous agent acknowledged the request but has not yet implemented the code changes.
-    -   **Status:** NOT STARTED
+-   **Issue 1: Failed Deployment on User's Hostinger VPS (P0)**
+    -   **Description:** The user is trying to deploy the application to their Hostinger VPS using the Coolify dashboard. The deployment is failing because the GitHub repository that Coolify is pulling from is incomplete.
+    -   **Status:** BLOCKED
+    -   **Attempted fixes:**
+        1.  Initial attempt using Coolify's Public Repository feature failed because the app requires a  setup.
+        2.  Switched to Docker Compose in Coolify. This failed because the user's GitHub repository was private.
+        3.  User made the repository public. The deployment failed again with the error , indicating the repo is missing files.
     -   **Next debug checklist:**
-        1.  Edit .
-        2.  Change the main  title to Fehlerbilder erkennen und Bewegungshilfen ableiten and remove the Übersicht breadcrumb link.
-        3.  Adjust Tailwind CSS classes to make the four images smaller.
-        4.  Update the  for each of the four  components to: 1. Angleiten, 2. Stoßauslage, 3. Dreh-Streck-Bewegung, 4. Abstoß.
-        5.  Below each of the four images, add a new small dropdown/select component as a placeholder for future content.
-    -   **File Reference:** .
-    -   **Why fix this issue and what will be achieved with the fix?** To fulfill the user's direct request for a more refined and functional UI for the error analysis section.
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+        1.  Confirm that all necessary files, especially , exist in the agent's workspace.
+        2.  Instruct the user to use the Save to GitHub feature one more time. This will sync the complete project, including the missing  and other deployment files, to their  repository.
+        3.  After the user confirms the sync is complete, instruct them to return to the Coolify dashboard and click the Deploy button on the existing Docker Compose service.
+        4.  If it fails again, ask the user to provide the new logs from Coolify to diagnose the next issue.
+    -   **Why fix this issue and what will be achieved with the fix?** This is the final step to get the application running on the user's own hosting infrastructure, fulfilling their goal of self-hosting for DSGVO (GDPR) compliance.
+    -   **Should Test frontend/backend/both after fix?** Post-deployment, the entire application will need to be tested by the user accessing the public IP/domain.
 
 **In progress Task List**:
--   **Task 1: Complete the refactoring of the Fehlerbilder page.**
-    -   **Where to resume:** The agent has a clear list of UI changes to implement in . The next step is to apply these changes to the file.
-    -   **What will be achieved with this?** The Fehlerbilder page will match the user's specific design and functional requirements.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend.
+-   None. The deployment issue is the sole focus.
 
 **Upcoming and Future Tasks**
--   **Upcoming Tasks:**
-    -   **P1: Populate Dropdowns on Fehlerbilder page:** Once the user provides the content, fill the new dropdowns under each error image with the three specific error categories for each phase.
 -   **Future Tasks:**
-    -   **Student Media Uploads:** Implement the user's idea of allowing end-users (students) to upload their own media. This would likely require a user session/account system to distinguish student content from admin content.
-    -   **App Template:** Solidify the current app's structure into a reusable template for creating apps for other sports disciplines.
+    -   **Video Trimming:** A user-requested feature to implement a video editor to shorten clips from the media library.
+    -   **Student Media Uploads:** The user's idea to add accounts for students to upload their own media for analysis.
+    -   **App Template:** Generalize the app's structure into a reusable template for other sports.
+    -   **New Video App:** The user expressed a strong interest in a follow-up project: a universal video-analysis app for school, university, and professional sports.
 
 **Completed work in this session**
--   **Media Upload System:** Implemented a full-stack solution for uploading, storing (in MongoDB), and managing images and videos throughout the app using a reusable  component.
--   **Image Zoom (Lightbox):** Added a feature to view images in a full-screen overlay, integrated into the media component.
--   **Interactive Drawing Canvas:** On the Stoßauslage page, replaced a simple exercise with a feature-rich drawing tool that allows users to mark up images. It includes a toolbar (shapes, colors, eraser), a show solution overlay, and a task list in a dropdown menu.
--   **Extensive UI Refactoring:** Systematically updated every page (, , , , , , ) to use the new  component and refined layouts, titles, and text based on iterative user feedback.
--   **Bug Fixes & Polish:**
-    -   Resolved a critical CSS bug where  was incorrectly rendering ß as SS.
-    -   Fixed video player controls being obscured by hover buttons.
-    -   Corrected terminology across the app (e.g., Abwurf to Abstoß).
-    -   Increased drawing line thickness for better visibility.
+-   **Deployment Preparation:** Created  for frontend/backend, , , and a detailed  to guide the user.
+-   **Advanced Drawing Tools:** Added Angle to Horizontal and Free Angle (two-line) measurement tools to the drawing canvas.
+-   **Video Recording & Analysis Workflow:**
+    -   Implemented a video recording feature using the device camera ( for iOS compatibility).
+    -   Created a player with a precision slider for scrubbing.
+    -   Implemented still-frame extraction from the recorded video.
+    -   Created a Tap-to-Assign UX to move still frames into analysis windows, replacing impractical drag-and-drop on tablets.
+    -   Refactored the entire tool into a full-screen overlay for superior mobile UX.
+-   **Media Library Enhancements:**
+    -   Created a new  page to list, filter, and delete all persistently stored media.
+    -   Added a Copy from Library feature, allowing users to populate any empty media slot directly from a modal showing available library content.
+    -   Added a Save button to persist analyzed/drawn-on images from the Fehlerbilder page back to the library.
+-   **UI/UX Refinements:**
+    -   Added a Show Solution button to an interactive exercise.
+    -   Replaced the unreliable browser  with a custom modal for delete actions.
+    -   Cleaned up UI by removing redundant links and adding a humorous Einstein placeholder image per user request.
+    -   Moved the Medienverwaltung link to the main header dropdown for global access.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Router, Tailwind CSS, , HTML5 Canvas API.
+-   **Frontend:** React, React Router, Tailwind CSS, , HTML5 Canvas API, .
 -   **Backend:** FastAPI (Python), Motor (async MongoDB driver).
--   **Database:** MongoDB for storing media metadata.
+-   **Database:** MongoDB.
 -   **File Storage:** Local filesystem storage in .
+-   **Deployment:** Docker, Docker Compose, Nginx, Coolify.
 
 **key DB schema**
--   ** collection:** 
+-   ** collection:**  (The  key is implicitly used for permanently saved items).
 
 **changes in tech stack**
--   **MongoDB Integration:** The backend was upgraded from serving static data to using MongoDB (via the  driver) to provide a persistent data layer for media files.
+-   Introduced Docker, Docker Compose, and Nginx for deployment purposes.
 
 **All files of reference**
--   : Contains the FastAPI app, MongoDB logic, and all API endpoints for media management.
--   : The core frontend component for all image and video content.
--   : The component for the interactive drawing feature.
--   : The page that hosts the .
--   : The current page being modified.
+-   : Defines the services for deployment in Coolify.
+-   : Builds the production React frontend with Nginx.
+-   : Builds the FastAPI backend.
+-   : Nginx config for serving the React app.
+-   : The step-by-step guide created for the user.
+-   : The main page hosting the video analysis workflow.
+-   : The component for the camera, recording, and frame extraction.
+-   : The core component, updated to support choosing from the library.
+-   : The page for managing all saved media.
 
 **Critical Info for New Agent**
 -   **Communicate in German.** This is mandatory.
--   **Iterative Workflow:** The user provides detailed feedback page by page. Implement a feature, show it to the user, and expect to refine it immediately. Do not move on until the user is satisfied.
--   **Immediate Task:** Your first priority is to complete the user's requests for the Fehlerbilder page () as detailed in the Pending/In progress Issue list.
+-   **TOP PRIORITY:** The user is blocked on deploying their application. Your immediate and only goal is to help them resolve the Coolify deployment failure.
+-   **The Plan:** The user's GitHub repo () is missing  and potentially other files. You must guide the user to click Save to GitHub again in the Emergent UI. This will update the repo. Then, they must trigger the deployment again in Coolify.
+-   **User's Environment:**
+    -   **Hosting:** Hostinger VPS (KVM 2)
+    -   **IP Address:** 
+    -   **Deployment Panel:** Coolify
+    -   **Database:** MongoDB Atlas (existing  cluster)
+    -   **Code Source:** GitHub repo 
 
 **documents and test reports created in this job**
 -   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Change the title of the 'Errors' page to Fehlerbilder erkennen und Bewegungshilfen ableiten and remove the Übersicht breadcrumb. (PENDING)
-2.  **User:** On the 'Errors' page, make the images smaller, update labels to 1. Angleiten, 2. Stoßauslage, 3. Dreh-Streck-Bewegung, 4. Abstoß, and add a small dropdown under each image. (PENDING)
-3.  **User:** On the 'O'Brien' page, remove the descriptive subtitles. (COMPLETED)
-4.  **User:** Refactor the 'Errors' page to have 4 image upload slots. (COMPLETED)
-5.  **User:** Refactor the 'O'Brien' page to have 2 media upload slots with specific titles. (COMPLETED)
-6.  **User:** Refactor the 'Stoß' (Videos) page to use the standard, smaller media upload format. (COMPLETED)
-7.  **User:** On the 'Stoß' page, remove Phase 4, correct Stoß spelling, change the subtitle, and replace all instances of Abwurf with Abstoß. (COMPLETED)
-8.  **User:** Increase the line width in the drawing tool. (COMPLETED)
-9.  **User:** Swap the order of two tasks in the drawing tool's dropdown menu. (COMPLETED)
-10. **User:** Remove the Bilder verwalten text and shorten the dropdown title on the 'Stoßauslage' (Technique) page. (COMPLETED)
+1.  **User:** Shared screenshot of Coolify failing, asking what to do.
+2.  **Agent:** Explained the error means the GitHub repo is private and instructed user to make it public.
+3.  **User:** Shared screenshot confirming the repo is now public.
+4.  **Agent:** Acknowledged progress but noted a new error:  not found. Stated it would re-save the file and user would need to sync to GitHub again.
+5.  **User:** Asked to be walked through deployment step-by-step.
+6.  **User:** Confirmed MongoDB Atlas account is created.
+7.  **User:** Provided the MongoDB connection string.
+8.  **User:** Confirmed they have the password.
+9.  **User:** Provided screenshots of their Hostinger VPS dashboard, revealing Coolify is installed.
+10. **User:** Followed instructions to create a new project in Coolify and attempted to add the resource, resulting in the failed deployments.
 
 **Project Health Check:**
--   **Broken:** None.
--   **Mocked:** The dropdown menus to be added to the  page will be non-functional placeholders until the user provides the content for them.
+-   **Broken:** The deployment on the user's external server is broken and blocked. The application code itself is stable.
+-   **Mocked:** None.
 
 **3rd Party Integrations**
 -   None.
@@ -122,7 +145,7 @@ A full-stack application with a React frontend and a FastAPI backend. A signific
 -   **Known regressions:** None
 
 **Credentials to test flow:**
--   N/A. The application does not have an authentication flow.
+-   N/A (No app login). For deployment, the user holds their MongoDB password and VPS root password.
 
 **What agent forgot to execute**
--   The agent did not start implementing the user's latest requests for the  page layout (title change, smaller images, new labels, adding dropdowns). It only acknowledged the requests before the session ended.</analysis>
+-   The previous agent correctly diagnosed the missing  file in the user's GitHub repository. However, the session ended before the agent could formally instruct the user to perform the final Save to GitHub action to sync the missing file. The next agent must pick up from exactly this step.</analysis>
