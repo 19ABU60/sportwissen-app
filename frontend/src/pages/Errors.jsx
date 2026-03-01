@@ -2,12 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronDown, Trash2, Edit3, Save, X, Upload,
-  Image as ImageIcon, Maximize2, FileText
+  Image as ImageIcon, Maximize2, FileText, FolderOpen
 } from "lucide-react";
-import { MediaUpload } from "@/components/MediaUpload";
-import { VideoRecorder } from "@/components/VideoRecorder";
 import { DrawingCanvas } from "@/components/DrawingCanvas";
 import { Lightbox } from "@/components/Lightbox";
+import { VideoRecorder } from "@/components/VideoRecorder";
 import { toast } from "sonner";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || "";
@@ -48,21 +47,129 @@ function DeleteConfirmModal({ message, onConfirm, onCancel }) {
   );
 }
 
-function PhaseWindow({ 
-  bild,
-  onAnalyze,
-}) {
+function LibraryPickerModal({ onSelect, onClose }) {
+  const [media, setMedia] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMedia = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/media/list/all`);
+        if (response.ok) {
+          const data = await response.json();
+          const images = (data.media || []).filter(m => m.media_type === "image");
+          setMedia(images);
+        }
+      } catch (err) {
+        console.error("Error fetching media:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMedia();
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-zinc-900 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-zinc-700 flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-zinc-700">
+          <h3 className="font-oswald text-lg font-bold text-white">Aus Medienverwaltung wählen</h3>
+          <button onClick={onClose} className="p-1 hover:bg-zinc-700 rounded">
+            <X className="w-5 h-5 text-zinc-400" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-zinc-400 text-sm">Medien werden geladen...</p>
+            </div>
+          ) : media.length === 0 ? (
+            <div className="text-center py-8">
+              <FolderOpen className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
+              <p className="text-zinc-400 text-sm">Keine Bilder in der Medienverwaltung</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {media.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => onSelect(item)}
+                  className="aspect-square bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700 hover:border-blue-500 transition-colors group"
+                  data-testid={`library-item-${item.id}`}
+                >
+                  <img
+                    src={`${API_URL}${item.url}`}
+                    alt={item.filename}
+                    className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function PhaseWindow({ bild, onAnalyze }) {
   const [selectedKategorie, setSelectedKategorie] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [slots, setSlots] = useState({});
   const [showLightbox, setShowLightbox] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const [description, setDescription] = useState("");
   const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
   const slotKey = `${bild.id}_${selectedKategorie}`;
   const currentSlot = slots[slotKey] || null;
+
+  // Load saved media from backend on mount
+  useEffect(() => {
+    const loadSavedMedia = async () => {
+      for (let i = 0; i < FEHLER_KATEGORIEN.length; i++) {
+        try {
+          const section = `fehler_${bild.id}_${i}`;
+          const response = await fetch(`${API_URL}/api/media/fehleranalyse/${section}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.url) {
+              setSlots(prev => ({
+                ...prev,
+                [`${bild.id}_${i}`]: {
+                  imageUrl: `${API_URL}${data.url}`,
+                  type: data.media_type || "image",
+                  fileName: data.filename,
+                  description: data.description || "",
+                  saved: true,
+                  mediaId: data.id
+                }
+              }));
+            }
+          }
+        } catch (err) {
+          // No saved media for this slot
+        }
+      }
+    };
+    loadSavedMedia();
+  }, [bild.id]);
 
   useEffect(() => {
     setDescription(currentSlot?.description || "");
@@ -72,13 +179,9 @@ function PhaseWindow({
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.startsWith("video/");
-    if (!isImage && !isVideo) {
-      toast.error("Nur Bild- oder Videodateien erlaubt");
-      return;
-    }
+    if (!isImage && !isVideo) { toast.error("Nur Bild- oder Videodateien erlaubt"); return; }
 
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -98,6 +201,22 @@ function PhaseWindow({
     e.target.value = "";
   };
 
+  const handleLibrarySelect = (item) => {
+    setSlots(prev => ({
+      ...prev,
+      [slotKey]: {
+        imageUrl: `${API_URL}${item.url}`,
+        type: item.media_type || "image",
+        fileName: item.filename,
+        description: prev[slotKey]?.description || "",
+        saved: false,
+        fromLibrary: true
+      }
+    }));
+    setShowLibrary(false);
+    toast.success("Bild aus Medienverwaltung geladen");
+  };
+
   const handleDropFrame = (frame) => {
     setSlots(prev => ({
       ...prev,
@@ -110,7 +229,15 @@ function PhaseWindow({
     toast.success(`Standbild zu "${bild.title}" hinzugefügt`);
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
+    const slot = slots[slotKey];
+    if (slot?.mediaId) {
+      try {
+        await fetch(`${API_URL}/api/media/${slot.mediaId}`, { method: 'DELETE' });
+      } catch (err) {
+        console.error("Delete from server error:", err);
+      }
+    }
     setSlots(prev => {
       const newState = { ...prev };
       delete newState[slotKey];
@@ -125,10 +252,7 @@ function PhaseWindow({
   const handleSaveDescription = () => {
     setSlots(prev => ({
       ...prev,
-      [slotKey]: {
-        ...prev[slotKey],
-        description: description
-      }
+      [slotKey]: { ...prev[slotKey], description }
     }));
     setIsEditingDesc(false);
     toast.success("Beschreibung gespeichert");
@@ -137,12 +261,18 @@ function PhaseWindow({
   const handleSaveToLibrary = async () => {
     if (!currentSlot) return;
     try {
-      const response = await fetch(currentSlot.imageUrl);
-      const blob = await response.blob();
+      let blob;
+      const imgUrl = currentSlot.imageUrl;
+      if (imgUrl.startsWith("data:")) {
+        const response = await fetch(imgUrl);
+        blob = await response.blob();
+      } else {
+        const response = await fetch(imgUrl);
+        blob = await response.blob();
+      }
       const formData = new FormData();
-      const phaseName = bild.title;
       const katName = FEHLER_KATEGORIEN[selectedKategorie];
-      formData.append('file', blob, `fehler_${phaseName}_${katName}_${Date.now()}.jpg`);
+      formData.append('file', blob, `fehler_${bild.title}_${katName}_${Date.now()}.jpg`);
       formData.append('page', 'fehleranalyse');
       formData.append('section', `fehler_${bild.id}_${selectedKategorie}`);
       formData.append('media_type', currentSlot.type || 'image');
@@ -153,9 +283,10 @@ function PhaseWindow({
       });
 
       if (uploadResponse.ok) {
+        const result = await uploadResponse.json();
         setSlots(prev => ({
           ...prev,
-          [slotKey]: { ...prev[slotKey], saved: true }
+          [slotKey]: { ...prev[slotKey], saved: true, mediaId: result.id }
         }));
         toast.success(`"${katName}" in Medienverwaltung gespeichert`);
       } else {
@@ -167,26 +298,18 @@ function PhaseWindow({
     }
   };
 
-  const [isDragOver, setIsDragOver] = useState(false);
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-    setIsDragOver(true);
-  };
-
   return (
     <>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={`bg-zinc-800/50 border-2 rounded-lg overflow-hidden transition-all ${
-          isDragOver ? "border-blue-500 bg-blue-500/10" 
-          : currentSlot 
-            ? currentSlot.saved ? "border-blue-500" : "border-green-500" 
+          isDragOver ? "border-blue-500 bg-blue-500/10"
+          : currentSlot
+            ? currentSlot.saved ? "border-blue-500" : "border-green-500"
             : "border-zinc-700"
         }`}
-        onDragOver={handleDragOver}
+        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setIsDragOver(true); }}
         onDragLeave={() => setIsDragOver(false)}
         onDrop={(e) => {
           e.preventDefault();
@@ -226,31 +349,33 @@ function PhaseWindow({
               </div>
             </>
           ) : (
-            <div 
-              className="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 p-2 cursor-pointer hover:bg-zinc-800/50 transition-colors"
-              onClick={() => fileInputRef.current?.click()}
-              data-testid={`upload-area-${bild.id}`}
-            >
-              <Upload className="w-8 h-8 mb-1" />
-              <p className="text-[10px] text-center">
-                {isDragOver ? "Hier ablegen" : "Tippen zum Hochladen"}
-              </p>
-              <p className="text-[9px] text-zinc-600 mt-0.5">oder Standbild hierher ziehen</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 p-2">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full flex flex-col items-center gap-1 py-3 hover:text-zinc-300 transition-colors cursor-pointer"
+                data-testid={`upload-area-${bild.id}`}
+              >
+                <Upload className="w-7 h-7" />
+                <span className="text-[10px]">{isDragOver ? "Hier ablegen" : "Bild hochladen"}</span>
+              </button>
+              <button
+                onClick={() => setShowLibrary(true)}
+                className="w-full flex items-center justify-center gap-1 py-2 text-blue-400 hover:text-blue-300 transition-colors cursor-pointer border-t border-zinc-800"
+                data-testid={`library-btn-${bild.id}`}
+              >
+                <FolderOpen className="w-4 h-4" />
+                <span className="text-[10px]">Aus Medienverwaltung</span>
+              </button>
+              <p className="text-[9px] text-zinc-600 mt-1">oder Standbild hierher ziehen</p>
             </div>
           )}
-          <input 
-            ref={fileInputRef} 
-            type="file" 
-            accept="image/*,video/*" 
-            className="hidden" 
-            onChange={handleFileUpload}
-          />
+          <input ref={fileInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFileUpload} />
         </div>
-        
+
         {/* Info Area */}
         <div className="p-2 space-y-2">
           <h3 className="font-oswald text-sm font-semibold text-white">{bild.title}</h3>
-          
+
           {/* Kategorie Dropdown */}
           <div className="relative">
             <button
@@ -308,7 +433,7 @@ function PhaseWindow({
               ) : (
                 <button
                   onClick={() => setIsEditingDesc(true)}
-                  className="w-full text-left bg-zinc-700/30 border border-zinc-700 rounded px-2 py-1.5 hover:bg-zinc-700/50 transition-colors group"
+                  className="w-full text-left bg-zinc-700/30 border border-zinc-700 rounded px-2 py-1.5 hover:bg-zinc-700/50 transition-colors"
                   data-testid={`desc-toggle-${bild.id}`}
                 >
                   {currentSlot.description ? (
@@ -338,6 +463,12 @@ function PhaseWindow({
           />
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {showLibrary && (
+          <LibraryPickerModal onSelect={handleLibrarySelect} onClose={() => setShowLibrary(false)} />
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -359,17 +490,10 @@ function AnalysisModal({ frame, phaseTitle, onClose, onSave }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-zinc-700">
-          <h2 className="font-oswald text-xl font-bold text-white">
-            Fehleranalyse: {phaseTitle}
-          </h2>
+          <h2 className="font-oswald text-xl font-bold text-white">Fehleranalyse: {phaseTitle}</h2>
           <div className="flex items-center gap-2">
-            <button
-              onClick={onSave}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-              data-testid="save-analysis-btn"
-            >
-              <Save className="w-4 h-4" />
-              Speichern
+            <button onClick={onSave} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors" data-testid="save-analysis-btn">
+              <Save className="w-4 h-4" /> Speichern
             </button>
             <button onClick={onClose} className="p-2 hover:bg-zinc-700 rounded-lg transition-colors">
               <X className="w-5 h-5 text-zinc-400" />
@@ -396,7 +520,6 @@ function AnalysisModal({ frame, phaseTitle, onClose, onSave }) {
 export default function Errors() {
   const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const [capturedFrames, setCapturedFrames] = useState([]);
-  const [droppedFrames, setDroppedFrames] = useState({});
   const [analyzingPhase, setAnalyzingPhase] = useState(null);
   const [analyzingFrame, setAnalyzingFrame] = useState(null);
 
@@ -458,11 +581,7 @@ export default function Errors() {
         data-testid="phase-windows-grid"
       >
         {bilder.map((bild) => (
-          <PhaseWindow
-            key={bild.id}
-            bild={bild}
-            onAnalyze={handleAnalyze}
-          />
+          <PhaseWindow key={bild.id} bild={bild} onAnalyze={handleAnalyze} />
         ))}
       </motion.div>
 
@@ -484,19 +603,13 @@ export default function Errors() {
               </svg>
             </div>
             <div className="text-left">
-              <h3 className="font-oswald text-base font-semibold text-white">
-                Video-Aufnahme & Standbild-Extraktion
-              </h3>
-              <p className="text-xs text-zinc-400">
-                Bewegungsabläufe aufnehmen und analysieren
-              </p>
+              <h3 className="font-oswald text-base font-semibold text-white">Video-Aufnahme & Standbild-Extraktion</h3>
+              <p className="text-xs text-zinc-400">Bewegungsabläufe aufnehmen und analysieren</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {capturedFrames.length > 0 && (
-              <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
-                {capturedFrames.length} Bilder
-              </span>
+              <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">{capturedFrames.length} Bilder</span>
             )}
             <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -527,9 +640,7 @@ export default function Errors() {
               </div>
               <div className="grid grid-cols-4 gap-1">
                 {bilder.map((bild) => (
-                  <div key={bild.id}
-                    className={`py-1 px-1 rounded text-center text-[10px] font-medium border border-zinc-600 bg-zinc-800 text-zinc-500`}
-                  >
+                  <div key={bild.id} className="py-1 px-1 rounded text-center text-[10px] font-medium border border-zinc-600 bg-zinc-800 text-zinc-500">
                     {bild.title.replace(/^\d+\.\s*/, '')}
                   </div>
                 ))}
@@ -540,7 +651,7 @@ export default function Errors() {
                 onFrameCaptured={handleFrameCaptured}
                 savedFrames={capturedFrames}
                 onDeleteFrame={handleDeleteFrame}
-                onAssignFrame={(phaseId, frame) => {}}
+                onAssignFrame={() => {}}
               />
             </div>
           </motion.div>
