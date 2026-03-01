@@ -299,6 +299,89 @@ export function MediaUpload({
           alt={media?.original_name}
         />
       )}
+
+      {/* Library Modal */}
+      <AnimatePresence>
+        {showLibrary && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+            onClick={() => setShowLibrary(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-900 rounded-xl p-4 max-w-lg w-full border border-zinc-700 max-h-[80vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-oswald text-lg font-bold text-white">
+                  Aus Bibliothek wählen
+                </h3>
+                <button
+                  onClick={() => setShowLibrary(false)}
+                  className="p-1 hover:bg-zinc-700 rounded"
+                >
+                  <X className="w-5 h-5 text-zinc-400" />
+                </button>
+              </div>
+              
+              {loadingLibrary ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                </div>
+              ) : libraryMedia.length === 0 ? (
+                <div className="text-center py-12 text-zinc-400">
+                  <FolderOpen className="w-12 h-12 mx-auto mb-2 text-zinc-600" />
+                  <p>Keine {mediaType === "video" ? "Videos" : mediaType === "image" ? "Bilder" : "Medien"} in der Bibliothek</p>
+                </div>
+              ) : (
+                <div className="overflow-y-auto flex-1 grid grid-cols-3 gap-2">
+                  {libraryMedia.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => selectFromLibrary(item)}
+                      className="relative aspect-video bg-zinc-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all group"
+                    >
+                      {item.media_type === "video" ? (
+                        <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+                          <Video className="w-6 h-6 text-zinc-500" />
+                        </div>
+                      ) : (
+                        <img
+                          src={`${API_URL}${item.url}`}
+                          alt={item.filename}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                        <ChevronRight className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1">
+                        <p className="text-[8px] text-white truncate">{item.section || item.page}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              <div className="mt-4 pt-4 border-t border-zinc-700">
+                <Button
+                  onClick={() => setShowLibrary(false)}
+                  variant="outline"
+                  className="w-full border-zinc-600"
+                  size="sm"
+                >
+                  Abbrechen
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
