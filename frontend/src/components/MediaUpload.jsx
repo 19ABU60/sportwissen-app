@@ -23,6 +23,7 @@ export function MediaUpload({
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryMedia, setLibraryMedia] = useState([]);
   const [loadingLibrary, setLoadingLibrary] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const fileInputRef = useRef(null);
 
   // Fetch existing media on mount
