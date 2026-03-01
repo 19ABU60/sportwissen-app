@@ -8,6 +8,7 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         - REACT_APP_BACKEND_URL=${DOMAIN_URL}
+    image: sportwissen-frontend:latest
     container_name: sportwissen-frontend
     restart: unless-stopped
     expose:
@@ -22,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    image: sportwissen-backend:latest
     container_name: sportwissen-backend
     restart: unless-stopped
     environment:
