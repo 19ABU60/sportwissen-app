@@ -262,24 +262,31 @@ export function MediaUpload({
             </div>
           </>
         ) : (
-          // Empty - Upload placeholder
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute inset-0 flex flex-col items-center justify-center hover:bg-zinc-600/30 transition-colors cursor-pointer"
-            data-testid={`upload-btn-${page}-${section}`}
-          >
-            <div className="p-3 rounded-full bg-zinc-600/50 mb-2">
-              {mediaType === "video" ? (
-                <Video className="w-6 h-6 text-zinc-400" />
-              ) : mediaType === "image" ? (
-                <Image className="w-6 h-6 text-zinc-400" />
-              ) : (
-                <Upload className="w-6 h-6 text-zinc-400" />
-              )}
+          // Empty - Upload placeholder with two options
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+            <div className="flex gap-2 mb-2">
+              {/* Upload from device */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex flex-col items-center p-3 rounded-lg bg-zinc-600/30 hover:bg-zinc-600/50 transition-colors cursor-pointer"
+                data-testid={`upload-btn-${page}-${section}`}
+              >
+                <Upload className="w-5 h-5 text-zinc-400 mb-1" />
+                <span className="text-[9px] text-zinc-500">Hochladen</span>
+              </button>
+              
+              {/* Select from library */}
+              <button
+                onClick={openLibrary}
+                className="flex flex-col items-center p-3 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 transition-colors cursor-pointer border border-blue-500/30"
+                data-testid={`library-btn-${page}-${section}`}
+              >
+                <FolderOpen className="w-5 h-5 text-blue-400 mb-1" />
+                <span className="text-[9px] text-blue-400">Bibliothek</span>
+              </button>
             </div>
-            <span className="text-[10px] text-zinc-500 text-center px-2">{placeholderText}</span>
-            <span className="text-[9px] text-zinc-600 mt-1">Klicken zum Hochladen</span>
-          </button>
+            <span className="text-[9px] text-zinc-600 text-center">{placeholderText}</span>
+          </div>
         )}
       </div>
 
