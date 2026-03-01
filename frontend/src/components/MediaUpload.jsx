@@ -254,7 +254,7 @@ export function MediaUpload({
                   <Upload className="w-5 h-5 text-white" />
                 </button>
                 <button
-                  onClick={handleDelete}
+                  onClick={() => setShowDeleteConfirm(true)}
                   className="p-2 bg-red-500/80 hover:bg-red-500 rounded-full backdrop-blur-sm"
                   title="Löschen"
                 >
