@@ -4,8 +4,8 @@ services:
   # Frontend (React)
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
       args:
         - REACT_APP_BACKEND_URL=${DOMAIN_URL}
     container_name: sportwissen-frontend
@@ -21,8 +21,8 @@ services:
   # Backend (FastAPI)
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: sportwissen-backend
     restart: unless-stopped
     environment:
