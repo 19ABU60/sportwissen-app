@@ -134,6 +134,62 @@ export function MediaUpload({
     return "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm";
   };
 
+  // Fetch library media
+  const openLibrary = async () => {
+    setShowLibrary(true);
+    setLoadingLibrary(true);
+    try {
+      const response = await fetch(`${API_URL}/api/media/list/all`);
+      if (response.ok) {
+        const data = await response.json();
+        // Filter by media type
+        const filtered = (data.media || []).filter(m => {
+          if (mediaType === "image") return m.media_type === "image";
+          if (mediaType === "video") return m.media_type === "video";
+          return true;
+        });
+        setLibraryMedia(filtered);
+      }
+    } catch (error) {
+      console.error("Error fetching library:", error);
+      toast.error("Fehler beim Laden der Medienbibliothek");
+    } finally {
+      setLoadingLibrary(false);
+    }
+  };
+
+  // Select media from library
+  const selectFromLibrary = async (item) => {
+    setIsUploading(true);
+    setShowLibrary(false);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/media/copy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source_id: item.id,
+          target_page: page,
+          target_section: section
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMedia(data.media);
+        onMediaChange?.(data.media);
+        toast.success("Medium eingefügt!");
+      } else {
+        throw new Error("Copy failed");
+      }
+    } catch (error) {
+      console.error("Select from library error:", error);
+      toast.error("Fehler beim Einfügen");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const mediaUrl = media?.url ? `${API_URL}${media.url}` : null;
 
   return (
