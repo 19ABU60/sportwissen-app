@@ -298,16 +298,20 @@ export function VideoRecorder({
   const autoSaveVideo = async (blob, mimeType, videoUrl) => {
     setIsSaving(true);
     try {
-      // Generate thumbnail from first frame
-      const thumbnailBlob = await generateThumbnail(videoUrl);
-      
       const ext = mimeType.includes('mp4') ? '.mp4' : '.webm';
       const formData = new FormData();
       formData.append('file', blob, `aufnahme_${Date.now()}${ext}`);
       formData.append('page', 'fehleranalyse');
       formData.append('section', `video_${Date.now()}`);
-      if (thumbnailBlob) {
-        formData.append('thumbnail', thumbnailBlob, `thumb_${Date.now()}.jpg`);
+      
+      // Try to generate thumbnail, but don't fail if it doesn't work
+      try {
+        const thumbnailBlob = await generateThumbnail(videoUrl);
+        if (thumbnailBlob) {
+          formData.append('thumbnail', thumbnailBlob, `thumb_${Date.now()}.jpg`);
+        }
+      } catch (thumbErr) {
+        console.warn("Thumbnail generation failed, saving without:", thumbErr);
       }
       
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/upload`, {
@@ -318,14 +322,16 @@ export function VideoRecorder({
       if (response.ok) {
         const data = await response.json();
         setSavedVideoId(data.media?.id);
-        toast.success("Video automatisch in Medienverwaltung gespeichert!");
+        toast.success("Video in Medienverwaltung gespeichert!");
         if (onVideoSaved) onVideoSaved(data);
       } else {
-        throw new Error("Upload failed");
+        const errorText = await response.text();
+        console.error("Upload response error:", response.status, errorText);
+        throw new Error(`Upload failed: ${response.status}`);
       }
     } catch (err) {
       console.error("Auto-save error:", err);
-      toast.error("Video konnte nicht automatisch gespeichert werden");
+      toast.error("Video konnte nicht gespeichert werden. Bitte manuell speichern.");
     } finally {
       setIsSaving(false);
     }

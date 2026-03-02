@@ -295,7 +295,7 @@ async def validate_phases(user_order: List[str]):
 # ==== MEDIA ROUTES ====
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
-ALLOWED_VIDEO_TYPES = {"video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"}
+ALLOWED_VIDEO_TYPES = {"video/mp4", "video/webm", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/ogg", "application/octet-stream"}
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB for videos
 
 @api_router.post("/media/upload", response_model=MediaUploadResponse)
@@ -310,10 +310,14 @@ async def upload_media(
     try:
         # Determine media type
         content_type = file.content_type or ""
+        filename_lower = (file.filename or "").lower()
+        
         if content_type in ALLOWED_IMAGE_TYPES:
             media_type = "image"
-        elif content_type in ALLOWED_VIDEO_TYPES:
+        elif content_type in ALLOWED_VIDEO_TYPES or filename_lower.endswith(('.mp4', '.webm', '.mov', '.avi')):
             media_type = "video"
+        elif content_type in ALLOWED_IMAGE_TYPES or filename_lower.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+            media_type = "image"
         else:
             raise HTTPException(
                 status_code=400, 
