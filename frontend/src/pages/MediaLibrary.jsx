@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Trash2, Video, Image as ImageIcon, 
+  Trash2, Video, Image as ImageIcon, Play,
   Download, ChevronDown, ChevronUp, Folder, X, Copy, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -269,8 +269,23 @@ export default function MediaLibrary() {
                             }}
                           >
                             {item.media_type === "video" ? (
-                              <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-                                <Video className="w-8 h-8 text-zinc-500" />
+                              <div className="w-full h-full flex items-center justify-center bg-zinc-800 relative">
+                                {item.thumbnail_url ? (
+                                  <>
+                                    <img
+                                      src={`${process.env.REACT_APP_BACKEND_URL}${item.thumbnail_url}`}
+                                      alt={item.filename}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center">
+                                        <Play className="w-5 h-5 text-white ml-0.5" />
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <Video className="w-8 h-8 text-zinc-500" />
+                                )}
                               </div>
                             ) : (
                               <img

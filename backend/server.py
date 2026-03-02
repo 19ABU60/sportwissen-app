@@ -85,14 +85,15 @@ class InfoCard(BaseModel):
 
 class MediaItem(BaseModel):
     id: str
-    page: str  # e.g., "ausgangsstellung", "angleiten", "technik"
-    section: str  # e.g., "nachstellschritt", "obrien", "main"
-    media_type: str  # "image" or "video"
+    page: str
+    section: str
+    media_type: str
     filename: str
     original_name: str
     url: str
     uploaded_at: str
-    is_default: bool = False  # True = Admin-uploaded default media
+    is_default: bool = False
+    thumbnail_url: Optional[str] = None
 
 class MediaUploadResponse(BaseModel):
     success: bool
@@ -302,7 +303,8 @@ async def upload_media(
     file: UploadFile = File(...),
     page: str = Form(...),
     section: str = Form(...),
-    is_default: bool = Form(False)
+    is_default: bool = Form(False),
+    thumbnail: Optional[UploadFile] = File(None)
 ):
     """Upload a media file (image or video) for a specific page section"""
     try:
@@ -328,6 +330,16 @@ async def upload_media(
             while chunk := await file.read(1024 * 1024):  # 1MB chunks
                 await out_file.write(chunk)
         
+        # Save thumbnail if provided (for videos)
+        thumbnail_url = None
+        if thumbnail and media_type == "video":
+            thumb_filename = f"thumb_{unique_filename.rsplit('.', 1)[0]}.jpg"
+            thumb_path = UPLOAD_DIR / thumb_filename
+            async with aiofiles.open(thumb_path, 'wb') as out_file:
+                while chunk := await thumbnail.read(1024 * 1024):
+                    await out_file.write(chunk)
+            thumbnail_url = f"/api/uploads/{thumb_filename}"
+        
         # Create media record
         media_id = str(uuid.uuid4())
         media_item = {
@@ -339,7 +351,8 @@ async def upload_media(
             "original_name": file.filename,
             "url": f"/api/uploads/{unique_filename}",
             "uploaded_at": datetime.now(timezone.utc).isoformat(),
-            "is_default": is_default
+            "is_default": is_default,
+            "thumbnail_url": thumbnail_url
         }
         
         # Delete old media for this page/section if exists (replace functionality)
@@ -400,6 +413,14 @@ async def delete_media(media_id: str):
     file_path = UPLOAD_DIR / media.get("filename", "")
     if file_path.exists():
         file_path.unlink()
+    
+    # Delete thumbnail if exists
+    thumb_url = media.get("thumbnail_url", "")
+    if thumb_url:
+        thumb_filename = thumb_url.split("/")[-1]
+        thumb_path = UPLOAD_DIR / thumb_filename
+        if thumb_path.exists():
+            thumb_path.unlink()
     
     # Remove from DB
     await db.media.delete_one({"id": media_id})

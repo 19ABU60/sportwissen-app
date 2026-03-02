@@ -135,6 +135,9 @@ export function VideoRecorder({
         setRecordedVideoUrl(url);
         setRecordedBlob(blob);
         stopCamera();
+        
+        // Auto-save to media library with thumbnail
+        autoSaveVideo(blob, mimeType, url);
       };
       
       mediaRecorderRef.current = mediaRecorder;
@@ -288,7 +291,81 @@ export function VideoRecorder({
     }
   };
 
-  // Save video permanently
+  // Auto-save video to media library with thumbnail
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedVideoId, setSavedVideoId] = useState(null);
+
+  const autoSaveVideo = async (blob, mimeType, videoUrl) => {
+    setIsSaving(true);
+    try {
+      // Generate thumbnail from first frame
+      const thumbnailBlob = await generateThumbnail(videoUrl);
+      
+      const ext = mimeType.includes('mp4') ? '.mp4' : '.webm';
+      const formData = new FormData();
+      formData.append('file', blob, `aufnahme_${Date.now()}${ext}`);
+      formData.append('page', 'fehleranalyse');
+      formData.append('section', `video_${Date.now()}`);
+      if (thumbnailBlob) {
+        formData.append('thumbnail', thumbnailBlob, `thumb_${Date.now()}.jpg`);
+      }
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSavedVideoId(data.media?.id);
+        toast.success("Video automatisch in Medienverwaltung gespeichert!");
+        if (onVideoSaved) onVideoSaved(data);
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (err) {
+      console.error("Auto-save error:", err);
+      toast.error("Video konnte nicht automatisch gespeichert werden");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const generateThumbnail = (videoUrl) => {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.crossOrigin = 'anonymous';
+      video.src = videoUrl;
+      video.muted = true;
+      video.playsInline = true;
+      
+      video.onloadeddata = () => {
+        video.currentTime = Math.min(1, video.duration / 2);
+      };
+      
+      video.onseeked = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0);
+          canvas.toBlob((blob) => {
+            video.src = '';
+            resolve(blob);
+          }, 'image/jpeg', 0.7);
+        } catch (err) {
+          console.error("Thumbnail generation error:", err);
+          resolve(null);
+        }
+      };
+      
+      video.onerror = () => resolve(null);
+      setTimeout(() => resolve(null), 5000);
+    });
+  };
+
+  // Save video permanently (manual fallback)
   const saveVideoPermanently = async () => {
     if (!recordedBlob) return;
     
@@ -517,15 +594,27 @@ export function VideoRecorder({
               Standbild
             </Button>
             
-            <Button 
-              onClick={saveVideoPermanently}
-              variant="outline"
-              className="border-green-600 text-green-400 hover:bg-green-600/20 h-8"
-              size="sm"
-            >
-              <Save className="w-4 h-4 mr-1" />
-              Speichern
-            </Button>
+            {isSaving ? (
+              <span className="text-xs text-blue-400 px-2 flex items-center gap-1">
+                <div className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                Speichert...
+              </span>
+            ) : savedVideoId ? (
+              <span className="text-xs text-green-400 px-2 flex items-center gap-1">
+                <Save className="w-3 h-3" />
+                Gespeichert
+              </span>
+            ) : (
+              <Button 
+                onClick={saveVideoPermanently}
+                variant="outline"
+                className="border-green-600 text-green-400 hover:bg-green-600/20 h-8"
+                size="sm"
+              >
+                <Save className="w-4 h-4 mr-1" />
+                Speichern
+              </Button>
+            )}
             
             <Button 
               onClick={resetRecording}
