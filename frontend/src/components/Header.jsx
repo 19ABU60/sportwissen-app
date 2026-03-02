@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const BEWEGUNGSPHASEN = [
-  { title: "Übersicht", path: "/", description: "Startseite" },
   { title: "Phasenstruktur", path: "/phasen", description: "Alle Phasen im Überblick" },
   { title: "1. Ausgangsstellung", path: "/ausgangsstellung", description: "Start der Bewegung" },
   { title: "2. Angleiten", path: "/angleiten", description: "Nachstell-/Impulsschritt" },
@@ -27,10 +26,11 @@ const BEWEGUNGSPHASEN = [
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const isPortal = location.pathname === "/";
 
   const getCurrentPageTitle = () => {
     const current = BEWEGUNGSPHASEN.find(p => p.path === location.pathname);
-    return current?.title || "Übersicht";
+    return current?.title || "Kugelstoßen";
   };
 
   return (
@@ -52,12 +52,13 @@ export const Header = () => {
               <h1 className="font-oswald text-xl font-bold tracking-wide text-white">
                 SportWissen
               </h1>
-              <p className="text-xs text-zinc-500 -mt-0.5">Kugelstoßen</p>
+              {!isPortal && <p className="text-xs text-zinc-500 -mt-0.5">Kugelstoßen</p>}
             </div>
           </motion.div>
         </Link>
 
         {/* Desktop Navigation - Rollmenü */}
+        {!isPortal && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -115,8 +116,10 @@ export const Header = () => {
             </Button>
           </Link>
         </motion.div>
+        )}
 
         {/* Mobile Menu Button */}
+        {!isPortal && (
         <Button
           variant="ghost"
           size="icon"
@@ -126,6 +129,7 @@ export const Header = () => {
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </Button>
+        )}
       </div>
 
       {/* Mobile Menu */}
