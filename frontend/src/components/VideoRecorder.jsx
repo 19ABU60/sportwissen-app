@@ -253,7 +253,7 @@ export function VideoRecorder({
   };
 
   // Capture frame from video
-  const captureFrame = () => {
+  const captureFrame = async () => {
     if (!playbackRef.current || !canvasRef.current) return;
     
     const video = playbackRef.current;
@@ -281,6 +281,27 @@ export function VideoRecorder({
     }
     
     toast.success(`Standbild aufgenommen (${timestamp.toFixed(2)}s)`);
+    
+    // Auto-save frame to media library
+    try {
+      const response = await fetch(imageDataUrl);
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('file', blob, `standbild_${timestamp.toFixed(1)}s_${Date.now()}.jpg`);
+      formData.append('page', 'fehleranalyse');
+      formData.append('section', `standbild_${Date.now()}`);
+      
+      const uploadResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (uploadResponse.ok) {
+        toast.success("Standbild in Medienverwaltung gespeichert");
+      }
+    } catch (err) {
+      console.error("Frame save error:", err);
+    }
   };
 
   // Delete a captured frame
