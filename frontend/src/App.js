@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 
 // Pages
+import Portal from "@/pages/Portal";
 import Home from "@/pages/Home";
 import Phases from "@/pages/Phases";
 import Ausgangsstellung from "@/pages/Ausgangsstellung";
@@ -24,7 +25,8 @@ function App() {
         <Header />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Portal />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/phasen" element={<Phases />} />
             <Route path="/ausgangsstellung" element={<Ausgangsstellung />} />
             <Route path="/technik" element={<Technique />} />
