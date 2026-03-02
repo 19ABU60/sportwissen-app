@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
   const location = useLocation();
-  const isPortal = location.pathname === "/";
+  const isPortal = location.pathname === "/" || location.pathname === "/login" || location.pathname.startsWith("/admin");
 
   return (
     <footer className="app-footer">
