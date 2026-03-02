@@ -13,9 +13,6 @@ services:
       - "80"
     depends_on:
       - backend
-    networks:
-      - default
-      - coolify
 
   backend:
     build:
@@ -30,14 +27,6 @@ services:
       - uploads-data:/app/uploads
     expose:
       - "8001"
-    networks:
-      - default
-
-networks:
-  default:
-    driver: bridge
-  coolify:
-    external: true
 
 volumes:
   uploads-data:
