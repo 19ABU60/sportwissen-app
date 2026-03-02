@@ -43,6 +43,8 @@ A German sports teacher wants modern web apps to replace FileMaker-based tools. 
 - [x] Media library with image/video support
 - [x] Camera functionality over HTTPS
 - [x] Auth system fully tested (13/13 frontend tests, 11/11 backend tests) - March 2026
+- [x] Password reset: Admin can reset user passwords + users can change own password - March 2026
+- [x] Portal redesign: Login button moved below app cards for cleaner layout - March 2026
 
 ## Upcoming Tasks (P1)
 - [ ] Video Trimming: Editor to shorten clips from media library
