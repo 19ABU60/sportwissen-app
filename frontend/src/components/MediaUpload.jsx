@@ -363,11 +363,26 @@ export function MediaUpload({
                       onClick={() => selectFromLibrary(item)}
                       className="relative aspect-video bg-zinc-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all group"
                     >
-                      {item.media_type === "video" ? (
+                      {item.media_type === "video" && item.thumbnail_url && (
+                        <div className="relative w-full h-full">
+                          <img
+                            src={`${API_URL}${item.thumbnail_url}`}
+                            alt={item.filename}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center">
+                              <div className="w-0 h-0 border-t-[5px] border-b-[5px] border-l-[8px] border-transparent border-l-white ml-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {item.media_type === "video" && !item.thumbnail_url && (
                         <div className="w-full h-full flex items-center justify-center bg-zinc-800">
                           <Video className="w-6 h-6 text-zinc-500" />
                         </div>
-                      ) : (
+                      )}
+                      {item.media_type === "image" && (
                         <img
                           src={`${API_URL}${item.url}`}
                           alt={item.filename}
