@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const isPortal = location.pathname === "/";
 
   return (
     <footer className="app-footer">
@@ -22,7 +25,8 @@ export const Footer = () => {
             </span>
           </div>
 
-          {/* Links */}
+          {/* Links - nur auf App-Seiten, nicht auf Portal */}
+          {!isPortal && (
           <div className="flex items-center gap-6 text-sm">
             <span className="text-zinc-600">
               Didaktisch-methodische Lern-App
@@ -32,6 +36,7 @@ export const Footer = () => {
               Kugelstoßen • O'Brien-Technik
             </span>
           </div>
+          )}
         </motion.div>
 
         {/* Patent/Info Notice */}
