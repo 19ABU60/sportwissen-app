@@ -14,7 +14,8 @@ services:
     depends_on:
       - backend
     networks:
-      - sportwissen-network
+      - default
+      - coolify
 
   backend:
     build:
@@ -30,11 +31,13 @@ services:
     expose:
       - "8001"
     networks:
-      - sportwissen-network
+      - default
 
 networks:
-  sportwissen-network:
+  default:
     driver: bridge
+  coolify:
+    external: true
 
 volumes:
   uploads-data:
