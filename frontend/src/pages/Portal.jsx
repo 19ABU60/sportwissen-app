@@ -58,18 +58,24 @@ export default function Portal() {
     if (newPw.length < 6) { toast.error("Neues Passwort muss mindestens 6 Zeichen haben"); return; }
     setPwLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/auth/change-password`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ current_password: currentPw, new_password: newPw })
+      const { status, data } = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", `${API_URL}/api/auth/change-password`);
+        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+          let d; try { d = JSON.parse(xhr.responseText); } catch { d = {}; }
+          resolve({ status: xhr.status, data: d });
+        };
+        xhr.onerror = () => reject(new Error("Verbindungsfehler"));
+        xhr.send(JSON.stringify({ current_password: currentPw, new_password: newPw }));
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Fehler");
-      toast.success("Passwort wurde geändert");
+      if (status >= 400) { toast.error(data.detail || "Passwort konnte nicht geändert werden"); return; }
+      toast.success(data.message || "Passwort wurde geändert");
       setShowPwChange(false);
       setCurrentPw("");
       setNewPw("");
-    } catch (err) { toast.error(err.message); }
+    } catch { toast.error("Verbindungsfehler"); }
     finally { setPwLoading(false); }
   };
 
