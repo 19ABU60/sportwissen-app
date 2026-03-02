@@ -218,14 +218,15 @@ export function MediaUpload({
         ) : media && mediaUrl ? (
           // Show Media
           <>
-            {media.media_type === "image" ? (
+            {media.media_type === "image" && (
               <img 
                 src={mediaUrl} 
                 alt={media.original_name}
                 className="w-full h-full object-cover cursor-pointer transition-transform group-hover:scale-105"
                 onClick={() => setShowLightbox(true)}
               />
-            ) : media.thumbnail_url ? (
+            )}
+            {media.media_type === "video" && media.thumbnail_url && (
               <div className="relative w-full h-full cursor-pointer" onClick={() => setShowLightbox(true)}>
                 <img 
                   src={`${API_URL}${media.thumbnail_url}`}
@@ -238,7 +239,8 @@ export function MediaUpload({
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+            {media.media_type === "video" && !media.thumbnail_url && (
               <video 
                 src={mediaUrl}
                 className="w-full h-full object-cover"
