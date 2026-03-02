@@ -225,6 +225,19 @@ export function MediaUpload({
                 className="w-full h-full object-cover cursor-pointer transition-transform group-hover:scale-105"
                 onClick={() => setShowLightbox(true)}
               />
+            ) : media.thumbnail_url ? (
+              <div className="relative w-full h-full cursor-pointer" onClick={() => setShowLightbox(true)}>
+                <img 
+                  src={`${API_URL}${media.thumbnail_url}`}
+                  alt={media.original_name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
+                    <div className="w-0 h-0 border-t-[8px] border-b-[8px] border-l-[14px] border-transparent border-l-white ml-1" />
+                  </div>
+                </div>
+              </div>
             ) : (
               <video 
                 src={mediaUrl}

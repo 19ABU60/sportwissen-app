@@ -57,8 +57,7 @@ function LibraryPickerModal({ onSelect, onClose }) {
         const response = await fetch(`${API_URL}/api/media/list/all`);
         if (response.ok) {
           const data = await response.json();
-          const images = (data.media || []).filter(m => m.media_type === "image");
-          setMedia(images);
+          setMedia(data.media || []);
         }
       } catch (err) {
         console.error("Error fetching media:", err);
@@ -99,7 +98,7 @@ function LibraryPickerModal({ onSelect, onClose }) {
           ) : media.length === 0 ? (
             <div className="text-center py-8">
               <FolderOpen className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
-              <p className="text-zinc-400 text-sm">Keine Bilder in der Medienverwaltung</p>
+              <p className="text-zinc-400 text-sm">Keine Medien in der Medienverwaltung</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -107,14 +106,45 @@ function LibraryPickerModal({ onSelect, onClose }) {
                 <button
                   key={item.id}
                   onClick={() => onSelect(item)}
-                  className="aspect-square bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700 hover:border-blue-500 transition-colors group"
+                  className="aspect-square bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700 hover:border-blue-500 transition-colors group relative"
                   data-testid={`library-item-${item.id}`}
                 >
-                  <img
-                    src={`${API_URL}${item.url}`}
-                    alt={item.filename}
-                    className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
-                  />
+                  {item.media_type === "video" ? (
+                    item.thumbnail_url ? (
+                      <>
+                        <img
+                          src={`${API_URL}${item.thumbnail_url}`}
+                          alt={item.filename}
+                          className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center">
+                            <div className="w-0 h-0 border-t-[6px] border-b-[6px] border-l-[10px] border-transparent border-l-white ml-0.5" />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center mx-auto mb-1">
+                            <div className="w-0 h-0 border-t-[5px] border-b-[5px] border-l-[8px] border-transparent border-l-zinc-400 ml-0.5" />
+                          </div>
+                          <span className="text-[9px] text-zinc-500">Video</span>
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <img
+                      src={`${API_URL}${item.url}`}
+                      alt={item.filename}
+                      className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
+                    />
+                  )}
+                  <span className={`absolute top-1 right-1 text-[8px] px-1 py-0.5 rounded ${
+                    item.media_type === "video" ? "bg-blue-500/80 text-white" : "bg-green-500/80 text-white"
+                  }`}>
+                    {item.media_type === "video" ? "Video" : "Bild"}
+                  </span>
                 </button>
               ))}
             </div>
