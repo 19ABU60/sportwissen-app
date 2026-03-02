@@ -66,46 +66,6 @@ export default function Portal() {
         </p>
       </motion.div>
 
-      {/* Auth Buttons */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="mb-8 flex items-center gap-3"
-      >
-        {user ? (
-          <>
-            <span className="text-sm text-zinc-400">
-              Angemeldet als <span className="text-white font-medium">{user.name || user.email}</span>
-            </span>
-            {user.is_admin && (
-              <button
-                onClick={() => navigate("/admin/users")}
-                className="flex items-center gap-1 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-lg hover:bg-amber-500/20 transition-colors"
-                data-testid="admin-btn"
-              >
-                <Shield className="w-3 h-3" /> Verwaltung
-              </button>
-            )}
-            <button
-              onClick={logout}
-              className="px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded-lg hover:bg-zinc-700 transition-colors"
-              data-testid="logout-btn"
-            >
-              Abmelden
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={() => navigate("/login")}
-            className="flex items-center gap-2 px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm rounded-lg transition-colors"
-            data-testid="login-btn"
-          >
-            <LogIn className="w-4 h-4" /> Anmelden / Registrieren
-          </button>
-        )}
-      </motion.div>
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-4xl">
         {apps.map((app, index) => {
           const Icon = app.icon;
@@ -161,6 +121,46 @@ export default function Portal() {
           );
         })}
       </div>
+
+      {/* Auth Buttons - below app cards */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="mt-10 flex items-center gap-3"
+      >
+        {user ? (
+          <>
+            <span className="text-sm text-zinc-400">
+              Angemeldet als <span className="text-white font-medium">{user.name || user.email}</span>
+            </span>
+            {user.is_admin && (
+              <button
+                onClick={() => navigate("/admin/users")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-lg hover:bg-amber-500/20 transition-colors"
+                data-testid="admin-btn"
+              >
+                <Shield className="w-3 h-3" /> Verwaltung
+              </button>
+            )}
+            <button
+              onClick={logout}
+              className="px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded-lg hover:bg-zinc-700 transition-colors"
+              data-testid="logout-btn"
+            >
+              Abmelden
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => navigate("/login")}
+            className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors"
+            data-testid="login-btn"
+          >
+            <LogIn className="w-4 h-4" /> Anmelden / Registrieren
+          </button>
+        )}
+      </motion.div>
     </div>
   );
 }

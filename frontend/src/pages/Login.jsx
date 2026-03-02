@@ -109,7 +109,12 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-2">
+          {!isRegister && (
+            <p className="text-xs text-zinc-500">
+              Passwort vergessen? Wenden Sie sich an den Administrator.
+            </p>
+          )}
           <button
             onClick={() => { setIsRegister(!isRegister); setPassword(""); }}
             className="text-sm text-zinc-400 hover:text-amber-500 transition-colors"

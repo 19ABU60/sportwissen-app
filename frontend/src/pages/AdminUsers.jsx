@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
-import { Users, Shield, ShieldOff, Trash2, Check, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users, Shield, ShieldOff, Trash2, Check, X, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || "";
@@ -16,6 +16,8 @@ export default function AdminUsers() {
   const { token } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [resetUserId, setResetUserId] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
 
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
@@ -64,6 +66,26 @@ export default function AdminUsers() {
       const res = await fetch(`${API_URL}/api/admin/users/${userId}`, { method: "DELETE", headers });
       if (res.ok) { toast.success("Benutzer gelöscht"); fetchUsers(); }
     } catch (err) { toast.error("Fehler"); }
+  };
+
+  const resetPassword = async (userId) => {
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("Passwort muss mindestens 6 Zeichen haben");
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/api/admin/users/${userId}/reset-password`, {
+        method: "PUT", headers, body: JSON.stringify({ new_password: newPassword })
+      });
+      if (res.ok) {
+        toast.success("Passwort wurde zurückgesetzt");
+        setResetUserId(null);
+        setNewPassword("");
+      } else {
+        const data = await res.json();
+        toast.error(data.detail || "Fehler");
+      }
+    } catch (err) { toast.error("Fehler beim Zurücksetzen"); }
   };
 
   const toggleApp = (user, appId) => {
@@ -145,6 +167,14 @@ export default function AdminUsers() {
               {!u.is_admin && (
                 <div className="flex gap-1.5">
                   <button
+                    onClick={() => { setResetUserId(resetUserId === u.id ? null : u.id); setNewPassword(""); }}
+                    className="p-2 rounded hover:bg-amber-500/20 text-amber-400 transition-colors"
+                    title="Passwort zurücksetzen"
+                    data-testid={`reset-pw-${u.id}`}
+                  >
+                    <KeyRound className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => toggleActive(u.id, u.is_active)}
                     className={`p-2 rounded transition-colors ${
                       u.is_active ? "hover:bg-red-500/20 text-red-400" : "hover:bg-green-500/20 text-green-400"
@@ -165,6 +195,42 @@ export default function AdminUsers() {
                 </div>
               )}
             </div>
+
+            {/* Password Reset Inline */}
+            <AnimatePresence>
+              {resetUserId === u.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-3 pt-3 border-t border-zinc-700/50"
+                >
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Neues Passwort (min. 6 Zeichen)"
+                      className="flex-1 bg-zinc-900 border border-zinc-600 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
+                      data-testid={`new-pw-input-${u.id}`}
+                    />
+                    <button
+                      onClick={() => resetPassword(u.id)}
+                      className="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded-lg transition-colors"
+                      data-testid={`confirm-reset-pw-${u.id}`}
+                    >
+                      Zurücksetzen
+                    </button>
+                    <button
+                      onClick={() => { setResetUserId(null); setNewPassword(""); }}
+                      className="p-2 text-zinc-400 hover:text-white transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ))}
       </div>

@@ -398,6 +398,37 @@ async def delete_user(user_id: str, admin=Depends(get_admin_user)):
     await db.users.delete_one({"id": user_id})
     return {"success": True, "message": "Benutzer gelöscht"}
 
+class ResetPasswordRequest(BaseModel):
+    new_password: str
+
+@api_router.put("/admin/users/{user_id}/reset-password")
+async def admin_reset_password(user_id: str, request: ResetPasswordRequest, admin=Depends(get_admin_user)):
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Passwort muss mindestens 6 Zeichen lang sein")
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"password_hash": pwd_context.hash(request.new_password)}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    return {"success": True, "message": "Passwort wurde zurückgesetzt"}
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+@api_router.put("/auth/change-password")
+async def change_password(request: ChangePasswordRequest, user=Depends(get_current_user)):
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Neues Passwort muss mindestens 6 Zeichen lang sein")
+    if not pwd_context.verify(request.current_password, user["password_hash"]):
+        raise HTTPException(status_code=400, detail="Aktuelles Passwort ist falsch")
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"password_hash": pwd_context.hash(request.new_password)}}
+    )
+    return {"success": True, "message": "Passwort wurde geändert"}
+
 @api_router.get("/phases", response_model=PhasesData)
 async def get_phases():
     """Get all phases for the drag & drop exercise"""
