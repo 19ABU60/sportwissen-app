@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, APIRouter, UploadFile, File, Form, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,9 +10,11 @@ from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import aiofiles
 import shutil
+import jwt
+from passlib.context import CryptContext
 
 
 ROOT_DIR = Path(__file__).parent
@@ -27,6 +30,65 @@ db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
 app = FastAPI(title="SportWissen Kugelstoßen API")
+
+# Auth config
+JWT_SECRET = os.environ.get('JWT_SECRET', 'sportwissen-secret-key-2026')
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 72
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer(auto_error=False)
+
+# Admin credentials
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@sport-wissen.com')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'SportWissen2026!')
+
+async def ensure_admin():
+    """Create admin user on startup if not exists"""
+    existing = await db.users.find_one({"email": ADMIN_EMAIL})
+    if not existing:
+        await db.users.insert_one({
+            "id": str(uuid.uuid4()),
+            "email": ADMIN_EMAIL,
+            "password_hash": pwd_context.hash(ADMIN_PASSWORD),
+            "name": "Admin",
+            "is_active": True,
+            "is_admin": True,
+            "allowed_apps": ["kugelstoessen", "speakly", "planed"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        logging.info(f"Admin user created: {ADMIN_EMAIL}")
+
+@app.on_event("startup")
+async def startup_event():
+    await ensure_admin()
+
+def create_token(user_id: str, email: str, is_admin: bool = False):
+    payload = {
+        "user_id": user_id,
+        "email": email,
+        "is_admin": is_admin,
+        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Nicht autorisiert")
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user = await db.users.find_one({"id": payload["user_id"]}, {"_id": 0})
+        if not user or not user.get("is_active"):
+            raise HTTPException(status_code=401, detail="Account nicht aktiv")
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token abgelaufen")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Ungültiger Token")
+
+async def get_admin_user(user=Depends(get_current_user)):
+    if not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Nur für Administratoren")
+    return user
 
 # Mount uploads directory for serving static files (via /api/uploads path)
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
@@ -245,6 +307,96 @@ async def root():
 @api_router.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+# ==== AUTH ENDPOINTS ====
+
+@api_router.post("/auth/register")
+async def register(email: str = Form(...), password: str = Form(...), name: str = Form("")):
+    existing = await db.users.find_one({"email": email.lower()}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="E-Mail bereits registriert")
+    user = {
+        "id": str(uuid.uuid4()),
+        "email": email.lower(),
+        "password_hash": pwd_context.hash(password),
+        "name": name or email.split("@")[0],
+        "is_active": False,
+        "is_admin": False,
+        "allowed_apps": [],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.users.insert_one(user)
+    return {"success": True, "message": "Registrierung erfolgreich! Warten Sie auf die Freischaltung durch den Administrator."}
+
+@api_router.post("/auth/login")
+async def login(email: str = Form(...), password: str = Form(...)):
+    user = await db.users.find_one({"email": email.lower()}, {"_id": 0})
+    if not user or not pwd_context.verify(password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="E-Mail oder Passwort falsch")
+    if not user.get("is_active"):
+        raise HTTPException(status_code=403, detail="Ihr Account wurde noch nicht freigeschaltet. Bitte warten Sie auf die Freigabe durch den Administrator.")
+    token = create_token(user["id"], user["email"], user.get("is_admin", False))
+    return {
+        "token": token,
+        "user": {
+            "id": user["id"],
+            "email": user["email"],
+            "name": user["name"],
+            "is_admin": user.get("is_admin", False),
+            "allowed_apps": user.get("allowed_apps", [])
+        }
+    }
+
+@api_router.get("/auth/me")
+async def get_me(user=Depends(get_current_user)):
+    return {
+        "id": user["id"],
+        "email": user["email"],
+        "name": user["name"],
+        "is_admin": user.get("is_admin", False),
+        "allowed_apps": user.get("allowed_apps", [])
+    }
+
+# ==== ADMIN ENDPOINTS ====
+
+@api_router.get("/admin/users")
+async def list_users(admin=Depends(get_admin_user)):
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    return {"users": users}
+
+@api_router.put("/admin/users/{user_id}/activate")
+async def activate_user(user_id: str, admin=Depends(get_admin_user)):
+    result = await db.users.update_one({"id": user_id}, {"$set": {"is_active": True}})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    return {"success": True, "message": "Benutzer freigeschaltet"}
+
+@api_router.put("/admin/users/{user_id}/deactivate")
+async def deactivate_user(user_id: str, admin=Depends(get_admin_user)):
+    result = await db.users.update_one({"id": user_id}, {"$set": {"is_active": False}})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    return {"success": True, "message": "Benutzer gesperrt"}
+
+class UpdateAppsRequest(BaseModel):
+    apps: List[str]
+
+@api_router.put("/admin/users/{user_id}/apps")
+async def update_user_apps(user_id: str, request: UpdateAppsRequest, admin=Depends(get_admin_user)):
+    result = await db.users.update_one({"id": user_id}, {"$set": {"allowed_apps": request.apps}})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    return {"success": True, "message": "App-Zugriff aktualisiert"}
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_user(user_id: str, admin=Depends(get_admin_user)):
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    if user.get("is_admin"):
+        raise HTTPException(status_code=400, detail="Admin kann nicht gelöscht werden")
+    await db.users.delete_one({"id": user_id})
+    return {"success": True, "message": "Benutzer gelöscht"}
 
 @api_router.get("/phases", response_model=PhasesData)
 async def get_phases():

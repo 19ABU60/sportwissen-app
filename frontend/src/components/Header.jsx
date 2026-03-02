@@ -26,7 +26,7 @@ const BEWEGUNGSPHASEN = [
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const isPortal = location.pathname === "/";
+  const isPortal = location.pathname === "/" || location.pathname === "/login";
 
   const getCurrentPageTitle = () => {
     const current = BEWEGUNGSPHASEN.find(p => p.path === location.pathname);
