@@ -1,8 +1,9 @@
-import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Globe, BookOpen, Calendar, LogIn, Shield } from "lucide-react";
+import { ArrowRight, Globe, BookOpen, Calendar, LogIn, Shield, KeyRound } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const apps = [
   {
@@ -44,8 +45,33 @@ const apps = [
 ];
 
 export default function Portal() {
-  const { user, logout, hasAppAccess } = useAuth();
+  const { user, token, logout, hasAppAccess } = useAuth();
   const navigate = useNavigate();
+  const [showPwChange, setShowPwChange] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [pwLoading, setPwLoading] = useState(false);
+  const API_URL = process.env.REACT_APP_BACKEND_URL || "";
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (newPw.length < 6) { toast.error("Neues Passwort muss mindestens 6 Zeichen haben"); return; }
+    setPwLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ current_password: currentPw, new_password: newPw })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Fehler");
+      toast.success("Passwort wurde geändert");
+      setShowPwChange(false);
+      setCurrentPw("");
+      setNewPw("");
+    } catch (err) { toast.error(err.message); }
+    finally { setPwLoading(false); }
+  };
 
   useEffect(() => {
     document.title = "SportWissen | App-Portal";
@@ -144,6 +170,13 @@ export default function Portal() {
               </button>
             )}
             <button
+              onClick={() => { setShowPwChange(!showPwChange); setCurrentPw(""); setNewPw(""); }}
+              className="flex items-center gap-1 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded-lg hover:bg-zinc-700 transition-colors"
+              data-testid="change-pw-btn"
+            >
+              <KeyRound className="w-3 h-3" /> Passwort ändern
+            </button>
+            <button
               onClick={logout}
               className="px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded-lg hover:bg-zinc-700 transition-colors"
               data-testid="logout-btn"
@@ -161,6 +194,59 @@ export default function Portal() {
           </button>
         )}
       </motion.div>
+
+      {/* Password Change Form */}
+      <AnimatePresence>
+        {showPwChange && (
+          <motion.form
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            onSubmit={handleChangePassword}
+            className="mt-4 w-full max-w-sm"
+            data-testid="change-pw-form"
+          >
+            <div className="bg-zinc-900/80 border border-zinc-700 rounded-xl p-4 space-y-3">
+              <input
+                type="password"
+                value={currentPw}
+                onChange={(e) => setCurrentPw(e.target.value)}
+                placeholder="Aktuelles Passwort"
+                required
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
+                data-testid="current-pw-input"
+              />
+              <input
+                type="password"
+                value={newPw}
+                onChange={(e) => setNewPw(e.target.value)}
+                placeholder="Neues Passwort (min. 6 Zeichen)"
+                required
+                minLength={6}
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
+                data-testid="new-pw-input"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={pwLoading}
+                  className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-colors"
+                  data-testid="confirm-change-pw-btn"
+                >
+                  {pwLoading ? "..." : "Passwort ändern"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPwChange(false)}
+                  className="px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs rounded-lg hover:bg-zinc-700 transition-colors"
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </div>
+          </motion.form>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
