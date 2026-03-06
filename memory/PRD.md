@@ -54,6 +54,8 @@ A German sports teacher wants modern web apps to replace FileMaker-based tools. 
 - [x] Drawing Canvas: Improved tooltips for tools (clearer German descriptions) - March 2026
 - [x] Media Library: Direct file upload from computer (images + videos, multi-select) - March 2026
 - [x] Media Library: Chronological sorting of sections by movement phases - March 2026
+- [x] Admin: Temporary access with expiry date (auto-deactivation after expiry) - March 2026
+- [x] Admin: Online status indicator (green dot + count, last active timestamp, auto-refresh 30s) - March 2026
 
 ## Upcoming Tasks (P1)
 - [ ] Video Trimming: Editor to shorten clips from media library

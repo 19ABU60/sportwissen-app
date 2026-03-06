@@ -333,8 +333,25 @@ async def login(email: str = Form(...), password: str = Form(...)):
     user = await db.users.find_one({"email": email.lower()}, {"_id": 0})
     if not user or not pwd_context.verify(password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="E-Mail oder Passwort falsch")
+    # Check temporary access expiration first
+    access_expires = user.get("access_expires")
+    if access_expires:
+        try:
+            from dateutil.parser import parse as parse_date
+            exp = parse_date(access_expires) if isinstance(access_expires, str) else access_expires
+            if exp.tzinfo is None:
+                exp = exp.replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) > exp:
+                await db.users.update_one({"id": user["id"]}, {"$set": {"is_active": False}})
+                raise HTTPException(status_code=403, detail="Ihr Zugang ist abgelaufen. Bitte wenden Sie sich an den Administrator.")
+        except HTTPException:
+            raise
+        except Exception:
+            pass
     if not user.get("is_active"):
         raise HTTPException(status_code=403, detail="Ihr Account wurde noch nicht freigeschaltet. Bitte warten Sie auf die Freigabe durch den Administrator.")
+    # Update last_active
+    await db.users.update_one({"id": user["id"]}, {"$set": {"last_active": datetime.now(timezone.utc).isoformat()}})
     token = create_token(user["id"], user["email"], user.get("is_admin", False))
     return {
         "token": token,
@@ -349,6 +366,19 @@ async def login(email: str = Form(...), password: str = Form(...)):
 
 @api_router.get("/auth/me")
 async def get_me(user=Depends(get_current_user)):
+    # Check temporary access expiration
+    access_expires = user.get("access_expires")
+    if access_expires:
+        from dateutil.parser import parse as parse_date
+        try:
+            exp = parse_date(access_expires) if isinstance(access_expires, str) else access_expires
+            if datetime.now(timezone.utc) > exp.replace(tzinfo=timezone.utc) if exp.tzinfo is None else exp:
+                await db.users.update_one({"id": user["id"]}, {"$set": {"is_active": False}})
+                raise HTTPException(status_code=403, detail="Ihr Zugang ist abgelaufen.")
+        except (ValueError, TypeError):
+            pass
+    # Update last_active
+    await db.users.update_one({"id": user["id"]}, {"$set": {"last_active": datetime.now(timezone.utc).isoformat()}})
     return {
         "id": user["id"],
         "email": user["email"],
@@ -400,6 +430,18 @@ async def delete_user(user_id: str, admin=Depends(get_admin_user)):
 
 class ResetPasswordRequest(BaseModel):
     new_password: str
+
+class SetAccessExpiresRequest(BaseModel):
+    access_expires: Optional[str] = None  # ISO date string or null to remove
+
+@api_router.put("/admin/users/{user_id}/access-expires")
+async def set_access_expires(user_id: str, request: SetAccessExpiresRequest, admin=Depends(get_admin_user)):
+    update = {"$set": {"access_expires": request.access_expires}} if request.access_expires else {"$unset": {"access_expires": ""}}
+    result = await db.users.update_one({"id": user_id}, update)
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    msg = f"Zugang befristet bis {request.access_expires}" if request.access_expires else "Befristung entfernt – unbegrenzter Zugang"
+    return {"success": True, "message": msg}
 
 @api_router.put("/admin/users/{user_id}/reset-password")
 async def admin_reset_password(user_id: str, request: ResetPasswordRequest, admin=Depends(get_admin_user)):

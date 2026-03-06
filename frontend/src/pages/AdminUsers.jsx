@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Shield, ShieldOff, Trash2, Check, X, KeyRound } from "lucide-react";
+import { Users, Shield, ShieldOff, Trash2, Check, X, KeyRound, Clock, Circle } from "lucide-react";
 import { toast } from "sonner";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || "";
@@ -12,12 +12,31 @@ const APP_OPTIONS = [
   { id: "planed", label: "PlanEd" },
 ];
 
+function isOnline(lastActive) {
+  if (!lastActive) return false;
+  const diff = Date.now() - new Date(lastActive).getTime();
+  return diff < 5 * 60 * 1000; // 5 Minuten
+}
+
+function formatExpiry(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function isExpired(dateStr) {
+  if (!dateStr) return false;
+  return new Date() > new Date(dateStr);
+}
+
 export default function AdminUsers() {
   const { token } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [resetUserId, setResetUserId] = useState(null);
   const [newPassword, setNewPassword] = useState("");
+  const [expiryUserId, setExpiryUserId] = useState(null);
+  const [expiryDate, setExpiryDate] = useState("");
 
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
@@ -36,6 +55,12 @@ export default function AdminUsers() {
   }, [token]);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  // Auto-refresh every 30 seconds for online status
+  useEffect(() => {
+    const interval = setInterval(fetchUsers, 30000);
+    return () => clearInterval(interval);
+  }, [fetchUsers]);
 
   const toggleActive = async (userId, isActive) => {
     const endpoint = isActive ? "deactivate" : "activate";
@@ -88,6 +113,23 @@ export default function AdminUsers() {
     } catch (err) { toast.error("Fehler beim Zurücksetzen"); }
   };
 
+  const setAccessExpiry = async (userId) => {
+    try {
+      const body = expiryDate
+        ? { access_expires: new Date(expiryDate + "T23:59:59Z").toISOString() }
+        : { access_expires: null };
+      const res = await fetch(`${API_URL}/api/admin/users/${userId}/access-expires`, {
+        method: "PUT", headers, body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        toast.success(expiryDate ? `Zugang befristet bis ${formatExpiry(expiryDate)}` : "Befristung entfernt");
+        setExpiryUserId(null);
+        setExpiryDate("");
+        fetchUsers();
+      }
+    } catch (err) { toast.error("Fehler"); }
+  };
+
   const toggleApp = (user, appId) => {
     const currentApps = user.allowed_apps || [];
     const newApps = currentApps.includes(appId)
@@ -95,6 +137,8 @@ export default function AdminUsers() {
       : [...currentApps, appId];
     updateApps(user.id, newApps);
   };
+
+  const onlineCount = users.filter(u => isOnline(u.last_active)).length;
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -108,7 +152,13 @@ export default function AdminUsers() {
         <h1 className="font-oswald text-2xl font-bold text-white flex items-center gap-2">
           <Users className="w-6 h-6 text-amber-500" /> Benutzerverwaltung
         </h1>
-        <p className="text-zinc-400 text-sm mt-1">{users.length} Benutzer registriert</p>
+        <div className="flex items-center gap-4 mt-1">
+          <p className="text-zinc-400 text-sm">{users.length} Benutzer registriert</p>
+          <p className="text-sm flex items-center gap-1.5">
+            <Circle className="w-2.5 h-2.5 fill-green-500 text-green-500" />
+            <span className="text-green-400">{onlineCount} online</span>
+          </p>
+        </div>
       </motion.div>
 
       <div className="space-y-3" data-testid="users-list">
@@ -125,6 +175,10 @@ export default function AdminUsers() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
+                  {/* Online indicator */}
+                  <Circle className={`w-2.5 h-2.5 flex-shrink-0 ${
+                    isOnline(u.last_active) ? "fill-green-500 text-green-500" : "fill-zinc-600 text-zinc-600"
+                  }`} />
                   <span className="font-medium text-white text-sm">{u.name || u.email.split("@")[0]}</span>
                   {u.is_admin && <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">Admin</span>}
                   {u.is_active ? (
@@ -132,10 +186,21 @@ export default function AdminUsers() {
                   ) : (
                     <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded">Gesperrt</span>
                   )}
+                  {u.access_expires && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 ${
+                      isExpired(u.access_expires)
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-blue-500/20 text-blue-400"
+                    }`}>
+                      <Clock className="w-3 h-3" />
+                      {isExpired(u.access_expires) ? "Abgelaufen" : `bis ${formatExpiry(u.access_expires)}`}
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs text-zinc-500 mt-0.5">{u.email}</p>
                 <p className="text-[10px] text-zinc-600 mt-0.5">
                   Registriert: {new Date(u.created_at).toLocaleDateString("de-DE")}
+                  {u.last_active && ` · Zuletzt aktiv: ${new Date(u.last_active).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}`}
                 </p>
               </div>
 
@@ -167,6 +232,16 @@ export default function AdminUsers() {
               {!u.is_admin && (
                 <div className="flex gap-1.5">
                   <button
+                    onClick={() => { setExpiryUserId(expiryUserId === u.id ? null : u.id); setExpiryDate(""); }}
+                    className={`p-2 rounded transition-colors ${
+                      u.access_expires ? "text-blue-400 hover:bg-blue-500/20" : "text-zinc-400 hover:bg-zinc-700"
+                    }`}
+                    title="Zugang befristen"
+                    data-testid={`set-expiry-${u.id}`}
+                  >
+                    <Clock className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => { setResetUserId(resetUserId === u.id ? null : u.id); setNewPassword(""); }}
                     className="p-2 rounded hover:bg-amber-500/20 text-amber-400 transition-colors"
                     title="Passwort zurücksetzen"
@@ -195,6 +270,51 @@ export default function AdminUsers() {
                 </div>
               )}
             </div>
+
+            {/* Access Expiry Inline */}
+            <AnimatePresence>
+              {expiryUserId === u.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-3 pt-3 border-t border-zinc-700/50"
+                >
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-zinc-400">Zugang gültig bis:</span>
+                    <input
+                      type="date"
+                      value={expiryDate}
+                      onChange={(e) => setExpiryDate(e.target.value)}
+                      min={new Date().toISOString().split("T")[0]}
+                      className="bg-zinc-900 border border-zinc-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                      data-testid={`expiry-date-${u.id}`}
+                    />
+                    <button
+                      onClick={() => setAccessExpiry(u.id)}
+                      className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+                      data-testid={`confirm-expiry-${u.id}`}
+                    >
+                      {expiryDate ? "Befristen" : "Befristung entfernen"}
+                    </button>
+                    {u.access_expires && (
+                      <button
+                        onClick={() => { setExpiryDate(""); setAccessExpiry(u.id); }}
+                        className="px-3 py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-300 text-xs rounded-lg transition-colors"
+                      >
+                        Unbegrenzt setzen
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setExpiryUserId(null)}
+                      className="p-2 text-zinc-400 hover:text-white transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Password Reset Inline */}
             <AnimatePresence>
