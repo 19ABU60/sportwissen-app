@@ -16,12 +16,12 @@ const COLORS = [
 ];
 
 const TOOLS = [
-  { id: "select", name: "Auswählen / Verschieben", icon: MousePointer },
-  { id: "pan", name: "Bild verschieben", icon: Hand },
-  { id: "circle", name: "Kreis", icon: Circle },
-  { id: "line", name: "Linie", icon: Minus },
-  { id: "arrow", name: "Pfeil", icon: ArrowUpRight },
-  { id: "angle", name: "Winkel zur Horizontalen", icon: Triangle },
+  { id: "select", name: "Bewegen – Elemente verschieben", icon: MousePointer },
+  { id: "pan", name: "Bild – Bildausschnitt verschieben", icon: Hand },
+  { id: "circle", name: "Kreis zeichnen", icon: Circle },
+  { id: "line", name: "Linie zeichnen", icon: Minus },
+  { id: "arrow", name: "Pfeil zeichnen", icon: ArrowUpRight },
+  { id: "angle", name: "Winkel zur Horizontalen messen", icon: Triangle },
   { id: "freeAngle", name: "Freier Winkel (2 Linien)", icon: Compass },
 ];
 
@@ -646,10 +646,10 @@ export function DrawingCanvas({
 
           {/* Zoom controls */}
           <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
-            <button onClick={zoomIn} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Vergrößern" data-testid="zoom-in-btn">
+            <button onClick={zoomIn} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Bild vergrößern" data-testid="zoom-in-btn">
               <ZoomIn className="w-4 h-4" />
             </button>
-            <button onClick={zoomOut} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Verkleinern" data-testid="zoom-out-btn">
+            <button onClick={zoomOut} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Bild verkleinern" data-testid="zoom-out-btn">
               <ZoomOut className="w-4 h-4" />
             </button>
             {zoom !== 1 && (
@@ -665,7 +665,7 @@ export function DrawingCanvas({
               onClick={undoLast}
               disabled={drawings.length === 0}
               className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Letzte Zeichnung entfernen"
+              title="Letztes Element entfernen"
             >
               <Eraser className="w-4 h-4" />
             </button>
