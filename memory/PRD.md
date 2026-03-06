@@ -46,6 +46,10 @@ A German sports teacher wants modern web apps to replace FileMaker-based tools. 
 - [x] Password reset: Admin can reset user passwords + users can change own password - March 2026
 - [x] Self-service password change: Users can change own password from portal page - March 2026
 - [x] Portal redesign: Login button moved below app cards for cleaner layout - March 2026
+- [x] Branding removal: "Made with Emergent" badge removed, title/description updated - March 2026
+- [x] Auth fix: Safari "body is disturbed or locked" error fixed with XHR approach - March 2026
+- [x] Admin page cleanup: Header/Footer no longer show Kugelstoßen-specific content on portal-level pages - March 2026
+- [x] Drawing Canvas: Zoom/Pan (trackpad pinch, scroll, buttons) + Select/Move tool for repositioning drawn elements - March 2026
 
 ## Upcoming Tasks (P1)
 - [ ] Video Trimming: Editor to shorten clips from media library
