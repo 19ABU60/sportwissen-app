@@ -157,15 +157,22 @@ export default function MediaLibrary() {
   };
 
   const pageNames = {
-    "fehleranalyse": "Fehlerbilder",
-    "angleiten": "Angleiten",
+    "phasen": "Phasenstruktur",
     "ausgangsstellung": "Ausgangsstellung",
-    "technique": "Stoßauslage",
+    "angleiten": "Angleiten",
     "stossauslage": "Stoßauslage",
+    "technique": "Stoßauslage",
     "videos": "Stoß",
     "obrien": "O'Brien-Technik",
-    "phasen": "Phasenstruktur"
+    "fehleranalyse": "Fehlerbilder",
+    "medienverwaltung": "Hochgeladene Medien"
   };
+
+  // Chronological order of movement phases
+  const PAGE_ORDER = [
+    "phasen", "ausgangsstellung", "angleiten", "stossauslage", "technique",
+    "videos", "obrien", "fehleranalyse", "medienverwaltung"
+  ];
 
   const totalVideos = media.filter(m => m.media_type === "video").length;
   const totalImages = media.filter(m => m.media_type === "image").length;
@@ -265,7 +272,13 @@ export default function MediaLibrary() {
       {/* Media Groups */}
       {!loading && Object.keys(filteredGroupedMedia).length > 0 && (
         <div className="space-y-4">
-          {Object.entries(filteredGroupedMedia).map(([page, items]) => (
+          {Object.entries(filteredGroupedMedia)
+            .sort(([a], [b]) => {
+              const ia = PAGE_ORDER.indexOf(a);
+              const ib = PAGE_ORDER.indexOf(b);
+              return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+            })
+            .map(([page, items]) => (
             <motion.div
               key={page}
               initial={{ opacity: 0, y: 20 }}
