@@ -3,6 +3,21 @@ import { createContext, useContext, useState, useEffect } from "react";
 const API_URL = process.env.REACT_APP_BACKEND_URL || "";
 const AuthContext = createContext(null);
 
+function apiRequest(method, url, body, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    Object.entries(headers).forEach(([k, v]) => xhr.setRequestHeader(k, v));
+    xhr.onload = () => {
+      let data;
+      try { data = JSON.parse(xhr.responseText); } catch { data = {}; }
+      resolve({ status: xhr.status, ok: xhr.status >= 200 && xhr.status < 300, data });
+    };
+    xhr.onerror = () => reject(new Error("Verbindungsfehler"));
+    xhr.send(body);
+  });
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("sw_token"));
@@ -10,11 +25,11 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (token) {
-      fetch(`${API_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(data => { setUser(data); setLoading(false); })
+      apiRequest("GET", `${API_URL}/api/auth/me`, null, { Authorization: `Bearer ${token}` })
+        .then(({ ok, data }) => {
+          if (ok) { setUser(data); } else { logout(); }
+          setLoading(false);
+        })
         .catch(() => { logout(); setLoading(false); });
     } else {
       setLoading(false);
@@ -25,9 +40,8 @@ export function AuthProvider({ children }) {
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
-    const res = await fetch(`${API_URL}/api/auth/login`, { method: "POST", body: formData });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || "Login fehlgeschlagen");
+    const { ok, data } = await apiRequest("POST", `${API_URL}/api/auth/login`, formData);
+    if (!ok) throw new Error(data.detail || "Login fehlgeschlagen");
     localStorage.setItem("sw_token", data.token);
     setToken(data.token);
     setUser(data.user);
@@ -39,9 +53,8 @@ export function AuthProvider({ children }) {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("name", name);
-    const res = await fetch(`${API_URL}/api/auth/register`, { method: "POST", body: formData });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || "Registrierung fehlgeschlagen");
+    const { ok, data } = await apiRequest("POST", `${API_URL}/api/auth/register`, formData);
+    if (!ok) throw new Error(data.detail || "Registrierung fehlgeschlagen");
     return data;
   };
 
