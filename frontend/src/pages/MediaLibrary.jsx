@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Trash2, Video, Image as ImageIcon, Play,
-  Download, ChevronDown, ChevronUp, Folder, X, Copy, ArrowRight
+  Download, ChevronDown, ChevronUp, Folder, X, Copy, ArrowRight, Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Lightbox } from "@/components/Lightbox";
@@ -34,6 +34,8 @@ export default function MediaLibrary() {
   const [showLightbox, setShowLightbox] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [copyModal, setCopyModal] = useState(null); // Media item to copy
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     document.title = "Medienverwaltung | SportWissen";
@@ -96,6 +98,36 @@ export default function MediaLibrary() {
       console.error("Error deleting media:", err);
       toast.error("Fehler beim Löschen");
     }
+  };
+
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    setUploading(true);
+    let successCount = 0;
+    for (const file of files) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("page", "medienverwaltung");
+        formData.append("section", file.name.replace(/\.[^.]+$/, ""));
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/media/upload`, {
+          method: "POST",
+          body: formData
+        });
+        if (response.ok) successCount++;
+      } catch (err) {
+        console.error("Upload error:", err);
+      }
+    }
+    if (successCount > 0) {
+      toast.success(`${successCount} ${successCount === 1 ? "Datei" : "Dateien"} hochgeladen`);
+      fetchMedia();
+    } else {
+      toast.error("Fehler beim Hochladen");
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // Group media by page
@@ -173,6 +205,24 @@ export default function MediaLibrary() {
         </div>
         
         <div className="flex gap-2 ml-auto">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            onChange={handleFileUpload}
+            className="hidden"
+            data-testid="media-file-input"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white transition-colors"
+            data-testid="upload-media-btn"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            {uploading ? "Lädt hoch..." : "Hochladen"}
+          </button>
           {["all", "video", "image"].map((f) => (
             <button
               key={f}
