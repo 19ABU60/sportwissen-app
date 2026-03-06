@@ -50,6 +50,10 @@ A German sports teacher wants modern web apps to replace FileMaker-based tools. 
 - [x] Auth fix: Safari "body is disturbed or locked" error fixed with XHR approach - March 2026
 - [x] Admin page cleanup: Header/Footer no longer show Kugelstoßen-specific content on portal-level pages - March 2026
 - [x] Drawing Canvas: Zoom/Pan (trackpad pinch, scroll, buttons) + Select/Move tool for repositioning drawn elements - March 2026
+- [x] Drawing Canvas: Image zoom fix - image and drawings zoom together - March 2026
+- [x] Drawing Canvas: Improved tooltips for tools (clearer German descriptions) - March 2026
+- [x] Media Library: Direct file upload from computer (images + videos, multi-select) - March 2026
+- [x] Media Library: Chronological sorting of sections by movement phases - March 2026
 
 ## Upcoming Tasks (P1)
 - [ ] Video Trimming: Editor to shorten clips from media library
