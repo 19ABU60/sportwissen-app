@@ -557,6 +557,10 @@ export function DrawingCanvas({
               alt={imageAlt}
               className="w-full h-auto"
               draggable={false}
+              style={{
+                transformOrigin: "0 0",
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`
+              }}
               onLoad={() => {
                 if (containerRef.current) {
                   const rect = containerRef.current.getBoundingClientRect();
