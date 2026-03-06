@@ -38,6 +38,12 @@ JWT_EXPIRATION_HOURS = 72
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
 
+def safe_hash(password: str) -> str:
+    return pwd_context.hash(password[:72])
+
+def safe_verify(password: str, hashed: str) -> bool:
+    return pwd_context.verify(password[:72], hashed)
+
 # Admin credentials
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@sport-wissen.com')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'SportWissen2026!')
@@ -49,7 +55,7 @@ async def ensure_admin():
         await db.users.insert_one({
             "id": str(uuid.uuid4()),
             "email": ADMIN_EMAIL,
-            "password_hash": pwd_context.hash(ADMIN_PASSWORD),
+            "password_hash": safe_hash(ADMIN_PASSWORD),
             "name": "Admin",
             "is_active": True,
             "is_admin": True,
@@ -318,7 +324,7 @@ async def register(email: str = Form(...), password: str = Form(...), name: str 
     user = {
         "id": str(uuid.uuid4()),
         "email": email.lower(),
-        "password_hash": pwd_context.hash(password),
+        "password_hash": safe_hash(password),
         "name": name or email.split("@")[0],
         "is_active": False,
         "is_admin": False,
@@ -331,7 +337,7 @@ async def register(email: str = Form(...), password: str = Form(...), name: str 
 @api_router.post("/auth/login")
 async def login(email: str = Form(...), password: str = Form(...)):
     user = await db.users.find_one({"email": email.lower()}, {"_id": 0})
-    if not user or not pwd_context.verify(password, user["password_hash"]):
+    if not user or not safe_verify(password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="E-Mail oder Passwort falsch")
     # Check temporary access expiration first
     access_expires = user.get("access_expires")
@@ -449,7 +455,7 @@ async def admin_reset_password(user_id: str, request: ResetPasswordRequest, admi
         raise HTTPException(status_code=400, detail="Passwort muss mindestens 6 Zeichen lang sein")
     result = await db.users.update_one(
         {"id": user_id},
-        {"$set": {"password_hash": pwd_context.hash(request.new_password)}}
+        {"$set": {"password_hash": safe_hash(request.new_password)}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
@@ -463,11 +469,11 @@ class ChangePasswordRequest(BaseModel):
 async def change_password(request: ChangePasswordRequest, user=Depends(get_current_user)):
     if len(request.new_password) < 6:
         raise HTTPException(status_code=400, detail="Neues Passwort muss mindestens 6 Zeichen lang sein")
-    if not pwd_context.verify(request.current_password, user["password_hash"]):
+    if not safe_verify(request.current_password, user["password_hash"]):
         raise HTTPException(status_code=400, detail="Aktuelles Passwort ist falsch")
     await db.users.update_one(
         {"id": user["id"]},
-        {"$set": {"password_hash": pwd_context.hash(request.new_password)}}
+        {"$set": {"password_hash": safe_hash(request.new_password)}}
     )
     return {"success": True, "message": "Passwort wurde geändert"}
 
