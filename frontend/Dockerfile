@@ -11,6 +11,7 @@ COPY frontend/yarn.lock* ./
 RUN yarn install --frozen-lockfile || yarn install
 
 # Copy frontend source code
+ARG CACHE_BUST=1
 COPY frontend/ .
 
 # Build the app
