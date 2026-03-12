@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, Image, Video, Trash2, ZoomIn, Loader2, FolderOpen, ChevronRight } from "lucide-react";
+import { Upload, X, Image, Video, Trash2, ZoomIn, Loader2, FolderOpen, ChevronRight, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Lightbox } from "./Lightbox";
@@ -307,7 +307,7 @@ export function MediaUpload({
         )}
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox for images */}
       {media?.media_type === "image" && (
         <Lightbox 
           isOpen={showLightbox} 
@@ -316,6 +316,17 @@ export function MediaUpload({
           alt={media?.original_name}
         />
       )}
+
+      {/* Video Player Modal with Frame Capture */}
+      <AnimatePresence>
+        {showLightbox && media?.media_type === "video" && mediaUrl && (
+          <VideoPlayerModal
+            src={mediaUrl}
+            page={page}
+            onClose={() => setShowLightbox(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Library Modal */}
       <AnimatePresence>
@@ -458,6 +469,85 @@ export function MediaUpload({
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// Video Player Modal with Frame Capture
+function VideoPlayerModal({ src, page, onClose }) {
+  const videoRef = useRef(null);
+  const [capturing, setCapturing] = useState(false);
+
+  const captureFrame = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    setCapturing(true);
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const timestamp = video.currentTime;
+
+      const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.92));
+      const formData = new FormData();
+      formData.append("file", blob, `standbild_${timestamp.toFixed(1)}s_${Date.now()}.jpg`);
+      formData.append("page", page);
+      formData.append("section", `standbild_${Date.now()}`);
+
+      const res = await fetch(`${API_URL}/api/media/upload`, { method: "POST", body: formData });
+      if (res.ok) {
+        toast.success(`Standbild aufgenommen (${timestamp.toFixed(1)}s) und gespeichert`);
+      } else {
+        toast.error("Fehler beim Speichern");
+      }
+    } catch {
+      toast.error("Standbild konnte nicht erstellt werden");
+    }
+    setCapturing(false);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="max-w-4xl w-full"
+        onClick={e => e.stopPropagation()}
+      >
+        <video
+          ref={videoRef}
+          src={src}
+          controls
+          autoPlay
+          className="w-full rounded-lg"
+          data-testid="video-player-modal"
+        />
+        <div className="flex items-center justify-between mt-3">
+          <button
+            onClick={captureFrame}
+            disabled={capturing}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+            data-testid="capture-frame-btn"
+          >
+            <Camera className="w-4 h-4" />
+            {capturing ? "Wird gespeichert..." : "Standbild aufnehmen"}
+          </button>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-300 text-sm rounded-lg transition-colors"
+          >
+            Schließen
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
