@@ -541,146 +541,145 @@ export function DrawingCanvas({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <h2 className="font-oswald text-lg font-semibold tracking-wide text-white">{title}</h2>
 
-      <div className="flex gap-3">
-        {/* Canvas container */}
-        <div 
-          ref={containerRef}
-          className="relative rounded-lg overflow-hidden border-2 border-zinc-700 flex-1"
-          style={{ touchAction: "none", cursor: getCursorStyle() }}
-        >
-          {imageSrc ? (
-            <img 
-              src={imageSrc} 
-              alt={imageAlt}
-              className="w-full h-auto"
-              draggable={false}
-              style={{
-                transformOrigin: "0 0",
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`
-              }}
-              onLoad={() => {
-                if (containerRef.current) {
-                  const rect = containerRef.current.getBoundingClientRect();
-                  setCanvasSize({ width: rect.width, height: rect.height });
-                }
-              }}
-            />
-          ) : (
-            <div className="aspect-[4/3] bg-zinc-800 flex items-center justify-center">
-              <span className="text-zinc-500 text-sm">Bild wird geladen...</span>
-            </div>
-          )}
-
-          <canvas
-            ref={canvasRef}
-            width={canvasSize.width || 400}
-            height={canvasSize.height || 300}
-            className="absolute inset-0 w-full h-full"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+      {/* Canvas container */}
+      <div 
+        ref={containerRef}
+        className="relative rounded-lg overflow-hidden border-2 border-zinc-700"
+        style={{ touchAction: "none", cursor: getCursorStyle() }}
+      >
+        {imageSrc ? (
+          <img 
+            src={imageSrc} 
+            alt={imageAlt}
+            className="w-full h-auto"
+            draggable={false}
+            style={{
+              transformOrigin: "0 0",
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`
+            }}
+            onLoad={() => {
+              if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                setCanvasSize({ width: rect.width, height: rect.height });
+              }
+            }}
           />
-
-          {/* Zoom indicator */}
-          {zoom !== 1 && (
-            <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md pointer-events-none">
-              {Math.round(zoom * 100)}%
-            </div>
-          )}
-
-          {/* Selected element info */}
-          {selectedIndex !== null && tool === "select" && (
-            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md flex items-center gap-2">
-              <span>Element ausgewählt</span>
-              <button
-                onClick={deleteSelected}
-                className="bg-red-600 hover:bg-red-700 px-2 py-0.5 rounded text-white"
-                data-testid="delete-selected-btn"
-              >
-                Löschen
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Vertical Toolbar */}
-        <div className="flex flex-col gap-2 bg-zinc-800/50 border border-zinc-700 rounded-lg p-2">
-          {/* Tools */}
-          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
-            {TOOLS.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => { setTool(t.id); setSelectedIndex(null); }}
-                className={`p-2 rounded-lg transition-colors ${
-                  tool === t.id ? "bg-blue-600 text-white" : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
-                }`}
-                title={t.name}
-                data-testid={`tool-${t.id}`}
-              >
-                <t.icon className="w-4 h-4" />
-              </button>
-            ))}
+        ) : (
+          <div className="aspect-[4/3] bg-zinc-800 flex items-center justify-center">
+            <span className="text-zinc-500 text-sm">Bild wird geladen...</span>
           </div>
+        )}
 
-          {/* Colors */}
-          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
-            {COLORS.map((c) => (
-              <button
-                key={c.value}
-                onClick={() => setColor(c.value)}
-                className={`w-6 h-6 rounded-full border-2 transition-transform ${
-                  color === c.value ? "border-white scale-110" : "border-zinc-500 hover:scale-105"
-                }`}
-                style={{ backgroundColor: c.value }}
-                title={c.name}
-              />
-            ))}
+        <canvas
+          ref={canvasRef}
+          width={canvasSize.width || 400}
+          height={canvasSize.height || 300}
+          className="absolute inset-0 w-full h-full"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        />
+
+        {/* Zoom indicator */}
+        {zoom !== 1 && (
+          <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md pointer-events-none">
+            {Math.round(zoom * 100)}%
           </div>
+        )}
 
-          {/* Zoom controls */}
-          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
-            <button onClick={zoomIn} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Bild vergrößern" data-testid="zoom-in-btn">
-              <ZoomIn className="w-4 h-4" />
-            </button>
-            <button onClick={zoomOut} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Bild verkleinern" data-testid="zoom-out-btn">
-              <ZoomOut className="w-4 h-4" />
-            </button>
-            {zoom !== 1 && (
-              <button onClick={resetZoom} className="p-1 rounded text-[10px] text-zinc-400 hover:text-white" title="Zoom zurücksetzen">
-                1:1
-              </button>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col items-center gap-1 pb-2 border-b border-zinc-600">
+        {/* Selected element info */}
+        {selectedIndex !== null && tool === "select" && (
+          <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md flex items-center gap-2">
+            <span>Element ausgewählt</span>
             <button
-              onClick={undoLast}
-              disabled={drawings.length === 0}
-              className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Letztes Element entfernen"
+              onClick={deleteSelected}
+              className="bg-red-600 hover:bg-red-700 px-2 py-0.5 rounded text-white"
+              data-testid="delete-selected-btn"
             >
-              <Eraser className="w-4 h-4" />
-            </button>
-            <button
-              onClick={clearAll}
-              disabled={drawings.length === 0}
-              className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Alles löschen"
-            >
-              <RotateCcw className="w-4 h-4" />
+              Löschen
             </button>
           </div>
+        )}
+      </div>
 
-          {/* Solution toggle */}
-          {solutionMarkers.length > 0 && (
+      {/* Horizontal Toolbar */}
+      <div className="flex items-center gap-1.5 bg-zinc-800/50 border border-zinc-700 rounded-lg p-1.5 flex-wrap">
+        {/* Tools */}
+        {TOOLS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => { setTool(t.id); setSelectedIndex(null); }}
+            className={`p-2 rounded-lg transition-colors ${
+              tool === t.id ? "bg-blue-600 text-white" : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+            }`}
+            title={t.name}
+            data-testid={`tool-${t.id}`}
+          >
+            <t.icon className="w-4 h-4" />
+          </button>
+        ))}
+
+        <div className="w-px h-6 bg-zinc-600 mx-1" />
+
+        {/* Colors */}
+        {COLORS.map((c) => (
+          <button
+            key={c.value}
+            onClick={() => setColor(c.value)}
+            className={`w-7 h-7 rounded-full border-2 transition-transform ${
+              color === c.value ? "border-white scale-110" : "border-zinc-500 hover:scale-105"
+            }`}
+            style={{ backgroundColor: c.value }}
+            title={c.name}
+          />
+        ))}
+
+        <div className="w-px h-6 bg-zinc-600 mx-1" />
+
+        {/* Zoom */}
+        <button onClick={zoomIn} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Bild vergrößern" data-testid="zoom-in-btn">
+          <ZoomIn className="w-4 h-4" />
+        </button>
+        <button onClick={zoomOut} className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600" title="Bild verkleinern" data-testid="zoom-out-btn">
+          <ZoomOut className="w-4 h-4" />
+        </button>
+        {zoom !== 1 && (
+          <button onClick={resetZoom} className="px-2 py-1 rounded text-[10px] text-zinc-400 hover:text-white bg-zinc-700" title="Zoom zurücksetzen">
+            1:1
+          </button>
+        )}
+
+        <div className="w-px h-6 bg-zinc-600 mx-1" />
+
+        {/* Actions */}
+        <button
+          onClick={undoLast}
+          disabled={drawings.length === 0}
+          className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Letztes Element entfernen"
+        >
+          <Eraser className="w-4 h-4" />
+        </button>
+        <button
+          onClick={clearAll}
+          disabled={drawings.length === 0}
+          className="p-2 rounded-lg bg-zinc-700 text-zinc-300 hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Alles löschen"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
+
+        {/* Solution toggle */}
+        {solutionMarkers.length > 0 && (
+          <>
+            <div className="w-px h-6 bg-zinc-600 mx-1" />
             <button
               onClick={() => setShowSolution(!showSolution)}
               className={`p-2 rounded-lg transition-colors ${
@@ -690,7 +689,14 @@ export function DrawingCanvas({
             >
               {showSolution ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
-          )}
+          </>
+        )}
+
+        {/* Status info */}
+        <div className="ml-auto flex items-center gap-3 text-xs text-zinc-500">
+          {tool === "select" && <span className="text-amber-400">Klicken zum Auswählen, Ziehen zum Verschieben</span>}
+          {tool === "pan" && <span className="text-amber-400">Ziehen zum Verschieben des Bildausschnitts</span>}
+          <span>{drawings.length} Markierung(en)</span>
         </div>
       </div>
 
@@ -725,16 +731,6 @@ export function DrawingCanvas({
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      {/* Status bar */}
-      <div className="flex items-center justify-between text-xs text-zinc-500">
-        <span>{drawings.length} Markierung(en){zoom !== 1 ? ` • Zoom: ${Math.round(zoom * 100)}%` : ""}</span>
-        <div className="flex items-center gap-3">
-          {tool === "select" && <span className="text-amber-400">Klicken zum Auswählen, Ziehen zum Verschieben</span>}
-          {tool === "pan" && <span className="text-amber-400">Ziehen zum Verschieben des Bildausschnitts</span>}
-          {showSolution && <span className="text-green-400">Musterlösung wird angezeigt (gestrichelt)</span>}
-        </div>
       </div>
     </div>
   );
