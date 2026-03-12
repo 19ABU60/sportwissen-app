@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 class SportWissenAPITester:
-    def __init__(self, base_url="https://obrien-method.preview.emergentagent.com"):
+    def __init__(self, base_url="https://shot-put-tech.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0

@@ -241,12 +241,21 @@ export function MediaUpload({
               </div>
             )}
             {media.media_type === "video" && !media.thumbnail_url && (
-              <video 
-                src={mediaUrl}
-                className="w-full h-full object-cover"
-                controls
-                data-testid={`video-${page}-${section}`}
-              />
+              <div className="relative w-full h-full">
+                <video 
+                  src={mediaUrl}
+                  className="w-full h-full object-cover"
+                  controls
+                  data-testid={`video-${page}-${section}`}
+                />
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowLightbox(true); }}
+                  className="absolute top-2 left-2 flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded-lg transition-colors z-10"
+                  data-testid={`capture-btn-${page}-${section}`}
+                >
+                  <Camera className="w-3.5 h-3.5" /> Standbild
+                </button>
+              </div>
             )}
             
             {/* Overlay actions - positioned in top right corner for videos */}
